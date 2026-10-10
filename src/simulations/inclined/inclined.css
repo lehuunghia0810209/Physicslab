@@ -1,0 +1,35 @@
+.inclined-visual {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.inclined-visual svg {
+  width: min(100%, 440px);
+  height: auto;
+  color: #dfeae7;
+}
+
+.graph-canvas {
+  min-height: 160px;
+}
+
+.graph-canvas svg {
+  width: 100%;
+  height: 180px;
+  color: #dfeae7;
+}
+
+.parameter {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.parameter label {
+  font-weight: 600;
+}
+
+.parameter span {
+  color: #4bb39a;
+}

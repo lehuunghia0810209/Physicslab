@@ -1,0 +1,104 @@
+.newton-scene {
+  position: relative;
+  min-height: 220px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(117, 181, 170, 0.12), rgba(117, 181, 170, 0.02));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: end;
+  padding: 30px 40px 38px;
+}
+
+.newton-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  background: linear-gradient(180deg, rgba(112, 178, 151, 0.18), rgba(112, 178, 151, 0.35));
+}
+
+.newton-block {
+  position: relative;
+  z-index: 1;
+  width: 124px;
+  height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #1f8c77, #0d5f54);
+  box-shadow: 0 20px 30px rgba(18, 96, 84, 0.18);
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  transition: transform 180ms ease;
+}
+
+.newton-vector {
+  position: absolute;
+  left: 0;
+  top: 45%;
+  transform: translate(-10%, -50%);
+  color: var(--amber);
+  z-index: 2;
+}
+
+.newton-vector.force { color: var(--amber); }
+.newton-vector.friction { color: var(--blue); }
+.newton-vector.net { color: var(--primary); }
+
+.newton-vector svg {
+  width: 180px;
+  height: 48px;
+  overflow: visible;
+}
+
+.newton-vector text {
+  fill: currentColor;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.newton-vector path,
+.newton-vector line {
+  stroke: currentColor;
+  stroke-width: 3;
+  fill: none;
+}
+
+.newton-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.newton-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.newton-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.newton-dot.force { background: var(--amber); }
+.newton-dot.friction { background: var(--blue); }
+.newton-dot.net { background: var(--primary); }
+
+.graph-canvas {
+  min-height: 180px;
+}
+
+.graph-canvas svg {
+  width: 100%;
+  height: 180px;
+  color: var(--primary);
+}

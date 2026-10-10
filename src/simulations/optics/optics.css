@@ -1,0 +1,33 @@
+.optics-layout { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(270px,.8fr); gap: 18px; align-items: start; }
+.optics-workbench, .optics-controls { min-width: 0; }
+#optics-scene { display: block; width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: color-mix(in srgb,var(--primary) 4%,var(--surface)); }
+#optics-scene text { fill: var(--muted); font: 13px var(--font); }
+.optics-axis { stroke: var(--muted); stroke-dasharray: 5 4; }
+.optics-lens { fill: color-mix(in srgb,var(--blue) 20%,transparent); stroke: var(--blue); stroke-width: 3; }
+.optics-ray { stroke: var(--amber); stroke-width: 2; fill: none; }
+.optics-ray.secondary { stroke: var(--primary); }
+.optics-ray.virtual { stroke-dasharray: 6 4; }
+.optics-object { stroke: var(--primary); fill: var(--primary); stroke-width: 3; }
+.optics-image { stroke: var(--amber); fill: var(--amber); stroke-width: 3; }
+.optics-focus { stroke: var(--muted); stroke-width: 2; }
+.optics-readouts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--line); }
+.optics-readouts > div { display: flex; flex-direction: column; min-height: 76px; gap: 2px; padding: 10px; background: var(--surface); }
+.optics-readouts span, .optics-readouts small { color: var(--muted); font-size: 12px; }
+.optics-readouts strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.optics-controls h2 { font-size: 18px; }
+.optics-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin: 14px 0; }
+.optics-parameter strong { color: var(--muted); font-size: 13px; }
+.optics-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.optics-equation { padding: 12px; border-radius: 8px; color: var(--ink); background: color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size: 14px; }
+.optics-assumption, #optics-status { font-size: 13px; }
+.optics-graph { margin-top: 24px; }
+.optics-graph .graph-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.optics-graph .graph-title h3, .optics-graph .graph-title span, .optics-graph .graph-value { font-size: 13px; }
+.optics-graph .graph-svg { display: block; width: 100%; margin-top: 8px; color: var(--blue); }
+.optics-graph .graph-svg text { fill: var(--muted); font: 12px var(--font); }
+.optics-graph .graph-grid { stroke: var(--line); }
+.optics-graph .graph-zero { stroke: var(--muted); }
+.optics-graph .graph-line { fill: none; stroke: currentColor; stroke-width: 2; }
+.optics-graph .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
+.optics-graph .graph-dot { fill: currentColor; }
+@media (max-width: 900px) { .optics-layout { grid-template-columns: 1fr; } }

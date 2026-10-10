@@ -1,0 +1,841 @@
+# MASTER CONTEXT — PHYSICSLAB
+
+Tôi đang xây dựng nhiều website giáo dục STEM độc lập.
+
+Hiện tại tôi đã có:
+
+- ChemLab — website Hóa học riêng, đã hoàn thiện
+- MathLab — website Toán riêng
+
+Dự án tiếp theo là:
+
+PHYSICSLAB
+
+PhysicsLab phải được phát triển như một WEBSITE HOÀN CHỈNH ĐỘC LẬP.
+
+QUAN TRỌNG:
+
+PhysicsLab hiện tại KHÔNG phải là một module nằm bên trong EduLab.
+
+Không xây PhysicsLab dựa trên một app shell chung của EduLab.
+
+Không cần kết nối MathLab hoặc ChemLab ở giai đoạn này.
+
+Không cần account chung.
+
+Không cần progress chung.
+
+Không cần navigation chung.
+
+Không cần dùng chung codebase.
+
+Không cần tạo monorepo.
+
+Mỗi sản phẩm phải có khả năng tồn tại và hoạt động độc lập hoàn toàn.
+
+==================================================
+TẦM NHÌN DÀI HẠN
+==================================================
+
+Sau này khi các website đã hoàn thiện:
+
+- MathLab
+- ChemLab
+- PhysicsLab
+- BioLab
+- ...
+
+tôi mới xây một website mới tên:
+
+EDULAB — EDUCATION LABORATORY
+
+EduLab lúc đó sẽ là cổng trung tâm kết nối các website trên.
+
+Ví dụ:
+
+               EDULAB
+                  │
+        ┌─────────┼─────────┐
+        │         │         │
+     MathLab   ChemLab   PhysicsLab
+                             │
+                           BioLab
+
+EduLab có thể làm:
+
+- homepage chung
+- khám phá các môn
+- account người dùng
+- profile
+- progress tổng
+- recommendation
+- chuyển nhanh giữa các Lab
+
+NHƯNG ĐÓ LÀ GIAI ĐOẠN SAU.
+
+Hiện tại chỉ tập trung xây PhysicsLab thật tốt.
+
+==================================================
+PHYSICSLAB LÀ GÌ?
+==================================================
+
+PhysicsLab là một website học Vật lý tương tác dành chủ yếu cho học sinh THPT Việt Nam.
+
+Không làm theo kiểu:
+
+- website đọc sách giáo khoa
+- website chỉ có công thức
+- website chỉ có calculator
+- website chỉ có vài animation
+- website copy PhET
+
+PhysicsLab phải là một môi trường:
+
+HỌC
++
+MÔ PHỎNG
++
+THÍ NGHIỆM
++
+KHÁM PHÁ
++
+ĐO LƯỜNG
++
+ĐỒ THỊ
++
+CÔNG CỤ
+
+Triết lý chính:
+
+"Không chỉ đọc Vật lý — hãy nhìn thấy và tương tác với nó."
+
+==================================================
+WEBSITE THAM KHẢO
+==================================================
+
+Tham khảo cách họ giải quyết trải nghiệm, không copy giao diện hoặc code.
+
+PHET
+https://phet.colorado.edu/vi/
+
+Học từ PhET:
+
+- simulation trực quan
+- thay tham số thấy kết quả ngay
+- học bằng thử nghiệm
+- ít thao tác thừa
+- tập trung vào hiện tượng vật lý
+
+MOZAIK3D
+https://mozaweb.vn/vi/mozaik3D
+
+Học từ Mozaik3D:
+
+- visualization mạnh
+- mô hình 3D
+- rotate
+- zoom
+- preset camera
+- annotation
+- animation
+- khả năng khám phá từng thành phần
+
+Các nguồn UI/UX có thể tham khảo:
+
+- Uiverse
+- Mobbin
+- Godly
+- Awwwards
+- Linear
+- Vercel
+- Apple Human Interface Guidelines
+- Material Design
+
+Không copy một website nào.
+
+PhysicsLab phải có bản sắc riêng.
+
+==================================================
+BẢN SẮC PHYSICSLAB
+==================================================
+
+Nếu ChemLab mang cảm giác:
+
+"Phòng thí nghiệm Hóa học số"
+
+thì PhysicsLab phải mang cảm giác:
+
+"Không gian khám phá các quy luật của thế giới vật lý."
+
+Phong cách:
+
+- scientific
+- modern
+- clean
+- premium
+- interactive
+- futuristic vừa phải
+
+Không:
+
+- gaming quá mức
+- neon quá mạnh
+- cyberpunk
+- giao diện trẻ con
+- dashboard doanh nghiệp nhàm chán
+
+PhysicsLab nên dùng visual language liên quan đến:
+
+- vector
+- quỹ đạo
+- trường
+- sóng
+- grid
+- đồ thị
+- tọa độ
+- dữ liệu đo
+
+==================================================
+CẤU TRÚC WEBSITE
+==================================================
+
+PhysicsLab nên có khoảng 5 khu vực chính:
+
+1. HOME
+2. SIMULATIONS
+3. LEARNING
+4. VIRTUAL LAB
+5. TOOLS
+
+Có thể mở rộng sau:
+
+6. 3D EXPLORER
+7. PROGRESS
+
+==================================================
+HOME
+==================================================
+
+Home phải là dashboard thực sự.
+
+Có thể gồm:
+
+- Hero
+- Continue Learning
+- Featured Simulation
+- Explore Physics
+- Simulation Categories
+- Recent Activity
+- Recommended Experiments
+- Quick Tools
+- Learning Progress
+
+Không biến Home thành landing page marketing dài.
+
+==================================================
+SIMULATIONS
+==================================================
+
+Đây là phần quan trọng nhất của PhysicsLab.
+
+Nhóm nội dung:
+
+MECHANICS
+
+- Kinematics
+- Projectile Motion
+- Newton Laws
+- Friction
+- Inclined Plane
+- Circular Motion
+- Momentum
+- Collision
+- Work
+- Energy
+- Spring
+- Pendulum
+- Gravitation
+
+WAVES
+
+- Wave on String
+- Frequency
+- Amplitude
+- Wavelength
+- Standing Waves
+- Interference
+- Resonance
+- Doppler Effect
+
+ELECTRICITY
+
+- Electric Charge
+- Coulomb Law
+- Electric Field
+- Electric Potential
+- Current
+- Voltage
+- Resistance
+- Ohm Law
+- Series Circuit
+- Parallel Circuit
+- Kirchhoff
+- Capacitor
+
+MAGNETISM
+
+- Magnetic Field
+- Lorentz Force
+- Electromagnetic Induction
+- Faraday Law
+- Generator
+- Transformer
+
+OPTICS
+
+- Reflection
+- Refraction
+- Mirrors
+- Lens
+- Ray Diagrams
+- Image Formation
+- Total Internal Reflection
+
+THERMAL PHYSICS
+
+- Temperature
+- Heat
+- Calorimetry
+- Expansion
+- Gas Laws
+- Ideal Gas
+- P-V Diagram
+
+MODERN PHYSICS
+
+phát triển sau khi core ổn định.
+
+==================================================
+SIMULATION ENGINE
+==================================================
+
+Không viết mỗi simulation thành một hệ thống hoàn toàn riêng.
+
+Phải có nền tảng dùng chung.
+
+Ví dụ:
+
+SimulationEngine
+SimulationScene
+SimulationControls
+SimulationRegistry
+PhysicsObject
+VectorRenderer
+GraphRenderer
+MeasurementSystem
+Timeline
+StateManager
+
+Mỗi simulation có metadata:
+
+id
+title
+category
+grade
+concepts
+description
+parameters
+measurements
+equations
+
+==================================================
+PHYSICS RULE
+==================================================
+
+Không fake simulation.
+
+Motion phải dựa trên model vật lý thật.
+
+Ví dụ Projectile Motion:
+
+vx = v0 cos(theta)
+
+vy = v0 sin(theta) - gt
+
+x = v0 cos(theta)t
+
+y = h + v0 sin(theta)t - 1/2 gt²
+
+Nếu bỏ qua:
+
+- air resistance
+- friction
+- mass
+- heat loss
+
+thì UI phải cho người học biết assumption đó.
+
+==================================================
+VECTOR SYSTEM
+==================================================
+
+Vector là thành phần dùng chung cực kỳ quan trọng.
+
+Dùng cho:
+
+- velocity
+- acceleration
+- force
+- momentum
+- electric field
+- magnetic force
+
+Mỗi vector nên có:
+
+origin
+magnitude
+direction
+label
+scale
+style role
+
+Không viết cách vẽ vector khác nhau ở từng simulation.
+
+==================================================
+GRAPH SYSTEM
+==================================================
+
+PhysicsLab cần graph engine dùng chung.
+
+Hỗ trợ:
+
+- x(t)
+- v(t)
+- a(t)
+- energy
+- force
+- voltage
+- current
+- waveform
+
+Graph phải sync với simulation.
+
+Ví dụ khi thời gian simulation là 2.5 s:
+
+đồ thị cũng phải highlight đúng t = 2.5 s.
+
+==================================================
+VIRTUAL LAB
+==================================================
+
+Simulation và Virtual Lab là hai thứ khác nhau.
+
+Simulation:
+khám phá hiện tượng.
+
+Virtual Lab:
+thực hiện thí nghiệm bằng thiết bị.
+
+Thiết bị có thể gồm:
+
+- ruler
+- stopwatch
+- spring
+- mass
+- cart
+- track
+- pulley
+- force meter
+- ammeter
+- voltmeter
+- resistor
+- battery
+- switch
+- wire
+- magnet
+- coil
+- lens
+- mirror
+- screen
+- thermometer
+- calorimeter
+
+Không cần làm tất cả ngay.
+
+Phải tạo Equipment System trước.
+
+==================================================
+LEARNING
+==================================================
+
+Learning không được tách biệt khỏi simulation.
+
+Một lesson tốt có flow:
+
+Theory
+↓
+Visualization
+↓
+Prediction
+↓
+Simulation
+↓
+Observation
+↓
+Graph
+↓
+Question
+↓
+Summary
+
+==================================================
+TOOLS
+==================================================
+
+Có thể gồm:
+
+Unit Converter
+Vector Calculator
+Kinematics Calculator
+Force Calculator
+Energy Calculator
+Momentum Calculator
+Circuit Calculator
+Ohm Law Calculator
+Lens Calculator
+Wave Calculator
+Formula Explorer
+
+==================================================
+2D VÀ 3D
+==================================================
+
+Không phải thứ gì cũng dùng Three.js.
+
+Dùng:
+
+SVG / Canvas
+khi 2D giải thích tốt hơn.
+
+Three.js
+khi không gian 3D thực sự giúp học sinh hiểu.
+
+Ví dụ:
+
+Projectile Motion:
+2D tốt hơn.
+
+Electric Field:
+2D hoặc 3D tùy trường hợp.
+
+Magnetic Field:
+3D có thể hữu ích.
+
+Optical Ray Diagram:
+2D.
+
+Equipment Explorer:
+3D có thể hữu ích.
+
+==================================================
+STACK
+==================================================
+
+Ưu tiên:
+
+Vite
+Vanilla JavaScript
+ES Modules
+CSS
+Three.js khi cần
+
+Không chuyển sang React nếu không có lý do thực sự cần thiết.
+
+==================================================
+PERFORMANCE
+==================================================
+
+Ngay từ đầu phải tránh lỗi kiến trúc về sau.
+
+Cần:
+
+- lazy loading
+- code splitting
+- simulation lazy loading
+- Three.js lazy loading
+- modular CSS
+- không bundle mọi simulation vào entry
+- không tạo main.js khổng lồ
+- tránh !important debt
+
+==================================================
+RESPONSIVE
+==================================================
+
+Desktop
+Tablet
+Mobile
+
+Mobile không phải desktop thu nhỏ.
+
+Simulation mobile cần:
+
+- viewport lớn nhất có thể
+- bottom control sheet
+- slider lớn
+- touch target >= 44px
+- graph thích ứng
+- không horizontal overflow
+- safe-area
+
+==================================================
+CHƯƠNG TRÌNH HỌC
+==================================================
+
+Hướng đến Vật lý THPT Việt Nam:
+
+Lớp 10
+Lớp 11
+Lớp 12
+
+Nhưng curriculum data phải tách khỏi UI.
+
+Không khóa website vào một bộ sách cụ thể.
+
+==================================================
+PROGRESS
+==================================================
+
+PhysicsLab cần progress system riêng.
+
+Có thể bắt đầu bằng localStorage:
+
+- lesson progress
+- simulation visited
+- experiment completed
+- quiz score
+- recent activity
+
+Không cần tích hợp với EduLab ở giai đoạn này.
+
+Chỉ cần thiết kế dữ liệu đủ sạch để sau này có thể migrate.
+
+==================================================
+PHYSICSLAB API NỘI BỘ
+==================================================
+
+PhysicsLab có thể có API nội bộ của chính nó:
+
+window.PhysicsLabApp
+
+Ví dụ:
+
+navigate(view)
+openSimulation(id)
+openTool(id)
+openLesson(id)
+openExperiment(id)
+context()
+
+Mục tiêu là giúp chính PhysicsLab modular.
+
+KHÔNG phải để kết nối EduLab ngay bây giờ.
+
+==================================================
+AI
+==================================================
+
+Chưa cần làm PhysicsAI ở giai đoạn đầu.
+
+Nhưng state architecture phải sạch để sau này AI có thể hiểu:
+
+- simulation hiện tại
+- parameters
+- measurements
+- graph
+- lesson
+- experiment
+
+==================================================
+GIAI ĐOẠN PHÁT TRIỂN
+==================================================
+
+Không làm toàn bộ website cùng lúc.
+
+PHYSICSLAB 0.1 — FOUNDATION
+
+Làm:
+
+- app shell
+- navigation
+- Home
+- design system
+- route architecture
+- responsive foundation
+- Simulation Registry
+- Physics Core
+- Units
+- Vector Renderer
+- Graph Engine foundation
+- progress storage
+- Simulation Library UI
+
+Và 1 flagship simulation hoàn chỉnh:
+
+PROJECTILE MOTION
+
+==================================================
+PROJECTILE MOTION
+==================================================
+
+Có:
+
+Simulation viewport
+
+Controls:
+
+- Initial Velocity
+- Angle
+- Height
+- Gravity
+
+Actions:
+
+- Play
+- Pause
+- Reset
+
+Visualization:
+
+- projectile
+- trajectory
+- velocity vector
+- vx
+- vy
+- grid
+
+Measurements:
+
+- time
+- distance
+- max height
+- range
+- speed
+
+Graphs:
+
+- x-t
+- y-t
+- vx-t
+- vy-t
+
+Presets:
+
+- Earth
+- Moon
+
+Tất cả phải dựa trên công thức thật.
+
+==================================================
+QUY TẮC LÀM VIỆC
+==================================================
+
+Nếu tôi cung cấp source/project:
+
+Đọc project trước khi sửa.
+
+Phải hiểu:
+
+- file structure
+- routes
+- imports
+- CSS
+- state
+- localStorage
+- dependencies
+
+Không đoán.
+
+Không patch mù.
+
+Không phá code đang chạy.
+
+Sau mỗi milestone phải:
+
+- syntax check
+- import check
+- build
+- responsive check
+- runtime check
+- data validation
+
+Nếu có thể hãy tạo:
+
+npm run check
+
+Không nói "chắc chạy".
+
+Nếu chưa kiểm chứng được thì nói rõ.
+
+==================================================
+CÁCH GỬI CODE
+==================================================
+
+Nếu thay đổi nhỏ:
+
+gửi full file để dễ copy.
+
+Nếu thay đổi lớn:
+
+tạo patch.
+
+Patch phải:
+
+- apply được
+- test được
+- không chứa node_modules
+- không chứa dist
+- không chứa secrets
+
+==================================================
+MỤC TIÊU HIỆN TẠI
+==================================================
+
+Bây giờ chỉ làm:
+
+PHYSICSLAB
+
+Không xây EduLab.
+
+Không xây BioLab.
+
+Không tích hợp ChemLab.
+
+Không tích hợp MathLab.
+
+Không xây shared ecosystem architecture.
+
+Hãy làm PhysicsLab như thể nó là sản phẩm độc lập duy nhất.
+
+Sau khi PhysicsLab trưởng thành, chúng ta mới bàn về việc gom các sản phẩm lại thành EduLab.
+
+==================================================
+BẮT ĐẦU
+==================================================
+
+Hãy bắt đầu bằng:
+
+PhysicsLab 0.1 — Foundation
+
+Trước tiên:
+
+1. đề xuất product architecture
+2. đề xuất UI/UX direction
+3. đề xuất file structure
+4. đề xuất navigation
+5. thiết kế Home
+6. thiết kế Simulation Library
+7. thiết kế nền Simulation Engine
+8. bắt đầu xây flagship simulation Projectile Motion
+
+Không hỏi lại những thông tin đã có trong prompt.

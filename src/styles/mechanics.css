@@ -1,0 +1,48 @@
+.mechanics-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.mechanics-workbench { min-width: 0; }
+.mechanics-viewport, .mechanics-panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.mechanics-viewport { overflow: hidden; padding: 18px 20px 16px; }
+.mechanics-viewport-top { display: flex; justify-content: space-between; align-items: center; min-height: 28px; gap: 12px; }
+.mechanics-viewport-top strong { font-size: 14px; font-variant-numeric: tabular-nums; color: var(--primary); }
+.mechanics-scene { position: relative; min-height: 215px; margin: 16px 0 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, rgba(117,181,170,.12), rgba(117,181,170,.025)); overflow: hidden; }
+.force-track, .collision-track, .oscillator-track { position: absolute; inset: 0; }
+.motion-floor, .collision-floor { position: absolute; height: 14px; bottom: 28px; left: 0; right: 0; background: linear-gradient(180deg, rgba(112,178,151,.18), rgba(112,178,151,.4)); }
+.motion-block, .collision-block, .oscillator-mass { position: absolute; z-index: 2; display: grid; place-items: center; background: linear-gradient(180deg,#1f8c77,#0d5f54); color: white; font-size: 15px; font-weight: 700; box-shadow: 0 12px 24px rgba(18,96,84,.2); }
+.motion-block { width: 68px; height: 52px; left: calc(50% - 34px); bottom: 42px; border-radius: 10px; transition: transform 80ms linear; }
+.force-label { position: absolute; left: 8%; top: 32%; color: var(--amber); font-size: 14px; font-weight: 650; }
+.force-arrow { position: absolute; left: 26%; top: 28%; color: var(--amber); font-size: 30px; }
+.mechanics-scene > p { position: absolute; inset: auto 12px 8px; text-align: center; font-size: 13px; font-weight: 550; }
+.mechanics-playback { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--line); margin-top: 14px; padding-top: 14px; }
+.mechanics-playback .button { min-width: 104px; }
+.mechanics-playback .speed-control { margin-left: auto; font-size: 13px; }
+.mechanics-playback select { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 7px; min-height: 44px; padding: 4px 8px; }
+.mechanics-controls .timeline-label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.mechanics-controls input[type=range] { width: 100%; min-height: 44px; }
+.mechanics-measurements { display: grid; grid-template-columns: repeat(auto-fit,minmax(125px,1fr)); gap: 1px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--line); margin-top: 10px; }
+.mechanics-measurements > div { display: flex; flex-direction: column; gap: 2px; background: var(--surface); padding: 12px; min-height: 82px; }
+.mechanics-measurements span { color: var(--muted); font-size: 12px; }
+.mechanics-measurements strong { font-size: 19px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.mechanics-measurements small { color: var(--muted); font-size: 12px; }
+.mechanics-panel { padding: 22px; }
+.mechanics-panel .control-heading { margin-bottom: 12px; }
+.mechanics-panel .control-heading h2 { font-size: 18px; }
+.mechanics-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin: 14px 0; }
+.mechanics-parameter label { font-size: 14px; font-weight: 550; }
+.mechanics-parameter input { grid-column: 1 / -1; width: 100%; min-height: 44px; }
+.mechanics-parameter > span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mechanics-note { border-radius: 8px; padding: 12px; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size: 13px; }
+.mechanics-panel .assumptions summary { min-height: 44px; padding-top: 10px; font-size: 13px; }
+.mechanics-panel .assumptions ul { padding-left: 18px; color: var(--muted); font-size: 13px; }
+.mechanics-panel .assumptions li { margin: 6px 0; }
+.mechanics-graphs { margin-top: 26px; }
+.mechanics-graphs .graphs-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.mechanics-graphs .graph-title h3 { font-size: 14px; }
+.mechanics-graphs .graph-title span, .mechanics-graphs .graph-value { font-size: 12px; }
+.collision-block { width: 56px; height: 48px; bottom: 42px; border-radius: 8px; transition: left 80ms linear; }
+.collision-block--two { background: linear-gradient(180deg,#587fc1,#31518a); }
+.oscillator-anchor { position: absolute; left: 9%; top: 44%; color: var(--muted); font-size: 24px; }
+.oscillator-center { position: absolute; left: 50%; top: 27%; height: 52%; border-left: 1px dashed var(--muted); opacity: .6; }
+.oscillator-spring { position: absolute; left: 14%; top: calc(50% - 3px); height: 6px; width: 30%; background: repeating-linear-gradient(135deg,var(--blue) 0 4px,transparent 4px 8px); transition: width 80ms linear; }
+.oscillator-mass { top: calc(50% - 24px); left: 45%; width: 48px; height: 48px; border-radius: 10px; transition: transform 80ms linear; }
+@media (max-width: 950px) { .mechanics-layout { grid-template-columns: 1fr; } .mechanics-panel { order: 2; } }
+@media (max-width: 600px) { .mechanics-viewport { padding: 14px 12px; } .mechanics-graphs .graphs-grid { grid-template-columns: 1fr; } .mechanics-measurements { grid-template-columns: repeat(2,minmax(0,1fr)); } .mechanics-playback .speed-control { margin-left: 0; } .mechanics-panel { padding: 18px; } }

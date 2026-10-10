@@ -1,0 +1,44 @@
+.em-layout { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(270px,.8fr); gap: 18px; align-items: start; }
+.em-workbench, .em-controls { min-width: 0; }
+.em-heading, .em-playback { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.em-heading strong { color: var(--primary); font-size: 13px; }
+#em-scene { display: block; width: 100%; height: auto; margin: 14px 0; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: color-mix(in srgb,var(--primary) 4%,var(--surface)); }
+#em-scene text { fill: var(--muted); font: 13px var(--font); }
+.em-field circle { fill: none; stroke: var(--blue); stroke-width: 1.5; }
+.em-field path { fill: none; stroke: var(--blue); stroke-width: 1.5; }
+.em-trajectory { fill: none; stroke: var(--primary); stroke-width: 3; stroke-dasharray: 5 4; }
+.em-force, .em-arrow { stroke: var(--amber); stroke-width: 3; fill: var(--amber); }
+.em-particle { fill: var(--primary); stroke: var(--surface); stroke-width: 3; }
+.em-vector-label { fill: var(--amber) !important; font-weight: 700 !important; }
+.em-core { fill: color-mix(in srgb,var(--muted) 20%,var(--surface)); stroke: var(--line); }
+.em-coil, .em-wire { fill: none; stroke: var(--primary); stroke-width: 4; stroke-linejoin: round; }
+.em-indicator { fill: none; stroke: var(--amber); stroke-width: 5; marker-end: none; }
+.em-readouts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--line); }
+.em-readouts > div { display: flex; flex-direction: column; min-height: 75px; gap: 2px; padding: 10px; background: var(--surface); }
+.em-readouts span, .em-readouts small { color: var(--muted); font-size: 12px; }
+.em-readouts strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.em-playback { justify-content: flex-start; flex-wrap: wrap; margin-top: 14px; }
+.em-playback .speed-control { margin-left: auto; }
+.em-playback select, .em-mode select { min-height: 44px; padding: 8px 10px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.em-playback #em-time { margin-left: auto; font-variant-numeric: tabular-nums; }
+.em-controls h2 { font-size: 18px; }
+.em-mode { display: grid; gap: 7px; font-weight: 550; }
+.em-mode select { width: 100%; }
+.em-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin: 14px 0; }
+.em-parameter strong { color: var(--muted); font-size: 13px; }
+.em-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.em-hint { color: var(--muted); font-size: 12px; }
+.em-equation { padding: 12px; border-radius: 8px; color: var(--ink); background: color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size: 14px; }
+.em-assumption { font-size: 13px; }
+.em-graph { margin-top: 24px; }
+.em-graph .graph-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.em-graph .graph-title h3, .em-graph .graph-title span, .em-graph .graph-value { font-size: 13px; }
+.em-graph .graph-svg { display: block; width: 100%; margin-top: 8px; color: var(--primary); }
+.em-graph .graph-svg text { fill: var(--muted); font: 12px var(--font); }
+.em-graph .graph-grid { stroke: var(--line); }
+.em-graph .graph-zero { stroke: var(--muted); }
+.em-graph .graph-line { fill: none; stroke: currentColor; stroke-width: 2; }
+.em-graph .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
+.em-graph .graph-dot { fill: currentColor; }
+@media (max-width: 900px) { .em-layout { grid-template-columns: 1fr; } }
+.em-playback button { min-height: 44px; }

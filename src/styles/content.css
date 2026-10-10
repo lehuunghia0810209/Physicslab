@@ -1,0 +1,39 @@
+.learning-layout { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+.learning-catalog { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 10px; margin: 0 0 20px; }
+.learning-choice { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; min-height: 72px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); text-align: left; }
+.learning-choice span { color: var(--muted); font-size: 11px; letter-spacing: .5px; }
+.learning-choice strong { font-size: 14px; }
+.learning-choice.selected { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.experiment-confirm { margin: 12px 0 0 8px; }
+.lesson-content #prediction-result { margin: 10px 0 0; color: var(--primary); }
+.lesson-content h2, .tools-layout h2 { margin: 10px 0 14px; } .lesson-content p { margin-bottom: 18px; } .lesson-content hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+.equation-box { background: color-mix(in srgb,var(--primary) 8%,var(--surface)); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; line-height: 2; font-family: 'Cambria Math', Georgia, serif; font-size: 17px; margin: 18px 0; color: var(--ink); }
+.learning-aside ol { list-style: none; padding: 0; margin: 22px 0; } .learning-aside li { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 13px; } .learning-aside li span { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; font-size: 11px; } .learning-aside li.done { color: var(--primary); } .learning-aside li.done span { background: #dcf0e4; border-color: #9ac9b3; }
+.learning-mastery { border-top: 1px solid var(--line); padding-top: 18px; } .learning-mastery h3 { margin: 0 0 6px; font-size: 15px; } .learning-mastery > p { font-size: 12px; } .learning-mastery-item { margin: 14px 0; } .learning-mastery-item > div { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; } .learning-mastery-item > div span, .learning-mastery-item small { color: var(--muted); } .learning-mastery-item progress { display: block; width: 100%; height: 8px; margin: 6px 0; accent-color: var(--primary); } .learning-mastery-item small { font-size: 11px; }
+.learning-aside p { font-size: 12px; } .assumption-box { padding-top: 20px; border-top: 1px solid var(--line); margin-top: 20px; } .assumption-box strong { font-size: 12px; } .assumption-box p { margin-top: 10px; }
+fieldset { border: 0; margin: 0 0 18px; padding: 0; } legend { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.quiz-option { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
+.quiz-option input { flex-shrink: 0; } #quiz-result { margin-top: 16px; color: var(--primary); }
+.lab-roadmap { max-width: 900px; } .large-icon { display: grid; place-items: center; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); width: 72px; height: 72px; border-radius: 16px; color: var(--primary); margin-bottom: 20px; } .large-icon .icon { width: 40px; height: 40px; }
+.lab-roadmap h2 { margin-bottom: 12px; } .lab-roadmap > p { max-width: 700px; } .roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 30px 0; } .roadmap-grid > div { background: var(--bg); border-radius: 12px; padding: 22px; } .roadmap-grid h3 { margin: 16px 0 10px; } .roadmap-grid p { font-size: 13px; }
+.tools-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; } .tools-layout p { font-size: 14px; margin-bottom: 18px; }
+.field { display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 600; margin: 18px 0; } .field input, .field select { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: white; color: var(--ink); }
+.unit-pair { display: grid; grid-template-columns: 1fr 24px 1fr; gap: 18px; align-items: center; } .unit-pair > .icon { margin-top: 22px; }
+.conversion-output { display: block; padding: 24px; border-radius: 12px; background: color-mix(in srgb,var(--primary) 9%,var(--surface)); color: var(--primary); font-size: 28px; font-weight: 650; overflow-wrap: anywhere; }
+@media (max-width: 1050px) { .learning-layout { grid-template-columns: 1fr; } .learning-aside { grid-row: 1; } .learning-aside ol { display: flex; gap: 12px; flex-wrap: wrap; } .learning-aside li { margin: 0; } }
+@media (max-width: 760px) { .tools-layout, .roadmap-grid { grid-template-columns: 1fr; } }
+
+/* Learning discoverability and guided experiment prerequisites */
+.learning-filters { display: grid; grid-template-columns: minmax(200px,2fr) repeat(2,minmax(140px,1fr)); gap: 12px; align-items: end; margin: 10px 0 14px; }
+.learning-filters label { display: grid; gap: 6px; color: var(--ink); font-size: 13px; font-weight: 650; }
+.learning-filters input, .learning-filters select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 10px 12px; font: inherit; font-weight: 450; }
+#learning-filter-count { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 13px; }
+.learning-choice[hidden], .learning-filter-empty[hidden] { display: none; }
+.learning-filter-empty { margin: 0 0 15px; padding: 18px; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); }
+.experiment-checklist { margin: 17px 0 0; padding: 16px 18px; border: 1px solid var(--line); background: color-mix(in srgb,var(--primary) 4%,var(--surface)); border-radius: 12px; }
+.experiment-checklist strong { display: block; font-size: 14px; }
+.experiment-checklist ul { padding: 0; margin: 9px 0 0; list-style: none; }
+.experiment-checklist li { padding: 5px 0; color: var(--muted); font-size: 14px; }
+.experiment-checklist li.verified { color: var(--primary); font-weight: 600; }
+.experiment-confirm:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 760px) { .learning-filters { grid-template-columns: repeat(2,minmax(0,1fr)); } .learning-filters label:first-child { grid-column: 1/-1; } }

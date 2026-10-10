@@ -1,0 +1,20 @@
+.explorer3d-layout { display: grid; grid-template-columns: minmax(0,1.5fr) minmax(250px,.8fr); gap: 20px; align-items: start; }
+.explorer3d-stage, .explorer3d-controls { min-width: 0; }
+#explorer3d-canvas { display: block; width: 100%; height: clamp(300px,50vw,520px); border: 1px solid var(--line); border-radius: 10px; touch-action: none; cursor: grab; }
+#explorer3d-canvas:active { cursor: grabbing; }
+#explorer3d-help { margin-top: 9px; font-size: 13px; }
+.explorer3d-parameter { display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; margin: 18px 0; }
+.explorer3d-parameter strong { color: var(--primary); font-variant-numeric: tabular-nums; }
+.explorer3d-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.explorer3d-readouts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; margin: 20px 0; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--line); }
+.explorer3d-readouts div { padding: 10px; background: var(--surface); }
+.explorer3d-readouts dt { color: var(--muted); font-size: 12px; }
+.explorer3d-readouts dd { margin: 2px 0 0; font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.explorer3d-equation { padding: 12px; border-radius: 8px; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); }
+@media (max-width: 900px) { .explorer3d-layout { grid-template-columns: 1fr; } #explorer3d-canvas { height: 380px; } }
+@media (max-width: 480px) { #explorer3d-canvas { height: 300px; } }
+.explorer3d-playback { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; padding: 12px 0; margin-top: 8px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.explorer3d-playback .button { min-height: 44px; }
+.explorer3d-playback label { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+.explorer3d-playback select, #explorer3d-charge { min-height: 44px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); }
+#explorer3d-phase { accent-color: var(--primary); }

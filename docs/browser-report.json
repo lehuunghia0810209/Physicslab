@@ -1,0 +1,28 @@
+{
+  "base": "http://127.0.0.1:5188",
+  "tests": [
+    "Home loads without projectile implementation",
+    "Vietnamese accent-insensitive library search",
+    "Library category / availability / empty / reset filters",
+    "Projectile lazy loads on navigation",
+    "Play advances physical time; Pause freezes it",
+    "Reset preserves parameters and returns time to zero",
+    "Moon preset and all four graph cursors synchronize at apex",
+    "Measurement capture and real CSV download",
+    "Parameter changes reset time and clear incompatible samples",
+    "Invalid gravity is rejected without mutating active model",
+    "Exact impact stops playback and records a completed run",
+    "Parameters / time / progress persist after reload",
+    "Display toggles change actual SVG layers",
+    "Learning quiz feedback and stored progress",
+    "SI unit converter works",
+    "Six routes at 1440 / 1024 / 768 / 390 / 360 / 320 px: no page overflow, control targets >=44px",
+    "Degenerate and extreme scene/graph parameter setups remain finite",
+    "Unavailable simulation fails gracefully",
+    "No runtime exceptions, console errors or failed requests"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "requestsFailed": [],
+  "passed": true
+}

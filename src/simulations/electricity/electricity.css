@@ -1,0 +1,36 @@
+.circuit-layout { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(270px,.8fr); gap: 18px; align-items: start; }
+.circuit-workbench, .circuit-controls { min-width: 0; }
+.circuit-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.circuit-topline strong { color: var(--primary); font-size: 13px; }
+#circuit-schematic { margin: 14px 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb,var(--primary) 4%,var(--surface)); }
+#circuit-schematic svg { display: block; width: 100%; min-height: 220px; color: var(--ink); }
+#circuit-schematic text { fill: var(--ink); font: 14px var(--font); }
+.circuit-measurements { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--line); }
+.circuit-measurements > div { display: flex; flex-direction: column; gap: 2px; min-height: 76px; padding: 10px; background: var(--surface); }
+.circuit-measurements span, .circuit-measurements small { color: var(--muted); font-size: 12px; }
+.circuit-measurements strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+#circuit-status { margin-top: 12px; color: var(--primary); font-size: 14px; }
+.circuit-controls h2 { font-size: 18px; }
+.circuit-controls .field { font-size: 14px; }
+.circuit-controls select { min-height: 44px; padding: 8px 10px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.circuit-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin: 14px 0; }
+.circuit-parameter span { font-weight: 550; }
+.circuit-parameter strong { color: var(--muted); font-size: 13px; }
+.circuit-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.circuit-equations { margin: 18px 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); color: var(--ink); font-size: 14px; }
+.circuit-assumptions { font-size: 13px; }
+.circuit-graphs { margin-top: 24px; }
+.circuit-graphs .graphs-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.circuit-graphs .graph-card { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.circuit-graphs .graph-title h3 { font-size: 14px; }
+.circuit-graphs .graph-title span, .circuit-graphs .graph-value { font-size: 13px; }
+.circuit-graphs .graph-svg { display: block; width: 100%; margin-top: 8px; color: var(--primary); }
+.circuit-graphs .graph-svg text { font: 12px var(--font); fill: var(--muted); }
+.circuit-graphs .graph-grid { stroke: var(--line); }
+.circuit-graphs .graph-zero { stroke: var(--muted); }
+.circuit-graphs .graph-line { stroke: currentColor; stroke-width: 2; fill: none; }
+.circuit-graphs .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
+.circuit-graphs .graph-dot { fill: currentColor; }
+.circuit-graphs .graph--blue { color: var(--blue); }
+@media (max-width: 900px) { .circuit-layout { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .circuit-graphs .graphs-grid { grid-template-columns: 1fr; } }

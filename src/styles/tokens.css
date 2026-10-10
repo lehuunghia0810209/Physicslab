@@ -1,0 +1,67 @@
+:root {
+  --ink: #183a40; --muted: #647b7d; --primary: #176a60; --primary-dark: #104d46;
+  --mint: #a1e8ce; --bg: #f6f8f7; --surface: #fff; --line: #e2e9e6;
+  --amber: #b36c20; --blue: #356baf; --purple: #8553b0;
+  --radius: 16px; --shadow: 0 3px 16px #123b4204;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #ebf6f8; --muted: #a8bfc2; --primary: #72d7c7; --primary-dark: #4bb5a5;
+  --mint: #7fd4ba; --bg: #0f1b1d; --surface: #172327; --line: #2a3b3f;
+  --amber: #f4b76a; --blue: #8cb9ff; --purple: #c9a1ff;
+  --shadow: 0 3px 24px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme='dark'] .sidebar,
+body[data-theme='dark'] .topbar,
+body[data-theme='dark'] .panel,
+body[data-theme='dark'] .simulation-card,
+body[data-theme='dark'] .search-field,
+body[data-theme='dark'] .grade-filter select,
+body[data-theme='dark'] .filter-tab,
+body[data-theme='dark'] .stat-card,
+body[data-theme='dark'] .continue-card,
+body[data-theme='dark'] .activity-card,
+body[data-theme='dark'] .category-card,
+body[data-theme='dark'] .viewport-panel,
+body[data-theme='dark'] .control-panel,
+body[data-theme='dark'] .graph-card,
+body[data-theme='dark'] .measurement-strip > div,
+body[data-theme='dark'] .number-unit,
+body[data-theme='dark'] .theme-toggle {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+body[data-theme='dark'] .brand-mark,
+body[data-theme='dark'] .nav-link.active,
+body[data-theme='dark'] .status-badge.available,
+body[data-theme='dark'] .theme-toggle {
+  color: var(--ink);
+}
+
+body[data-theme='dark'] .button.secondary,
+body[data-theme='dark'] .button.ghost,
+body[data-theme='dark'] .preset,
+body[data-theme='dark'] .filter-tab,
+body[data-theme='dark'] .theme-toggle {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+body[data-theme='dark'] .simulation-art,
+body[data-theme='dark'] .continue-art,
+body[data-theme='dark'] .category-icon,
+body[data-theme='dark'] .discovery-note {
+  background-color: rgba(114, 215, 199, 0.09);
+}
+
+body[data-theme='dark'] .hero-card { background: linear-gradient(135deg, #153e43, #10242f); }
+body[data-theme='dark'] .activity-empty .icon,
+body[data-theme='dark'] .continue-art,
+body[data-theme='dark'] .category-icon,
+body[data-theme='dark'] .sim-card .icon {
+  color: var(--primary);
+}

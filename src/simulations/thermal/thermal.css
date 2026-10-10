@@ -1,0 +1,38 @@
+.gas-layout { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(270px,.8fr); gap: 18px; align-items: start; }
+.gas-workbench, .gas-controls { min-width: 0; }
+.gas-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.gas-topline strong { color: var(--primary); font-variant-numeric: tabular-nums; }
+#gas-scene { display: block; width: 100%; height: auto; margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: color-mix(in srgb,var(--primary) 4%,var(--surface)); }
+#gas-scene text { fill: var(--muted); font: 13px var(--font); }
+.gas-cylinder { fill: color-mix(in srgb,var(--blue) 7%,var(--surface)); stroke: var(--muted); stroke-width: 3; }
+.gas-piston { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
+.gas-particle { fill: var(--amber); opacity: .85; }
+.gas-readouts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--line); }
+.gas-readouts > div { display: flex; flex-direction: column; min-height: 75px; gap: 2px; padding: 9px; background: var(--surface); }
+.gas-readouts span, .gas-readouts small { color: var(--muted); font-size: 12px; }
+.gas-readouts strong { font-size: 16px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.gas-playback { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.gas-playback button { min-height: 44px; }
+.gas-playback .speed-control { margin-left: auto; }
+.gas-playback select, .gas-process select { min-height: 44px; padding: 8px 10px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.gas-controls h2 { font-size: 18px; }
+.gas-process { display: grid; gap: 7px; font-weight: 550; }
+.gas-process select { width: 100%; }
+.gas-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; margin: 12px 0; }
+.gas-parameter[hidden] { display: none; }
+.gas-parameter strong { color: var(--muted); font-size: 13px; }
+.gas-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.gas-equation { padding: 12px; border-radius: 8px; color: var(--ink); background: color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size: 14px; }
+.gas-assumption { font-size: 13px; }
+.gas-graph { margin-top: 24px; }
+.gas-graph .graph-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.gas-graph .graph-title h3, .gas-graph .graph-title span, .gas-graph .graph-value { font-size: 13px; }
+.gas-graph .graph-svg { display: block; width: 100%; margin-top: 8px; color: var(--blue); }
+.gas-graph .graph-svg text { fill: var(--muted); font: 12px var(--font); }
+.gas-graph .graph-grid { stroke: var(--line); }
+.gas-graph .graph-zero { stroke: var(--muted); }
+.gas-graph .graph-line { fill: none; stroke: currentColor; stroke-width: 2; }
+.gas-graph .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
+.gas-graph .graph-dot { fill: currentColor; }
+@media (max-width: 900px) { .gas-layout { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .gas-readouts { grid-template-columns: repeat(2,minmax(0,1fr)); } }

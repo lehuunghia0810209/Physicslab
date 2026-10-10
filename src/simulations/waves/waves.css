@@ -1,0 +1,42 @@
+.wave-viewport, .wave-parameters { min-width: 0; }
+.wave-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wave-toolbar strong { color: var(--primary); font-variant-numeric: tabular-nums; }
+#wave-scene { display: block; width: 100%; height: auto; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb,var(--primary) 5%,var(--surface)); }
+#wave-scene text { fill: var(--muted); font: 13px var(--font); }
+.wave-axis { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.wave-grid { stroke: var(--line); stroke-width: 1; }
+.wave-profile { fill: none; stroke: var(--primary); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.wave-probe { fill: var(--amber); stroke: var(--surface); stroke-width: 3; }
+.wave-readouts { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 1px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--line); }
+.wave-readouts > div { display: flex; flex-direction: column; gap: 2px; padding: 12px; background: var(--surface); min-height: 78px; }
+.wave-readouts span, .wave-readouts small { color: var(--muted); font-size: 12px; }
+.wave-readouts strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.wave-playback { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.wave-playback .speed-control { margin-left: auto; }
+.wave-playback select { min-height: 44px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: var(--surface); padding: 6px; }
+.wave-viewport .timeline-label { display: flex; justify-content: space-between; margin-top: 8px; color: var(--muted); font-size: 13px; }
+.wave-viewport input[type=range] { width: 100%; min-height: 44px; }
+.wave-parameters { margin-top: 18px; }
+.wave-parameters h2 { font-size: 18px; }
+.wave-mode { display: grid; gap: 7px; font-weight: 550; }
+.wave-mode select { min-height: 44px; padding: 8px 10px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.wave-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; margin: 14px 0; }
+.wave-parameter span { font-weight: 550; }
+.wave-parameter strong { color: var(--muted); font-size: 13px; }
+.wave-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }
+.wave-equation { margin: 18px 0; padding: 12px; border-radius: 8px; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); font-size: 14px; color: var(--ink); }
+.wave-assumption { font-size: 13px; }
+.wave-graphs { margin-top: 24px; }
+.wave-graphs .graphs-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.wave-graphs .graph-card { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.wave-graphs .graph-title h3 { font-size: 14px; }
+.wave-graphs .graph-title span, .wave-graphs .graph-value { font-size: 13px; }
+.wave-graphs .graph-svg { display: block; width: 100%; margin-top: 8px; color: var(--primary); }
+.wave-graphs .graph-svg text { font: 12px var(--font); fill: var(--muted); }
+.wave-graphs .graph-grid { stroke: var(--line); }
+.wave-graphs .graph-zero { stroke: var(--muted); }
+.wave-graphs .graph-line { stroke: currentColor; stroke-width: 2; fill: none; }
+.wave-graphs .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
+.wave-graphs .graph-dot { fill: currentColor; }
+.wave-graphs .graph--blue { color: var(--blue); }
+@media (max-width: 650px) { .wave-graphs .graphs-grid { grid-template-columns: 1fr; } .wave-playback .speed-control { margin-left: 0; } }
