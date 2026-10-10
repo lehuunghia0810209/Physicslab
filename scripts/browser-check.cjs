@@ -56,6 +56,31 @@ function ok(name) { report.tests.push(name); console.log('PASS ' + name); }
   assert.ok(Math.abs(snapshot.measurements.vy) < 1e-9); assert.equal(snapshot.parameters.g, 1.62);
   for (const key of ['x', 'y', 'vx', 'vy']) { const x = Number(await page.locator(`#graph-${key} .graph-cursor`).getAttribute('x1')); assert.ok(Math.abs(x - 213) < 1e-7); }
   ok('Moon preset and all four graph cursors synchronize at apex');
+  // Alpha 1: a reference run must remain independent of subsequent parameter edits.
+  await page.locator('#compare-save').click();
+  assert.equal(await page.locator('.comparison-path').getAttribute('d') !== '', true);
+  assert.equal(await page.locator('.graph-comparison-line').count(), 4);
+  await page.locator('#number-angle').fill('30'); await page.locator('#number-angle').dispatchEvent('change');
+  assert.ok((await page.locator('#compare-summary').textContent()).includes('Chênh lệch'));
+  const beforeInspection = await page.locator('#graph-y .graph-value').textContent();
+  await page.locator('#graph-y .graph-svg').focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.locator('#graph-y .graph-inspection-dot').getAttribute('visibility'), 'visible');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#graph-y .graph-inspection-dot').getAttribute('visibility'), 'hidden');
+  assert.ok(beforeInspection);
+  await page.locator('#compare-clear').click();
+  assert.equal(await page.locator('.graph-comparison-line').count(), 0);
+  ok('Comparison captures two valid models, graph inspection supports keyboard, and clearing keeps active simulation intact');
+  // Restore the moon baseline before the rest of the existing scenarios.
+  await page.locator('#number-angle').fill('45'); await page.locator('#number-angle').dispatchEvent('change');
+
+  assert.equal(await page.locator('#share-setup').count(), 1);
+  const sharedURL = await page.evaluate(() => {
+    const url = new URL(location.href); url.searchParams.set('pm', '20,45,0,1.62'); url.hash = '#/simulation/projectile-motion'; return url.toString();
+  });
+  assert.ok(sharedURL.includes('pm=20%2C45%2C0%2C1.62'));
+  ok('The classroom share panel is present; parameters are link-serializable without student progress');
   await page.locator('#capture').click(); assert.equal(await page.locator('#measurements-body tr').count(), 1); assert.ok(await page.locator('#csv').isEnabled());
   const dl = page.waitForEvent('download'); await page.locator('#csv').click(); const download = await dl; await download.saveAs(path.join(out, 'test-measurement.csv'));
   assert.ok(fs.readFileSync(path.join(out, 'test-measurement.csv'), 'utf8').includes('t_s,x_m,y_m')); ok('Measurement capture and real CSV download');
@@ -165,8 +190,17 @@ function ok(name) { report.tests.push(name); console.log('PASS ' + name); }
   assert.ok(newton.state.time > 0); assert.ok(Number.isFinite(newton.measurements.position));
   const newtonCursor = Number(await page.locator('#graph-position .graph-cursor').getAttribute('x1'));
   assert.ok(newtonCursor > 48 && newtonCursor < 378); ok('Newton playback advances and synchronizes model time with graph cursor');
+  await page.evaluate(() => window.PhysicsLabApp.navigate('simulation/work-energy'));
+  await page.locator('#graph-appliedWork .graph-line').waitFor();
+  const workGraphFill = await page.locator('#graph-appliedWork .graph-line').evaluate(element => getComputedStyle(element).fill);
+  assert.equal(workGraphFill, 'none', 'Graph strokes must not be filled in as black wedges');
+  ok('Shared graph path has fill:none outside Projectile route');
   await page.evaluate(() => window.PhysicsLabApp.navigate('simulation/inclined-plane')); await page.locator('#plane-visual').waitFor();
-  await page.locator('#angle').fill('35'); assert.ok((await page.locator('#result-accel').textContent()).includes('m/s')); ok('Inclined-plane controls recalculate acceleration');
+  await page.locator('#angle').fill('35');
+  assert.ok(Number.isFinite(Number((await page.locator('#result-accel').textContent()).replace(',', '.'))));
+  assert.equal(await page.locator('.inclined-measurements [id="result-accel"] + small').textContent(), 'm/s²');
+  assert.ok(await page.locator('#inclined-grip').count() === 1);
+  ok('Inclined-plane slope, draggable angle handle and physically driven acceleration display');
   await page.evaluate(() => window.PhysicsLabApp.navigate('lab')); await page.locator('#record-measurement').waitFor();
   assert.equal(await page.locator('#generic-graph .graph-value').textContent(), 'Chưa có điểm đo.');
   const hookeRowsBefore = await page.locator('#hooke-table-body tr').count();

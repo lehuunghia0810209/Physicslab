@@ -1,39 +1,29 @@
-# Báo cáo kiểm thử — 1.0.0-rc.2
+## PhysicsLab Beta 1 UX Rework — kiểm chứng hiện tại
 
-## Đã xác minh trong môi trường hiện tại
+- Unit / structural test: 116 PASS, 0 FAIL.
+- Syntax/import validation: PASS (100 JS modules, 224 relative imports).
+- CSS parser: 21 CSS files, 0 errors.
+- Vite build: chưa xác minh trên Linux (native Rolldown binding Windows); cần build trên Windows.
+- Chromium/Playwright: không có browser binary trong môi trường nên chưa chạy.
+- Browser regression được bổ sung kiểm tra `.graph-line` fill:none trên route Work & Energy, và sửa assertion Inclined cho bố cục mới.
 
-- `npm run check:core`: **99/99 Node unit tests PASS** (bao gồm camera tự căn quỹ đạo, lọc lesson, checklist, lưu/khôi phục tiến độ).
-- Kiểm tra JavaScript syntax và đường dẫn import bằng `scripts/check.mjs`: PASS.
-- Tất cả CSS được parse bằng tinycss2: **0 parser errors**.
-- Bộ Playwright đã sửa selector `a[href="#/explorer3d"]` quá rộng, và thêm phép kiểm tra pixel của vật màu cam/quỹ đạo xanh.
+# Kiểm tra PhysicsLab 1.2.0-alpha.1
 
-## Chưa thể xác minh tại môi trường này
+## Đã thực hiện độc lập
+- Xác nhận nền tảng RC2: 99/99 unit tests PASS.
+- Sau nâng cấp: 109/109 unit tests PASS; scripts/check.mjs kiểm tra cú pháp, imports và lazy registry PASS.
+- CSS: 20 stylesheet parse thành công (0 parser errors) bằng tinycss2.
+- Test cases: số liệu ném xiên hữu hạn, miền vẽ hai lần chạy chung trục, đầu dò chọn mẫu thật, từ chối NaN/Infinity, số đo ΔR/ΔH/ΔT, tạo/đọc/loại bỏ link chia sẻ cấu hình.
+- Browser-check.cjs đã thêm kịch bản thử reference, đồ thị điều khiển bằng bàn phím và giao diện chia sẻ; **chưa chạy độc lập**.
 
-- `npm ci --offline` thất bại `ENOTCACHED` vì thiếu tarball Vite 8.3.4, nên **Vite production build CHƯA CHẠY LẠI**.
-- Đã thử Chromium qua Playwright Python với HTTP server riêng, nhưng trình duyệt trả `net::ERR_BLOCKED_BY_ADMINISTRATOR` khi truy cập `127.0.0.1:5188`; vì vậy **browser checks CHƯA PASS độc lập**.
-- Các phép thử Playwright mới cần được chạy trên máy Windows với `npm run check:browser`; không suy diễn từ unit tests sang kết quả UI thật.
+## Chưa thể kiểm tra tại môi trường này
+- npm ci offline lỗi ENOTCACHED (`vite-8.3.4.tgz` không có trong cache); do vậy production build Vite chưa được thực hiện ở đây.
+- Playwright Chromium gặp `ERR_BLOCKED_BY_ADMINISTRATOR` khi điều hướng ngay cả tới data URL; không thể xác nhận 6 breakpoint hoặc vẽ SVG thực tế.
+- Cần chạy bản mới trên môi trường Windows đã từng kiểm thử RC2, đảm bảo `npm run check` + `npm run check:browser` đều PASS trước khi triển khai lên Cloudflare.
 
-## Trên Windows
-
-Tại thư mục PhysicsLab (giữ nguyên localStorage và sao lưu dự án trước khi giải nén):
-
-```powershell
-npm ci
-npm run check
-npm run dev -- --port 5188
-```
-
-Ở terminal thứ hai:
-
-```powershell
-npm run check:browser
-```
-
-Bộ test giờ xác nhận hạt cam và đường xanh thực sự được vẽ trong canvas, nút vừa khung, vai trò giáo viên và các điều kiện học tập. Nếu fail, gửi `work/browser-report.json` cùng log để sửa tiếp.
-
-## Nguyên tắc nghiệm thu
-
-- PASS 90 unit tests **không đồng nghĩa** mọi mô phỏng đều đúng dưới mọi tham số.
-- 3D Explorer dùng Canvas 2D chiếu cảnh không gian; không nói thành WebGL/Three.js.
-- Giữ an toàn dữ liệu học, khả năng nhập số hữu hạn, mô hình Vật lý có giả định và sự khác biệt giữa mô phỏng và thí nghiệm thực.
-- Giữ trạng thái RC đến khi xác minh Vite build và Playwright/browser trên máy Windows.
+## Cần xác nhận bằng mắt thường
+1. Lưu mốc ném xiên → đổi g Trái Đất/Mặt Trăng → hai quỹ đạo cùng hiển thị đúng tỷ lệ và 4 đồ thị có nét đứt.
+2. Tab vào đồ thị → mũi tên → hiện số đo → Escape thoát, con trỏ timeline không mất đồng bộ.
+3. Tạo link chia sẻ tham số, mở trong trình duyệt riêng → các tham số đúng; không chia sẻ điểm quiz.
+4. Đổi theme; kiểm tra desktop/mobile, không tràn ngang hoặc nút nhỏ hơn 44px.
+5. Các route cũ, Lab, 3D, Learning và export không hồi quy.

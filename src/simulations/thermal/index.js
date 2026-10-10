@@ -3,6 +3,7 @@ import { createIdealGas, IDEAL_GAS_DEFAULTS } from '../../core/ideal-gas.js';
 import { format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
 import { Timeline } from '../../engines/timeline.js';
+import { quantizeParameter, clampSceneValue } from '../../core/direct-manipulation.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -23,7 +24,8 @@ export function mount(main, context) {
   progress.visit(id, 'Khám phá định luật khí lí tưởng');
   main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">NHIỆT HỌC · LỚP 12</p><h1>Khí lí tưởng và các quá trình</h1><p>Điều khiển piston và quan sát mối liên hệ giữa áp suất, thể tích, nhiệt độ cùng trao đổi năng lượng.</p></div><a class="button secondary" href="#/simulations">Quay lại thư viện</a></div>
     <div class="gas-layout"><section class="panel gas-workbench"><div class="gas-topline"><span class="tag">MÔ HÌNH KHÍ LÍ TƯỞNG ĐƠN NGUYÊN TỬ</span><strong id="gas-time"></strong></div>
-      <svg id="gas-scene" viewBox="0 0 620 300" role="img" aria-label="Piston chứa khí lí tưởng"><rect class="gas-cylinder" x="100" y="55" width="420" height="190" rx="12"/><g id="gas-particles"></g><rect id="gas-piston" class="gas-piston" x="300" y="55" width="24" height="190"/><text id="gas-piston-label" y="272"></text></svg>
+      <svg id="gas-scene" viewBox="0 0 620 300" role="img" aria-label="Piston chứa khí lí tưởng"><rect class="gas-cylinder" x="100" y="55" width="420" height="190" rx="12"/><g id="gas-particles"></g><rect id="gas-piston" class="gas-piston" x="300" y="55" width="24" height="190" tabindex="0" role="slider" aria-label="Kéo piston để điều chỉnh thể tích cuối" aria-valuemin="0.001" aria-valuemax="0.4" aria-valuenow="0.04"/><text id="gas-piston-label" y="272"></text></svg>
+      <p class="gas-gesture-hint">Kéo piston sang trái hoặc phải để thay đổi thể tích cuối. Khi chọn đẳng tích, piston được cố định. Hình chỉ minh họa tỉ lệ thay đổi thể tích.</p>
       <div class="gas-readouts">${[['pressure','Áp suất P','Pa'],['volume','Thể tích V','m³'],['temperature','Nhiệt độ T','K'],['internalEnergy','Nội năng U','J'],['work','Công W','J'],['heat','Nhiệt lượng Q','J']].map(([key,label,unit])=>`<div><span>${label}</span><strong id="gas-${key}"></strong><small>${unit}</small></div>`).join('')}</div>
       <div class="gas-playback"><button class="button primary" id="play">Chạy</button><button class="button secondary" id="reset">Đặt lại</button><label class="speed-control">Tốc độ<select id="playback-rate" aria-label="Tốc độ phát"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
       <label class="timeline-label" for="scrubber">Tiến trình <span id="duration-label"></span></label><input id="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Tiến trình quá trình nhiệt"></section>
@@ -46,11 +48,12 @@ export function mount(main, context) {
     main.querySelector('#duration-label').textContent = `/ ${format(model.duration)} s`;
     scrubber.value = String(state.progress * 1000);
     play.textContent = timeline.state.get().playing ? 'Tạm dừng' : (state.time >= model.duration ? 'Chạy lại' : 'Chạy');
-    const minVolume = Math.min(params.initialVolume, state.volume);
-    const maxVolume = Math.max(params.initialVolume, params.finalVolume);
-    const fraction = maxVolume === minVolume ? 0.5 : (state.volume - minVolume) / (maxVolume - minVolume);
-    const pistonX = 185 + 250 * fraction;
+    const range = params.finalVolume - params.initialVolume;
+    const fraction = range === 0 ? .5 : clampSceneValue((state.volume - params.initialVolume) / range, 0, 1);
+    const pistonX = range > 0 ? 185 + 250 * fraction : range < 0 ? 435 - 250 * fraction : 310;
     main.querySelector('#gas-piston').setAttribute('x', pistonX);
+    main.querySelector('#gas-piston').setAttribute('aria-valuenow', String(params.finalVolume));
+    main.querySelector('#gas-piston').setAttribute('aria-valuetext', `${format(params.finalVolume, 3)} mét khối`);
     main.querySelector('#gas-piston-label').setAttribute('x', pistonX + 12);
     main.querySelector('#gas-piston-label').textContent = `Piston · V = ${format(state.volume, 3)} m³`;
     const width = pistonX - 112;
@@ -99,6 +102,33 @@ export function mount(main, context) {
   main.querySelector('#reset').addEventListener('click', () => { timeline.reset(model.duration); persist(); }, { signal: abort.signal });
   scrubber.addEventListener('input', event => { timeline.seek(Number(event.target.value) / 1000 * model.duration); persist(); }, { signal: abort.signal });
   main.querySelector('#playback-rate').addEventListener('change', event => timeline.rate(Number(event.target.value)), { signal: abort.signal });
+  const gasScene = main.querySelector('#gas-scene');
+  const piston = main.querySelector('#gas-piston');
+  let draggingPiston = null;
+  function updatePiston(event) {
+    if (params.process === 'isochoric') return;
+    const matrix = gasScene.getScreenCTM(); if (!matrix) return;
+    const pos = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const fraction = clampSceneValue((pos.x - 150) / 330, 0, 1);
+    const volume = quantizeParameter(fraction, { min: .001, max: .4, step: .001 });
+    replaceModel({ ...params, finalVolume: volume });
+  }
+  piston.addEventListener('pointerdown', event => {
+    if (params.process === 'isochoric') return;
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    draggingPiston = event.pointerId;
+    gasScene.setPointerCapture?.(event.pointerId);
+    updatePiston(event);
+  }, { signal: abort.signal });
+  gasScene.addEventListener('pointermove', event => { if (event.pointerId === draggingPiston) updatePiston(event); }, { signal: abort.signal });
+  gasScene.addEventListener('pointerup', event => { if (event.pointerId === draggingPiston) draggingPiston = null; }, { signal: abort.signal });
+  gasScene.addEventListener('pointercancel', event => { if (event.pointerId === draggingPiston) draggingPiston = null; }, { signal: abort.signal });
+  piston.addEventListener('keydown', event => {
+    if (!['ArrowLeft','ArrowRight'].includes(event.key) || params.process === 'isochoric') return;
+    event.preventDefault();
+    const next = clampSceneValue(Number((params.finalVolume + (event.key === 'ArrowRight' ? .001 : -.001)).toFixed(3)), .001, .4);
+    replaceModel({ ...params, finalVolume: next });
+  }, { signal: abort.signal });
   graph.setModel(model);
   timeline.reset(model.duration);
   timeline.seek(savedTime);

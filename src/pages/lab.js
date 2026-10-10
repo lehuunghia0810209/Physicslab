@@ -6,6 +6,7 @@ import { LAB_EXPERIMENTS, defaultLabSetup, getLabExperiment, measureLabExperimen
 import { GraphRenderer } from '../engines/graph.js';
 import { format } from '../core/units.js';
 import { analyzeHookeRows } from '../core/hooke-analysis.js';
+import { quantizeParameter, clampSceneValue } from '../core/direct-manipulation.js';
 
 export function mount(main, context = {}) {
   const { progress } = context;
@@ -141,7 +142,7 @@ export function mount(main, context = {}) {
       <line x1="78" y1="198" x2="150" y2="198" stroke="var(--muted)" stroke-width="9" stroke-linecap="round" />
       <line x1="105" y1="25" x2="285" y2="25" stroke="var(--muted)" stroke-width="7" stroke-linecap="round" />
       <path d="M220 28 L220 42 ${Array.from({ length: 8 }, (_, index) => `L${index % 2 ? 230 : 210} ${50 + index * (extensionHeight / 8)}`).join(' ')} L220 ${massY}" fill="none" stroke="var(--primary)" stroke-width="4" />
-      <rect x="184" y="${massY}" width="72" height="42" rx="7" fill="var(--blue)" />
+      <rect data-hooke-weight="true" x="184" y="${massY}" width="72" height="42" rx="7" fill="var(--blue)" />
       <text x="220" y="${massY + 27}" text-anchor="middle" fill="white" font-size="15">m = ${current.mass} kg</text>
       <line x1="306" y1="32" x2="306" y2="${massY + 40}" stroke="var(--amber)" stroke-width="2" />
       ${Array.from({ length: 8 }, (_, index) => `<line x1="298" y1="${32 + index * ((massY + 8) / 8)}" x2="314" y2="${32 + index * ((massY + 8) / 8)}" stroke="var(--amber)" stroke-width="2" />`).join('')}
@@ -177,7 +178,7 @@ export function mount(main, context = {}) {
         <label class="field"><span>Thước đo độ dãn</span><select id="ruler-select">${EQUIPMENT_CATALOG.filter(item => item.type === 'ruler').map(item => `<option value="${item.id}">${item.label} · độ chia ${(item.resolution * 1000).toLocaleString('vi-VN')} mm</option>`).join('')}</select></label>
         <label class="field"><span>Lực kế</span><select id="force-sensor-select">${EQUIPMENT_CATALOG.filter(item => item.type === 'force-sensor').map(item => `<option value="${item.id}">${item.label}</option>`).join('')}</select></label>
       </div>
-      <div class="virtual-lab"><div><h3>Bố trí phòng thí nghiệm</h3><p>Thiết bị được lắp thành một bộ thí nghiệm Hooke có thể cấu hình lại.</p><div id="hooke-apparatus" class="hooke-apparatus"></div></div><div class="equipment-inventory"><h3>Bộ dụng cụ đang dùng</h3><ul id="equipment-list"></ul><p id="instrument-info"></p><p id="equipment-status" role="status"></p></div></div>
+      <div class="virtual-lab"><div><h3>Bố trí phòng thí nghiệm</h3><p>Thiết bị được lắp thành một bộ thí nghiệm Hooke có thể cấu hình lại.</p><div id="hooke-apparatus" class="hooke-apparatus"></div><p class="hooke-gesture-hint">Kéo trực tiếp quả nặng lên/xuống để thử thay đổi khối lượng; các phép đo không tự ghi cho đến khi bấm “Ghi kết quả”.</p></div><div class="equipment-inventory"><h3>Bộ dụng cụ đang dùng</h3><ul id="equipment-list"></ul><p id="instrument-info"></p><p id="equipment-status" role="status"></p></div></div>
       <div class="summary-grid">
         <div class="stat-card"><span>Hằng số lò xo</span><strong id="spring-constant">0</strong></div>
         <div class="stat-card"><span>Lực tác dụng</span><strong id="applied-force">0</strong></div>
@@ -208,6 +209,30 @@ export function mount(main, context = {}) {
       <div class="table-scroll"><table><thead><tr><th>STT</th><th id="generic-x-heading">Đại lượng x</th><th id="generic-y-heading">Đại lượng y</th><th>Độ không đảm bảo x</th><th>Độ không đảm bảo y</th><th>Dụng cụ</th></tr></thead><tbody id="generic-table-body"></tbody></table></div>
     </section>`;
 
+  // A draggable mass keeps the same validated select-based apparatus logic and result recording.
+  const apparatus = main.querySelector('#hooke-apparatus');
+  let massPointer = null;
+  function moveMassFromPointer(event) {
+    const diagram = apparatus.querySelector('svg');
+    const matrix = diagram?.getScreenCTM(); if (!matrix) return;
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const amount = quantizeParameter(clampSceneValue((point.y - 48) / 160, 0, 1), { min: .1, max: 3, step: .1 });
+    main.querySelector('#mass-select').value = String(Number(amount.toFixed(1)));
+    refreshFromControls();
+  }
+  apparatus.addEventListener('pointerdown', event => {
+    if (!event.target.closest('[data-hooke-weight]')) return;
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    massPointer = event.pointerId;
+    apparatus.setPointerCapture?.(event.pointerId);
+    moveMassFromPointer(event);
+  });
+  apparatus.addEventListener('pointermove', event => {
+    if (event.pointerId === massPointer) moveMassFromPointer(event);
+  });
+  const stopMass = event => { if (event.pointerId === massPointer) massPointer = null; };
+  apparatus.addEventListener('pointerup', stopMass);
+  apparatus.addEventListener('pointercancel', stopMass);
   main.querySelector('#spring-select').addEventListener('change', refreshFromControls);
   main.querySelector('#mass-select').addEventListener('change', refreshFromControls);
   main.querySelector('#gravity-select').addEventListener('change', refreshFromControls);

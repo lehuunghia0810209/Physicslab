@@ -4,6 +4,7 @@ import { format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
 import { Timeline } from '../../engines/timeline.js';
 import { path } from '../../engines/svg.js';
+import { quantizeParameter, clampSceneValue } from '../../core/direct-manipulation.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -28,6 +29,7 @@ export function mount(main, context) {
         <line class="wave-axis" x1="40" y1="110" x2="600" y2="110"></line><line class="wave-grid" x1="40" y1="20" x2="40" y2="200"></line><path id="wave-profile" class="wave-profile"></path><circle id="wave-probe" class="wave-probe" cx="180" cy="110" r="7"></circle>
         <text x="48" y="208">0 m</text><text x="585" y="208" text-anchor="end">10 m</text><text x="600" y="104" text-anchor="end">x</text>
       </svg>
+      <p class="wave-gesture-hint">Kéo lên hoặc xuống trên dây để điều chỉnh biên độ của nguồn; quan sát dạng sóng và đồ thị cập nhật ngay.</p>
       <div class="wave-readouts"><div><span>Biên độ thành phần A</span><strong id="wave-amplitude-value"></strong><small>m</small></div><div><span>Tần số f</span><strong id="wave-frequency-value"></strong><small>Hz</small></div><div><span>Bước sóng λ</span><strong id="wave-wavelength-value"></strong><small>m</small></div><div><span>Tốc độ truyền sóng</span><strong id="wave-speed"></strong><small>m/s</small></div><div><span>Li độ tại đầu dò</span><strong id="wave-displacement"></strong><small>m</small></div><div><span>Vận tốc dao động</span><strong id="wave-particle-velocity"></strong><small>m/s</small></div></div>
       <div class="wave-playback"><button class="button primary" id="play">Chạy</button><button class="button secondary" id="reset">Đặt lại</button><label class="speed-control">Tốc độ<select id="playback-rate" aria-label="Tốc độ phát"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
       <label class="timeline-label" for="scrubber">Thời gian <span id="duration-label"></span></label><input id="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Thời điểm trong mô phỏng"></section>
@@ -70,6 +72,7 @@ export function mount(main, context) {
     const state = model.at(time);
     const points = model.profile(time);
     main.querySelector('#wave-profile').setAttribute('d', path(points.map(point => [40 + point.x * 56, 110 - point.y * 20])));
+    main.querySelector('#wave-probe').setAttribute('cx', 40 + params.wavelength / 4 * 56);
     main.querySelector('#wave-probe').setAttribute('cy', 110 - state.displacement * 20);
     main.querySelector('#wave-time').textContent = `t = ${format(state.time)} s`;
     main.querySelector('#duration-label').textContent = `/ ${format(model.duration)} s`;
@@ -113,6 +116,26 @@ export function mount(main, context) {
     bind(`#wave-${key}`, 'input', event => updateModel({ ...params, [key]: Number(event.target.value) }));
   }
   bind('#wave-mode', 'change', event => updateModel({ ...params, mode: event.target.value }));
+  const waveScene = main.querySelector('#wave-scene');
+  let draggingWave = null;
+  const setAmplitudeFromPointer = event => {
+    const matrix = waveScene.getScreenCTM(); if (!matrix) return;
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const magnitude = clampSceneValue(Math.abs(110 - point.y) / 28, .1, 2);
+    const amplitude = quantizeParameter((magnitude - .1) / 1.9, { min: .1, max: 2, step: .1 });
+    updateModel({ ...params, amplitude });
+  };
+  waveScene.addEventListener('pointerdown', event => {
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    draggingWave = event.pointerId;
+    waveScene.setPointerCapture?.(event.pointerId);
+    setAmplitudeFromPointer(event);
+  }, { signal: abort.signal });
+  waveScene.addEventListener('pointermove', event => {
+    if (event.pointerId === draggingWave) setAmplitudeFromPointer(event);
+  }, { signal: abort.signal });
+  waveScene.addEventListener('pointerup', event => { if (event.pointerId === draggingWave) draggingWave = null; }, { signal: abort.signal });
+  waveScene.addEventListener('pointercancel', event => { if (event.pointerId === draggingWave) draggingWave = null; }, { signal: abort.signal });
   bind('#play', 'click', () => timeline.state.get().playing ? timeline.pause() : timeline.play());
   bind('#reset', 'click', () => { timeline.reset(model.duration); persist(); });
   bind('#scrubber', 'input', event => { timeline.seek(Number(event.target.value) / 1000 * model.duration); persist(); });

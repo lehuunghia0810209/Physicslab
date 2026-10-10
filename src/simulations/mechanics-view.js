@@ -2,6 +2,7 @@ import '../styles/mechanics.css';
 import { format } from '../core/units.js';
 import { Timeline } from '../engines/timeline.js';
 import { GraphRenderer } from '../engines/graph.js';
+import { normalizePointerX, quantizeParameter } from '../core/direct-manipulation.js';
 
 export function mountMechanicsSimulation(main, context, config) {
   const { progress } = context;
@@ -25,13 +26,14 @@ export function mountMechanicsSimulation(main, context, config) {
       <section class="mechanics-workbench">
         <div class="mechanics-viewport">
           <div class="mechanics-viewport-top"><span class="tag">${config.sceneLabel}</span><strong id="mechanics-time">t = 0 s</strong></div>
-          <div class="mechanics-scene mechanics-scene--${config.kind}" aria-label="${config.sceneLabel}">
+          <div class="mechanics-scene mechanics-scene--${config.kind}" tabindex="0" role="slider" aria-label="Tua thời gian trực tiếp trên cảnh: ${config.sceneLabel}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 giây">
             ${config.kind === 'collision'
               ? '<div class="collision-track"><span class="collision-block collision-block--one" id="body-one">m₁</span><span class="collision-block collision-block--two" id="body-two">m₂</span><span class="collision-floor"></span></div><p id="scene-caption" role="status"></p>'
               : config.kind === 'oscillation'
                 ? '<div class="oscillator-track"><span class="oscillator-anchor">▥</span><span class="oscillator-spring" id="spring-coil"></span><span class="oscillator-mass" id="oscillator-mass">m</span><span class="oscillator-center"></span></div><p id="scene-caption" role="status"></p>'
-                : `<div class="force-track"><span class="force-label">${config.kind === 'work' ? 'F cos θ' : 'F tác dụng'}</span><span class="force-arrow" aria-hidden="true">⟶</span><span class="motion-block" id="motion-block"></span><span class="motion-floor"></span></div><p id="scene-caption" role="status"></p>`}
+                : `<div class="force-track"><span class="force-label">${config.kind === 'work' ? 'F cos θ' : 'F tác dụng'}</span><span class="force-arrow" role="slider" aria-label="Kéo ngang để thay đổi lực tác dụng" tabindex="0" aria-valuemin="-80" aria-valuemax="80" aria-valuenow="0" title="Kéo mũi tên để đổi lực">⟶</span><span class="motion-block" id="motion-block"></span><span class="motion-floor"></span></div><p id="scene-caption" role="status"></p>`}
           </div>
+          <p class="scene-gesture-hint">Kéo trực tiếp trên cảnh để thay đổi thời điểm và quan sát số đo, đồ thị cùng cập nhật. Dùng ← → khi chọn cảnh.</p>
           <div class="mechanics-controls">
             <div class="mechanics-playback"><button class="button primary" id="play">Chạy</button><button class="button secondary" id="reset">Đặt lại</button><label class="speed-control">Tốc độ<select id="playback-rate" aria-label="Tốc độ phát"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
             <label class="timeline-label" for="scrubber">Thời gian <span id="duration-label"></span></label><input id="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Thời điểm trong mô phỏng">
@@ -65,6 +67,12 @@ export function mountMechanicsSimulation(main, context, config) {
 
   function updateScene(state) {
     const caption = main.querySelector('#scene-caption');
+    const stage = main.querySelector('.mechanics-scene');
+    if (stage) {
+      stage.setAttribute('aria-valuemax', String(Number(model.duration.toFixed(3))));
+      stage.setAttribute('aria-valuenow', String(Number(state.time.toFixed(3))));
+      stage.setAttribute('aria-valuetext', `${format(state.time)} giây`);
+    }
     if (config.kind === 'collision') {
       const extent = Math.max(6, Math.abs(state.x1), Math.abs(state.x2)) + 1;
       const toPercent = x => Math.max(2, Math.min(94, 50 + (x / extent) * 44));
@@ -72,15 +80,18 @@ export function mountMechanicsSimulation(main, context, config) {
       main.querySelector('#body-two').style.left = `${toPercent(state.x2)}%`;
       caption.textContent = state.collided ? 'Sau va chạm' : model.approaching ? 'Hai vật đang tiến lại gần nhau' : 'Hai vật không tiến lại gần nhau';
     } else if (config.kind === 'oscillation') {
-      const x = state.position / model.parameters.amplitude * 38;
-      main.querySelector('#oscillator-mass').style.transform = `translateX(${x * 120}px)`;
-      const springWidth = Math.max(14, Math.min(48, 30 + x * 18));
+      const x = model.parameters.amplitude > 0 ? Math.max(-1, Math.min(1, state.position / model.parameters.amplitude)) : 0;
+      main.querySelector('#oscillator-mass').style.left = `${50 + x * 30}%`;
+      main.querySelector('#oscillator-mass').style.transform = 'translateX(-50%)';
+      const springWidth = Math.max(5, Math.min(70, 36 + x * 30));
       main.querySelector('#spring-coil').style.width = `${springWidth}%`;
       caption.textContent = `x = ${format(state.position)} m`;
     } else {
       const travel = config.kind === 'work' ? model.distance : model.maxDistance;
       const ratio = Math.max(-1, Math.min(1, state.position / Math.max(0.1, travel)));
-      main.querySelector('#motion-block').style.transform = `translateX(${ratio * 24}vw)`;
+      const block = main.querySelector('#motion-block');
+      block.style.left = `${50 + ratio * 34}%`;
+      block.style.transform = 'translateX(-50%)';
       caption.textContent = config.kind === 'friction'
         ? (model.threshold ? 'Ma sát nghỉ giữ vật đứng yên' : 'Vật trượt; ma sát ngược chiều chuyển động')
         : `Quãng đường: ${format(state.position)} m`;
@@ -123,6 +134,74 @@ export function mountMechanicsSimulation(main, context, config) {
   for (const parameter of config.parameters) {
     main.querySelector(`[data-param-value="${parameter.key}"]`).textContent = `${format(params[parameter.key])} ${parameter.unit}`;
     bind(`#param-${parameter.key}`, 'input', event => apply({ ...params, [parameter.key]: Number(event.target.value) }));
+  }
+  // Direct manipulation stays within the model's validated time range; it never invents a trajectory.
+  const scene = main.querySelector('.mechanics-scene');
+  let gestureId = null;
+  function seekFromPointer(event) {
+    const fraction = normalizePointerX(event.clientX, scene.getBoundingClientRect());
+    timeline.seek(fraction * model.duration);
+    frame(timeline.state.get().time);
+  }
+  scene.addEventListener('pointerdown', event => {
+    if (event.target.closest('.force-arrow')) return;
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    gestureId = event.pointerId;
+    scene.classList.add('scene-is-dragging');
+    scene.setPointerCapture?.(event.pointerId);
+    seekFromPointer(event);
+  }, { signal: abort.signal });
+  scene.addEventListener('pointermove', event => {
+    if (event.pointerId === gestureId) seekFromPointer(event);
+  }, { signal: abort.signal });
+  const finishGesture = event => {
+    if (event.pointerId !== gestureId) return;
+    gestureId = null;
+    scene.classList.remove('scene-is-dragging');
+    persist();
+  };
+  scene.addEventListener('pointerup', finishGesture, { signal: abort.signal });
+  scene.addEventListener('pointercancel', finishGesture, { signal: abort.signal });
+  scene.addEventListener('keydown', event => {
+    if (event.target !== scene) return;
+    const step = model.duration / 40;
+    const offset = event.key === 'ArrowRight' ? step : event.key === 'ArrowLeft' ? -step : null;
+    const destination = event.key === 'Home' ? 0 : event.key === 'End' ? model.duration : offset === null ? null : timeline.state.get().time + offset;
+    if (destination === null) return;
+    event.preventDefault(); timeline.seek(destination); persist();
+  }, { signal: abort.signal });
+  const forceArrow = main.querySelector('.force-arrow');
+  const forceConfig = config.parameters.find(parameter => parameter.key === 'force');
+  if (forceArrow && forceConfig) {
+    forceArrow.setAttribute('aria-valuemin', String(forceConfig.min));
+    forceArrow.setAttribute('aria-valuemax', String(forceConfig.max));
+    const moveForce = event => {
+      const fraction = normalizePointerX(event.clientX, scene.getBoundingClientRect());
+      const force = quantizeParameter(fraction, forceConfig);
+      apply({ ...params, force });
+      forceArrow.setAttribute('aria-valuenow', String(params.force));
+      forceArrow.title = `Lực kéo ${format(params.force)} ${forceConfig.unit || 'N'}`;
+    };
+    let forcePointer = null;
+    forceArrow.addEventListener('pointerdown', event => {
+      event.stopPropagation();
+      forcePointer = event.pointerId;
+      forceArrow.setPointerCapture?.(event.pointerId);
+      moveForce(event);
+    }, { signal: abort.signal });
+    forceArrow.addEventListener('pointermove', event => {
+      if (event.pointerId === forcePointer) moveForce(event);
+    }, { signal: abort.signal });
+    forceArrow.addEventListener('pointerup', () => { forcePointer = null; }, { signal: abort.signal });
+    forceArrow.addEventListener('pointercancel', () => { forcePointer = null; }, { signal: abort.signal });
+    forceArrow.addEventListener('keydown', event => {
+      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault(); event.stopPropagation();
+      const value = event.key === 'Home' ? forceConfig.min : event.key === 'End' ? forceConfig.max : params.force + (event.key === 'ArrowRight' ? forceConfig.step : -forceConfig.step);
+      apply({ ...params, force: quantizeParameter((value - forceConfig.min) / (forceConfig.max - forceConfig.min), forceConfig) });
+      forceArrow.setAttribute('aria-valuenow', String(params.force));
+    }, { signal: abort.signal });
+    forceArrow.setAttribute('aria-valuenow', String(params.force));
   }
   bind('#play', 'click', () => timeline.state.get().playing ? timeline.pause() : timeline.play());
   bind('#reset', 'click', () => { timeline.reset(model.duration); persist(); });

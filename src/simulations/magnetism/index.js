@@ -4,6 +4,7 @@ import { format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
 import { Timeline } from '../../engines/timeline.js';
 import { path } from '../../engines/svg.js';
+import { normalizePointerX } from '../../core/direct-manipulation.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -24,7 +25,7 @@ export function mount(main, context) {
   progress.visit(id, 'Khám phá từ trường và cảm ứng điện từ');
   main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">ĐIỆN TỪ HỌC · LỚP 11–12</p><h1>Từ trường và cảm ứng điện từ</h1><p>Khảo sát lực Lorentz lên điện tích chuyển động và suất điện động cảm ứng khi từ thông biến thiên.</p></div><a class="button secondary" href="#/simulations">Quay lại thư viện</a></div>
     <div class="em-layout"><section class="panel em-workbench"><div class="em-heading"><span class="tag">MÔ HÌNH ĐIỆN TỪ</span><strong id="em-mode-label"></strong></div>
-      <svg id="em-scene" viewBox="0 0 620 300" role="img"></svg><div id="em-readouts" class="em-readouts"></div>
+      <svg id="em-scene" viewBox="0 0 620 300" role="slider" tabindex="0" aria-label="Kéo trên cảnh để tua thời gian của hiện tượng" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></svg><p class="em-gesture-hint">Kéo ngang trên cảnh để quay lại hoặc tiến tới một thời điểm khác; đồ thị và số đo luôn được tính từ cùng mô hình.</p><div id="em-readouts" class="em-readouts"></div>
       <div class="em-playback"><button class="button primary" id="play">Chạy</button><button class="button secondary" id="reset">Đặt lại</button><label class="speed-control">Tốc độ<select id="playback-rate" aria-label="Tốc độ phát"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><strong id="em-time"></strong></div>
       <label class="timeline-label" for="scrubber">Thời gian <span id="duration-label"></span></label><input id="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Thời điểm trong mô phỏng"></section>
       <aside class="panel em-controls"><h2>Thiết lập thí nghiệm</h2><label class="em-mode" for="em-mode"><span>Hiện tượng</span><select id="em-mode" aria-label="Hiện tượng điện từ"><option value="lorentz">Lực Lorentz</option><option value="induction">Cảm ứng điện từ</option></select></label><div id="em-parameters"></div><p id="em-equation" class="em-equation"></p><p id="em-assumption" class="em-assumption"></p></aside></div>
@@ -102,6 +103,9 @@ export function mount(main, context) {
     scrubber.value = String(time / model.duration * 1000);
     play.textContent = timeline.state.get().playing ? 'Tạm dừng' : (time >= model.duration ? 'Chạy lại' : 'Chạy');
     graph.update(time);
+    scene.setAttribute('aria-valuenow',String(Number(time.toFixed(3))));
+    scene.setAttribute('aria-valuemax',String(Number(model.duration.toFixed(3))));
+    scene.setAttribute('aria-valuetext',`${format(time)} giây`);
     renderScene(state);
   }
 
@@ -136,6 +140,23 @@ export function mount(main, context) {
   startTimeline();
   frame(savedTime);
   const bind = (selector, event, handler) => main.querySelector(selector).addEventListener(event, handler, { signal: abort.signal });
+  let scenePointer = null;
+  const moveThroughTime = event => {
+    timeline.seek(normalizePointerX(event.clientX,scene.getBoundingClientRect()) * model.duration);
+    persist();
+  };
+  scene.addEventListener('pointerdown',event=>{
+    if(event.button!==0&&event.pointerType==='mouse')return;
+    scenePointer=event.pointerId; scene.setPointerCapture?.(event.pointerId); moveThroughTime(event);
+  },{signal:abort.signal});
+  scene.addEventListener('pointermove',event=>{if(event.pointerId===scenePointer)moveThroughTime(event);},{signal:abort.signal});
+  const endGesture = event=>{if(event.pointerId===scenePointer)scenePointer=null;};
+  scene.addEventListener('pointerup',endGesture,{signal:abort.signal});
+  scene.addEventListener('pointercancel',endGesture,{signal:abort.signal});
+  scene.addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+    event.preventDefault();timeline.seek(timeline.state.get().time+(event.key==='ArrowRight'?1:-1)*model.duration/40);persist();
+  },{signal:abort.signal});
   bind('#em-mode', 'change', event => replaceModel({ ...ELECTROMAGNETISM_DEFAULTS, ...params, mode: event.target.value }));
   bind('#em-parameters', 'input', event => {
     if (event.target.matches('input[type="range"]')) replaceModel({ ...params, [event.target.id.replace('em-param-', '')]: Number(event.target.value) });

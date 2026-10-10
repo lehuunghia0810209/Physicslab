@@ -17,7 +17,7 @@ fieldset { border: 0; margin: 0 0 18px; padding: 0; } legend { font-size: 12px; 
 .lab-roadmap { max-width: 900px; } .large-icon { display: grid; place-items: center; background: color-mix(in srgb,var(--primary) 8%,var(--surface)); width: 72px; height: 72px; border-radius: 16px; color: var(--primary); margin-bottom: 20px; } .large-icon .icon { width: 40px; height: 40px; }
 .lab-roadmap h2 { margin-bottom: 12px; } .lab-roadmap > p { max-width: 700px; } .roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 30px 0; } .roadmap-grid > div { background: var(--bg); border-radius: 12px; padding: 22px; } .roadmap-grid h3 { margin: 16px 0 10px; } .roadmap-grid p { font-size: 13px; }
 .tools-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; } .tools-layout p { font-size: 14px; margin-bottom: 18px; }
-.field { display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 600; margin: 18px 0; } .field input, .field select { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: white; color: var(--ink); }
+.field { display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 600; margin: 18px 0; } .field input, .field select { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); color: var(--ink); }
 .unit-pair { display: grid; grid-template-columns: 1fr 24px 1fr; gap: 18px; align-items: center; } .unit-pair > .icon { margin-top: 22px; }
 .conversion-output { display: block; padding: 24px; border-radius: 12px; background: color-mix(in srgb,var(--primary) 9%,var(--surface)); color: var(--primary); font-size: 28px; font-weight: 650; overflow-wrap: anywhere; }
 @media (max-width: 1050px) { .learning-layout { grid-template-columns: 1fr; } .learning-aside { grid-row: 1; } .learning-aside ol { display: flex; gap: 12px; flex-wrap: wrap; } .learning-aside li { margin: 0; } }
@@ -37,3 +37,14 @@ fieldset { border: 0; margin: 0 0 18px; padding: 0; } legend { font-size: 12px; 
 .experiment-checklist li.verified { color: var(--primary); font-weight: 600; }
 .experiment-confirm:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 760px) { .learning-filters { grid-template-columns: repeat(2,minmax(0,1fr)); } .learning-filters label:first-child { grid-column: 1/-1; } }
+
+
+.action-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+.teacher-note { margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb,var(--primary) 6%,var(--surface)); }
+.teacher-note strong { display: block; margin-bottom: 10px; font-size: 14px; }
+.teacher-note ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.teacher-note li { margin: 7px 0; }
+body[data-theme='dark'] .field input,
+body[data-theme='dark'] .field select,
+body[data-theme='dark'] .learning-filters input,
+body[data-theme='dark'] .learning-filters select { background: var(--surface); }

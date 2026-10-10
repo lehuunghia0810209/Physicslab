@@ -1,0 +1,130 @@
+/* Simulation Workspace — one visual language across all 13 scientific models. */
+.graph-card .graph-svg, .graph-svg { display:block; width:100%; height:auto; max-height:280px; color:var(--primary); overflow:visible; }
+.graph-svg .graph-line { fill:none !important; stroke:currentColor !important; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+.graph-svg .graph--blue .graph-line, .graph--blue .graph-line { stroke:var(--blue) !important; }
+.graph-svg .graph--purple .graph-line, .graph--purple .graph-line { stroke:var(--purple) !important; }
+.graph-svg .graph-comparison-line { fill:none !important; stroke:var(--amber); stroke-width:2.2; stroke-dasharray:7 5; }
+.graph-svg .graph-grid, .graph-svg .graph-zero { fill:none; stroke:var(--line); stroke-width:1.15; }
+.graph-svg .graph-zero { stroke:color-mix(in srgb,var(--muted) 70%,var(--line)); stroke-width:1.6; }
+.graph-svg .graph-cursor { fill:none; stroke:var(--primary); stroke-width:1.6; stroke-dasharray:4 5; opacity:.8; }
+.graph-svg .graph-dot { fill:var(--primary); stroke:var(--surface); stroke-width:2; }
+.graph-svg text { fill:var(--muted); font-family:var(--font); font-size:11px; }
+.graph-svg .graph-fit { fill:none; stroke:var(--amber); stroke-width:2.4; stroke-dasharray:6 4; }
+.graph-svg .graph-error-bar { fill:none; stroke:var(--amber); stroke-width:1.6; }
+.graph-svg .graph-measurement-point { fill:var(--primary); stroke:var(--surface); stroke-width:2.3; }
+.graphs-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.graph-card { min-width:0; padding:clamp(15px,1.5vw,24px); border-radius:18px; background:var(--surface) !important; border:1px solid var(--line); overflow:hidden; }
+.graph-card .graph-title { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.graph-card .graph-title h3 { color:var(--ink); font-size:clamp(16px,1.2vw,19px); }
+.graph-card .graph-title span { color:var(--muted); background:var(--surface-alt); border-radius:8px; padding:3px 8px; }
+.graph-card .graph-value { font-size:clamp(12px,1vw,14px); color:var(--muted); background:var(--surface-alt); border-radius:9px; padding:8px 12px; min-height:43px; }
+.simulation-layout, .mechanics-layout, .em-layout, .wave-layout, .gas-layout, .optics-layout, .field-layout, .circuit-layout { gap:clamp(16px,2vw,28px); align-items:start; }
+.viewport-panel, .mechanics-viewport, .panel, .graph-card { scroll-margin-top:100px; }
+.viewport-panel, .mechanics-viewport, .wave-stage, .field-workbench, .em-workbench, .gas-workbench, .optics-workbench { overflow:hidden; }
+#scene-container, .mechanics-scene, .newton-scene, .inclined-visual, .wave-stage, .gas-workbench, .em-workbench, .optics-stage, .field-workbench { isolation:isolate; }
+input[type=range] { accent-color:var(--primary); touch-action:pan-y; }
+button, .button, select { min-height:44px; }
+.parameter, .mechanics-parameter, .em-parameter, .wave-parameter, .gas-parameter, .optics-parameter, .field-control { padding-block:3px; }
+.control-panel h2, .mechanics-panel h2, .panel h2 { line-height:1.28; }
+body[data-theme=dark] .graph-card { background:var(--surface) !important; }
+body[data-theme=dark] .graph-svg text { fill:#afc8c9; }
+body[data-theme=dark] .graph-grid { stroke:#355058; }
+@media(max-width:1100px) { .graphs-grid, .mechanics-graphs .graphs-grid, .graphs-section .graphs-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:780px) { .graphs-grid, .mechanics-graphs .graphs-grid, .graphs-section .graphs-grid { grid-template-columns:1fr; } .graph-card .graph-svg { max-height:255px; } }
+@media(prefers-reduced-motion:reduce) { .graph-card, .simulation-card, .mechanics-block, .motion-block, .oscillator-mass { transition:none !important; animation:none !important; } }
+
+/* Formula card is HTML rather than SVG text, so the browser wraps it correctly. */
+.hero-visual { position:relative; align-items:flex-start; padding:12px clamp(10px,2vw,22px) 20px 0; }
+.hero-visual svg { display:block; width:100%; height:auto; overflow:visible; }
+.hero-formula { position:absolute; bottom:42px; right:clamp(12px,2vw,30px); width:min(79%,380px); padding:16px 19px; border:1px solid rgba(136,223,204,.5); border-radius:17px; background:rgba(17,64,70,.92); box-shadow:0 12px 28px rgba(5,29,32,.20); backdrop-filter:blur(12px); color:#e8faf5; }
+.hero-formula strong { display:block; font-family:Cambria,Georgia,serif; font-size:clamp(16px,1.35vw,22px); font-weight:600; white-space:normal; overflow-wrap:anywhere; letter-spacing:0; }
+.hero-formula span { display:block; color:#b2d6d0; font-size:10px; line-height:1.4; font-weight:700; letter-spacing:.08em; margin-top:7px; }
+@media(max-width:1080px) { .hero-formula { bottom:25px; } }
+@media(max-width:760px) { .hero-visual { min-height:280px; max-height:none; margin:0; padding:0 12px 14px; flex-direction:column; } .hero-visual svg { height:210px; } .hero-formula { position:relative; margin:-38px 16px 10px auto; right:auto; bottom:auto; width:min(94%,380px); } .illustration-note { display:none; } }
+@media(max-width:420px) { .hero-formula { padding:12px 14px; width:100%; margin:-22px 0 0; } .hero-formula strong { font-size:17px; } }
+/* Manipulable mechanics stages */
+.mechanics-scene { min-height:clamp(240px,23vw,340px); border-radius:18px; border-color:var(--line); cursor:ew-resize; touch-action:none; background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 10%,var(--surface)) 0%,var(--surface-alt) 100%); }
+.mechanics-scene::before { content:''; position:absolute; inset:0; z-index:0; pointer-events:none; opacity:.5; background-image:linear-gradient(90deg,color-mix(in srgb,var(--primary) 10%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--primary) 10%,transparent) 1px,transparent 1px); background-size:32px 32px; }
+.mechanics-scene::after { content:'0       1       2       3       4       5'; position:absolute; left:5%; right:5%; bottom:4px; color:var(--muted); white-space:pre; font-size:11px; letter-spacing:.26em; overflow:hidden; pointer-events:none; }
+.scene-is-dragging { outline:2px solid var(--primary); outline-offset:-2px; }
+.scene-gesture-hint { color:var(--muted); font-size:13px; line-height:1.5; padding:11px 5px 4px; }
+.mechanics-scene .motion-block { left:50%; z-index:3; transition:left 55ms linear,box-shadow 150ms ease; border:1px solid rgba(255,255,255,.22); }
+.mechanics-scene .motion-floor, .mechanics-scene .collision-floor { z-index:1; height:12px; background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 32%,var(--surface)),color-mix(in srgb,var(--primary) 16%,var(--surface))); }
+.mechanics-scene .force-arrow { z-index:6; display:grid; place-items:center; width:52px; height:44px; border:1px solid color-mix(in srgb,var(--amber) 55%,transparent); border-radius:999px; background:color-mix(in srgb,var(--amber) 14%,var(--surface)); font-size:25px; cursor:ew-resize; touch-action:none; left:22%; top:24%; }
+.mechanics-scene .force-arrow:hover, .mechanics-scene .force-arrow:focus-visible { background:color-mix(in srgb,var(--amber) 25%,var(--surface)); box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 10%,transparent); }
+.mechanics-scene .force-label { z-index:4; }
+.mechanics-scene .oscillator-mass { z-index:3; transform:translateX(-50%); transition:left 55ms linear; box-shadow:0 12px 28px rgba(13,101,93,.25); }
+.mechanics-scene .oscillator-spring { z-index:2; transition:width 55ms linear; }
+.mechanics-scene .collision-block { transition:left 55ms linear; border:1px solid rgba(255,255,255,.26); }
+.mechanics-scene #scene-caption { z-index:5; border-radius:999px; width:fit-content; min-width:0; left:50%; transform:translateX(-50%); padding:4px 12px; bottom:20px; background:color-mix(in srgb,var(--surface) 92%,transparent); color:var(--ink); }
+.mechanics-viewport { padding:clamp(14px,2vw,24px); }
+.mechanics-playback { gap:12px; }
+.mechanics-playback .button { flex:0 0 auto; }
+.mechanics-measurements > div { min-height:91px; padding:13px 15px; }
+.mechanics-measurements strong { font-size:clamp(19px,1.55vw,24px); }
+body[data-theme=dark] .mechanics-scene { background:linear-gradient(180deg,#1a363b,#142a30); }
+@media(max-width:600px){.mechanics-scene{min-height:240px}.mechanics-viewport{padding:12px}.scene-gesture-hint{font-size:12px}.mechanics-scene::after{letter-spacing:0}}
+
+/* Direct launch aim — original controls remain accessible alternatives. */
+.launch-aim-line { stroke:var(--amber); stroke-width:4; stroke-dasharray:5 6; opacity:.8; pointer-events:none; }
+.launch-aim-point { fill:var(--amber); stroke:var(--surface); stroke-width:3; cursor:grab; touch-action:none; filter:drop-shadow(0 3px 5px rgba(0,0,0,.24)); }
+.launch-aim-handle { cursor:grab; outline:0; }
+.launch-aim-handle:focus-visible .launch-aim-point, .launch-aim-handle:hover .launch-aim-point { stroke:#fff; stroke-width:5; filter:drop-shadow(0 0 12px rgba(240,181,87,.75)); }
+.launch-aim-text { font-family:var(--font); font-size:9px; font-weight:800; fill:#102928; pointer-events:none; user-select:none; }
+.launch-aim-hint { font-size:13px; color:var(--muted); padding:5px 3px 8px; margin:0; }
+.projectile-scene { touch-action:pan-y; }
+body[data-theme=dark] .projectile-scene .coordinate-grid { stroke:#355058; }
+body[data-theme=dark] .projectile-scene .scene-grid text { fill:#b2c9ca; }
+body[data-theme=dark] .projectile-scene .predicted-path { stroke:#87d7b5; }
+body[data-theme=dark] .projectile-scene .traced-path { stroke:#7ae4c3; }
+@media(max-width:600px) { .launch-aim-hint { font-size:12px; } }
+
+/* Wave rope is directly pluckable; amplitude stays constrained by its slider. */
+#wave-scene { cursor:ns-resize; touch-action:none; border-radius:16px; background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),var(--surface-alt)); }
+.wave-gesture-hint { padding:8px 4px 4px; color:var(--muted); font-size:13px; }
+.wave-profile { stroke-width:3.8; stroke-linecap:round; fill:none; }
+.wave-probe { stroke:var(--surface); stroke-width:3; r:9; }
+body[data-theme=dark] #wave-scene { background:linear-gradient(180deg,#1a343b,#14292f); }
+
+/* Lens object can be repositioned by dragging directly in the ray diagram. */
+.optics-object-handle { cursor:ew-resize; touch-action:none; }
+.optics-object-handle:hover .optics-object, .optics-object-handle:focus-visible .optics-object { stroke-width:5; filter:drop-shadow(0 0 5px var(--amber)); }
+#optics-scene { touch-action:pan-y; border-radius:15px; }
+.optics-gesture-hint { margin:4px 0 12px; padding:0 6px; color:var(--muted); font-size:13px; }
+.newton-scene { min-height:300px; background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 10%,var(--surface)),var(--surface-alt)); cursor:ew-resize; touch-action:none; }
+.newton-scene::before { content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(90deg,color-mix(in srgb,var(--primary) 12%,transparent) 1px,transparent 1px),linear-gradient(color-mix(in srgb,var(--primary) 12%,transparent) 1px,transparent 1px);background-size:32px 32px; }
+.newton-block { flex:none; cursor:ew-resize; touch-action:none; font-size:15px; transition:transform .06s linear; border:2px solid color-mix(in srgb,var(--surface) 55%,transparent); }
+.newton-vector.force { left:21%; top:36%; cursor:ew-resize; touch-action:none; }
+.newton-vector.force:focus-visible { outline:3px solid var(--focus); border-radius:12px; }
+.newton-vector.force svg { width:130px; }
+.newton-vector.friction { left:45%; top:69%; }
+.newton-gesture-hint { margin:10px 3px 0; font-size:13px; color:var(--muted); }
+.newton-floor { background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 23%,var(--surface)),color-mix(in srgb,var(--primary) 36%,var(--surface))); }
+body[data-theme=dark] .newton-scene { background:linear-gradient(160deg,#1d363c,#14282e); }
+
+/* Thermodynamics: controllable piston with visually honest qualitative scale. */
+#gas-scene { background:linear-gradient(160deg,color-mix(in srgb,var(--blue) 8%,var(--surface)),var(--surface-alt)); border-radius:17px; }
+#gas-piston { cursor:ew-resize; touch-action:none; }
+#gas-piston:hover, #gas-piston:focus-visible { filter:drop-shadow(0 0 7px var(--primary)); stroke-width:5; }
+.gas-gesture-hint { padding:0 4px 10px; font-size:13px; color:var(--muted); line-height:1.5; }
+body[data-theme=dark] #gas-scene { background:linear-gradient(150deg,#1b343e,#142b33); }
+
+/* Hooke: touch/drag the load as well as using select controls. */
+#hooke-apparatus { touch-action:none; cursor:default; }
+#hooke-apparatus [data-hooke-weight] { cursor:ns-resize; stroke:var(--surface); stroke-width:2; }
+#hooke-apparatus [data-hooke-weight]:hover { stroke-width:4; filter:drop-shadow(0 0 9px var(--blue)); }
+.hooke-gesture-hint { font-size:13px; color:var(--muted); line-height:1.6; padding:8px 4px; }
+
+/* Circuit resistor manipulation with physically computed readouts. */
+#circuit-schematic { border-radius:16px; background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),var(--surface-alt)); touch-action:none; }
+#circuit-schematic .circuit-resistor { cursor:ew-resize; touch-action:none; color:var(--primary); }
+#circuit-schematic .circuit-resistor:hover path, #circuit-schematic .circuit-resistor.active path { stroke:var(--amber); stroke-width:5.2; }
+#circuit-schematic .circuit-resistor text { font-weight:750; }
+.circuit-gesture-hint { margin:0 4px 14px; color:var(--muted); font-size:13px; }
+body[data-theme=dark] #circuit-schematic { background:linear-gradient(155deg,#1c343b,#132930); }
+
+#em-scene { cursor:ew-resize; touch-action:none; border-radius:16px; background:linear-gradient(160deg,color-mix(in srgb,var(--purple) 9%,var(--surface)),var(--surface-alt)); }
+.em-gesture-hint { margin:8px 4px 14px; font-size:13px; color:var(--muted); }
+body[data-theme=dark] #em-scene { background:linear-gradient(160deg,#292f45,#1b2936); }
+
+.graph-svg[tabindex='0'] { touch-action:pan-y; }

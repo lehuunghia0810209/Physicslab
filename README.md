@@ -1,8 +1,30 @@
-# PhysicsLab 1.0 — Release Candidate 2
+# PhysicsLab 1.2 — Beta 1 UX Rework (Balanced)
 
 **PhysicsLab** là một website Vật lý tương tác, **độc lập**, bằng **tiếng Việt** dành cho học sinh THPT. Triết lý: **“Không chỉ đọc Vật lý — hãy nhìn thấy và tương tác với nó.”**
 
-> **Trạng thái mã nguồn: `1.0.0-rc.2` (release candidate, chưa phải bản 1.0 đã nghiệm thu).** Đã qua kiểm tra mã nguồn + 99 unit tests trong môi trường hiện tại. Việc dựng Vite và kiểm thử trình duyệt thực tế cần xác nhận trên máy có đủ npm dependencies. Xem [báo cáo thử nghiệm](docs/TEST_REPORT.md).
+> **Trạng thái mã nguồn: `1.2.0-beta.1-ux.1` (cột mốc beta đầu tiên của lộ trình Balanced, chưa phải 1.2 stable).** Đã qua kiểm tra mã nguồn + 116 unit tests trong môi trường hiện tại (có bản vá Build Fix sửa thiếu export `updateNavigation`). Việc dựng Vite và kiểm thử trình duyệt thực tế cần xác nhận trên máy có đủ npm dependencies. Xem [báo cáo thử nghiệm](docs/TEST_REPORT.md).
+
+
+
+## Cập nhật UX Rework từ Lab.zip
+
+Bản này sửa lỗi đồ thị màu đen và lỗi tràn công thức Hero; làm mới phong cách chung của biểu đồ, workbench và controls, thêm thao tác kéo trực tiếp trên các mô phỏng, giữ nguyên nội dung và tiến độ. Các mô phỏng Cơ học, Sóng, Điện, Từ, Quang, Nhiệt có thêm điều khiển trực quan và/hoặc chỉ báo khoa học đồng bộ; Lab Hooke có thể kéo quả nặng. **Xem ma trận đầy đủ và các giới hạn tại [UX_REWORK_1_2.md](docs/UX_REWORK_1_2.md).**
+
+> **Lưu ý nghiệm thu:** 116 unit tests PASS; Vite build/Playwright chưa được xác minh trên môi trường Linux vì ZIP gốc chứa dependency native Windows và thiếu Chromium. Trước khi deploy lên Cloudflare Pages, cần chạy `npm run check` và `npm run check:browser` trên Windows.
+
+## Bản vá Build Fix cho 1.2 Beta 1
+
+- Sửa lỗi Vite build `[MISSING_EXPORT] updateNavigation` từ shell/router. Giữ nguyên các tính năng được bàn giao trong bản 1.2 Beta 1.
+- Bổ sung kiểm thử điều hướng để tránh làm mất export trong lần cải tiến giao diện tiếp theo.
+
+## Nâng cấp mới trong 1.2 Beta 1
+
+- **Biểu đồ khoa học có thể thăm dò:** rê chuột hoặc dùng Tab + phím mũi tên trái/phải để đọc điểm dữ liệu; Escape thoát chế độ thăm dò. Con trỏ mô phỏng chính vẫn đồng bộ theo thời gian.
+- **So sánh thực nghiệm ném xiên:** dùng “Lưu làm mốc”, đổi tham số, xem hai quỹ đạo và hai đường trong 4 biểu đồ trên cùng thang; so sánh độ chênh tầm xa, độ cao và thời gian bay. Mốc chỉ tồn tại trong lần mở trang này.
+- **Liên kết cấu hình cho giáo viên:** sao chép link chứa vận tốc, góc, độ cao, trọng trường (không bao gồm tiến độ hay điểm số). Mở link trên Cloudflare Pages sẽ dùng bộ tham số đó.
+- **UI/UX:** đồ thị 2 cột trên desktop để đọc rõ; dark/light token đủ giá trị, nhãn dễ đọc, responsive và hỗ trợ reduced-motion như cũ.
+
+Đây là đợt **1.2 Beta 1**. Ngoài các hạng mục của Alpha 1, bản này làm sạch thanh công cụ, di chuyển sao lưu dữ liệu sang trang Công cụ, tăng độ rõ minh họa thẻ mô phỏng trong dark mode và sửa lại hero card / visual language của khu vực Mô phỏng.
 
 ## Chạy trên Windows 11
 
@@ -64,6 +86,7 @@ Vite, Vanilla JavaScript, ES Modules, CSS, Canvas/SVG, Node test runner, Playwri
 
 ## Tài liệu
 
+- [Lộ trình PhysicsLab 1.2](docs/ROADMAP_1_2.md)
 - [Lịch sử thay đổi](docs/CHANGELOG.md)
 - [Trạng thái và phạm vi kiểm chứng](docs/DEVELOPMENT_STATUS.md)
 - [Báo cáo kiểm thử / giới hạn](docs/TEST_REPORT.md)

@@ -3,6 +3,7 @@ import { createNewtonMotion, NEWTON_DEFAULTS } from '../../core/newton.js';
 import { clamp, format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
 import { Timeline } from '../../engines/timeline.js';
+import { quantizeParameter, normalizePointerX } from '../../core/direct-manipulation.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -21,6 +22,7 @@ export function mount(main, context) {
     }
   }
   progress.visit('newton', 'Khám phá định luật Newton');
+  const abort = new AbortController();
 
   function syncReadout(state) {
     const current = model.at(state.time);
@@ -35,9 +37,11 @@ export function mount(main, context) {
     main.querySelector('#scrubber').value = String((state.time / Math.max(model.duration, 1e-9)) * 1000 || 0);
     main.querySelector('#play-label').textContent = state.playing ? 'Tạm dừng' : (state.time >= model.duration ? 'Chạy lại' : 'Chạy');
     const block = main.querySelector('#newton-block');
-    const maxTravel = 180;
+    const maxTravel = Math.max(0, main.querySelector('.newton-scene').clientWidth - block.clientWidth - 96);
     const travel = model.threshold ? 0 : clamp((current.position / Math.max(model.maxDistance, 0.5)) * maxTravel, -maxTravel, maxTravel);
     block.style.transform = `translateX(${travel}px)`;
+    main.querySelector('.newton-scene').setAttribute('aria-valuenow', String(Number(state.time.toFixed(3))));
+    main.querySelector('.newton-scene').setAttribute('aria-valuemax', String(Number(model.duration.toFixed(3))));
     block.textContent = `m = ${model.parameters.mass} kg`;
   }
 
@@ -73,8 +77,8 @@ export function mount(main, context) {
       <section class="simulation-workbench">
         <div class="viewport-panel">
           <div class="viewport-top"><span class="tag">BÀN MÔ PHỎNG LỰC</span><span class="tag">F = ma</span><span id="time-label" class="time-label">t = 0 s</span></div>
-          <div class="newton-scene">
-            <div class="newton-vector force" aria-hidden="true">
+          <div class="newton-scene" role="slider" tabindex="0" aria-label="Kéo khối để tua thời gian chuyển động" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="newton-vector force" role="slider" tabindex="0" aria-label="Kéo mũi tên lực để thay đổi lực tác dụng" aria-valuemin="-80" aria-valuemax="80" aria-valuenow="0">
               <svg viewBox="0 0 180 48"><line x1="20" y1="24" x2="142" y2="24" /><path d="M138 12 L160 24 L138 36" /><text x="48" y="18">F kéo</text></svg>
             </div>
             <div class="newton-vector friction" aria-hidden="true">
@@ -83,6 +87,7 @@ export function mount(main, context) {
             <div class="newton-block" id="newton-block">m = ${params.mass} kg</div>
             <div class="newton-floor"></div>
           </div>
+          <p class="newton-gesture-hint">Kéo khối để tua chuyển động; kéo mũi tên lực để thay đổi lực kéo và quan sát gia tốc.</p>
           <div class="newton-legend">
             <span><i class="newton-dot force"></i> Lực tác dụng</span>
             <span><i class="newton-dot friction"></i> Ma sát</span>
@@ -181,10 +186,49 @@ export function mount(main, context) {
     timeline.rate(Number(e.target.value));
   });
 
+  // Drag the block to inspect a physical time, or drag the force arrow to change F.
+  const stage = main.querySelector('.newton-scene');
+  const forceHandle = main.querySelector('.newton-vector.force');
+  let stagePointer = null; let forcePointer = null;
+  function seekByPointer(event) {
+    timeline.seek(normalizePointerX(event.clientX, stage.getBoundingClientRect()) * model.duration);
+    persist();
+  }
+  stage.addEventListener('pointerdown', event => {
+    if (event.target.closest('.newton-vector')) return;
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    stagePointer = event.pointerId; stage.setPointerCapture?.(event.pointerId); seekByPointer(event);
+  }, { signal: abort.signal });
+  stage.addEventListener('pointermove', event => { if (event.pointerId === stagePointer) seekByPointer(event); }, { signal: abort.signal });
+  const stopStage = event => { if (event.pointerId === stagePointer) stagePointer = null; };
+  stage.addEventListener('pointerup', stopStage, { signal: abort.signal });
+  stage.addEventListener('pointercancel', stopStage, { signal: abort.signal });
+  stage.addEventListener('keydown', event => {
+    if (event.target !== stage || !['ArrowLeft','ArrowRight'].includes(event.key)) return;
+    event.preventDefault(); timeline.seek(timeline.state.get().time + (event.key === 'ArrowRight' ? 1 : -1) * model.duration/35); persist();
+  }, { signal: abort.signal });
+  function forceFromPointer(event) {
+    const force = quantizeParameter(normalizePointerX(event.clientX, stage.getBoundingClientRect()),{min:-80,max:80,step:1});
+    apply({...params,force});forceHandle.setAttribute('aria-valuenow',String(params.force));
+  }
+  forceHandle.addEventListener('pointerdown', event => {
+    event.stopPropagation(); forcePointer = event.pointerId; forceHandle.setPointerCapture?.(event.pointerId); forceFromPointer(event);
+  }, { signal: abort.signal });
+  forceHandle.addEventListener('pointermove', event => { if (event.pointerId === forcePointer) forceFromPointer(event); }, { signal: abort.signal });
+  forceHandle.addEventListener('pointerup', () => { forcePointer = null; }, { signal: abort.signal });
+  forceHandle.addEventListener('pointercancel', () => { forcePointer = null; }, { signal: abort.signal });
+  forceHandle.addEventListener('keydown', event => {
+    if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+    event.preventDefault();event.stopPropagation();
+    apply({...params,force:Math.max(-80,Math.min(80,params.force+(event.key==='ArrowRight'?1:-1)))});
+    forceHandle.setAttribute('aria-valuenow',String(params.force));
+  },{signal:abort.signal});
+  forceHandle.setAttribute('aria-valuenow',String(params.force));
   initialize();
   context.activeSimulation = () => ({ id: 'newton', parameters: { ...params }, state: timeline.state.get(), measurements: model.at(timeline.state.get().time), graphs: ['position', 'velocity'] });
   return () => {
     persist();
+    abort.abort();
     unsubscribe();
     timeline.destroy();
     context.activeSimulation = null;

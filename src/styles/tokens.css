@@ -1,6 +1,6 @@
 :root {
   --ink: #183a40; --muted: #647b7d; --primary: #176a60; --primary-dark: #104d46;
-  --mint: #a1e8ce; --bg: #f6f8f7; --surface: #fff; --line: #e2e9e6;
+  --mint: #a1e8ce; --bg: #f6f8f7; --surface: #fff; --surface-alt: #eef5f2; --line: #e2e9e6;
   --amber: #b36c20; --blue: #356baf; --purple: #8553b0;
   --radius: 16px; --shadow: 0 3px 16px #123b4204;
   --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -9,7 +9,7 @@
 body[data-theme='dark'] {
   color-scheme: dark;
   --ink: #ebf6f8; --muted: #a8bfc2; --primary: #72d7c7; --primary-dark: #4bb5a5;
-  --mint: #7fd4ba; --bg: #0f1b1d; --surface: #172327; --line: #2a3b3f;
+  --mint: #7fd4ba; --bg: #0f1b1d; --surface: #172327; --surface-alt: #203439; --line: #2a3b3f;
   --amber: #f4b76a; --blue: #8cb9ff; --purple: #c9a1ff;
   --shadow: 0 3px 24px rgba(0, 0, 0, 0.35);
 }
@@ -65,3 +65,26 @@ body[data-theme='dark'] .category-icon,
 body[data-theme='dark'] .sim-card .icon {
   color: var(--primary);
 }
+
+
+body[data-theme='dark'] .simulation-art {
+  background-color: #203338;
+  --art-grid: rgba(174, 230, 208, 0.085);
+  --art-guide: rgba(214, 241, 233, 0.34);
+  --art-stroke: #9fe3c8;
+  --art-accent: #d2fff0;
+  --art-accent-fill: rgba(146, 227, 197, 0.34);
+  --art-fill-start: rgba(90, 188, 155, 0.42);
+  --art-fill-end: rgba(50, 115, 98, 0.32);
+}
+body[data-theme='dark'] .art-waves { --art-stroke: #9bc2ff; --art-accent: #d2e7ff; --art-accent-fill: rgba(134, 173, 255, 0.34); }
+body[data-theme='dark'] .art-electricity { --art-stroke: #f2cf77; --art-accent: #ffeeb4; --art-accent-fill: rgba(240, 193, 76, 0.34); }
+body[data-theme='dark'] .art-magnetism { --art-stroke: #d0b3ff; --art-accent: #eedbff; --art-accent-fill: rgba(172, 122, 255, 0.34); }
+body[data-theme='dark'] .art-optics { --art-stroke: #efb29a; --art-accent: #ffd4c6; --art-accent-fill: rgba(231, 154, 120, 0.34); }
+body[data-theme='dark'] .art-thermal { --art-stroke: #8fdbe5; --art-accent: #cef7fb; --art-accent-fill: rgba(102, 205, 222, 0.34); }
+body[data-theme='dark'] .status-badge { background: rgba(15, 30, 33, 0.88); color: #d2e7e2; border-color: rgba(184, 226, 214, 0.18); }
+body[data-theme='dark'] .status-badge.available { background: rgba(190, 252, 224, 0.14); color: #dffff0; border-color: rgba(145, 235, 201, 0.34); }
+body[data-theme='dark'] .simulation-card:hover { box-shadow: 0 16px 30px rgba(0,0,0,.32); }
+body[data-theme='dark'] .nav-link:hover { background: #1e2e32; }
+body[data-theme='dark'] .nav-link.active { background: #25413f; color: #ddfbf2; }
+body[data-theme='dark'] .avatar { background: #25413f; color: #d8f6ee; }

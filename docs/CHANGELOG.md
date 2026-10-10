@@ -1,3 +1,39 @@
+## 1.2.0-beta.1-ux.1 — Simulation Experience Rework
+
+- Sửa SVG GraphRenderer path không có fill:none ở những route không tải projectile.css.
+- Sửa bảng phương trình ở Hero bằng overlay HTML responsive.
+- Nâng ngôn ngữ thiết kế chung của chart, workbench, dark-mode và thiết bị di động.
+- Kéo mũi tên ném, lực và vật theo model thật; tương tác trực tiếp tại Inclined, Waves, Circuits, Magnetic, Optics, Thermal, Lab Hooke.
+- Sửa tỉ lệ chuyển động khối Cơ học, đầu dò sóng x=λ/4 và piston chiều nén.
+- Thêm domain/regression tests, cập nhật check:browser cho lỗi mảng đen.
+- 116 unit tests PASS; Vite/Playwright chưa xác minh do thiếu dependency Linux và trình duyệt.
+
+## 1.2.0-beta.1 (Build Fix — 10/10/2026)
+
+- Khôi phục `updateNavigation(route, label)` trong `src/app/shell.js` để router có thể import và Vite không còn vướng `MISSING_EXPORT` cho hàm này.
+- Giữ nguyên thanh điều hướng 6 mục, nhãn active, breadcrumb, `aria-current`, số mô phỏng tự tính theo Registry và phiên bản ứng dụng.
+- Không đưa lại hai nút xuất/nhập dữ liệu lên topbar; các tiện ích vẫn nằm trong trang Công cụ.
+- Thêm `tests/shell-navigation.test.js` với hai bài kiểm thử hồi quy cho cấu trúc shell và trạng thái điều hướng.
+- `npm run check:core`: 111/111 PASS tại môi trường bàn giao. Vite/Playwright cần kiểm chứng trên máy có đủ dependency.
+
+## 1.2.0-beta.1 — Balanced / Simulation UI refresh & workflow polish
+
+- Sửa thẻ công thức ở hero dashboard: bố cục SVG ổn định hơn, không bị chật/cắt nội dung như trước.
+- Làm mới toàn bộ phần minh họa thẻ mô phỏng bằng SVG theo từng chủ đề/mô phỏng; dark mode tăng tương phản, badge “Sẵn sàng khám phá” dễ đọc hơn.
+- Bỏ 2 nút xuất/nhập dữ liệu khỏi topbar để giao diện gọn hơn; chức năng **không mất** mà được chuyển sang trang Công cụ với khu vực sao lưu/khôi phục rõ ràng hơn.
+- Mở rộng trang Công cụ: thêm quản lý sao lưu dữ liệu và điều khiển nhanh cho chế độ giáo viên / trình chiếu.
+- Giữ nguyên toàn bộ chức năng đang có của 1.2 Alpha 1 và 1.0 RC2. `npm run check:core`: **109/109 PASS**. `npm run build` chưa xác minh trong môi trường bàn giao do thiếu vite trong node_modules/cache.
+
+## 1.2.0-alpha.1 — Balanced / Graph & Classroom Interaction
+
+- Biểu đồ mô phỏng: thanh inspect dữ liệu bằng chuột hoặc phím trái/phải, Escape đóng, hỗ trợ aria; không thay đổi con trỏ timeline.
+- Graph engine có đường tham chiếu nét đứt và miền vẽ tự vừa cả hai lượt chạy, xử lý dữ liệu không hữu hạn an toàn.
+- Projectile Motion: lưu một lần ném làm mốc, so sánh trên scene SVG và 4 đồ thị, hiển thị ΔR, ΔH, ΔT. Không thay đổi công thức ném xiên.
+- Cấu hình bài giảng: tạo link chia sẻ 4 tham số ném xiên, kiểm tra lại dữ liệu URL trước khi áp dụng; không chia sẻ tiến độ người dùng.
+- UI/UX: cải thiện khoảng trống, kích thước đồ thị và chú giải; bổ sung token `--surface-alt` cho light/dark, tối ưu trên mobile.
+- Thêm regression tests cho graph, so sánh, link chia sẻ; tổng **109/109 PASS** ở `npm run check:core`. Cập nhật browser checks cho tính năng mới (cần chạy trên máy có Vite/Playwright).
+- Build/browser **chưa xác minh tại môi trường tạo bản bàn giao** vì thiếu dependency Vite offline và trình duyệt bị hạn chế điều hướng.
+
 ## 1.0.0-rc.2 — Sửa theo báo cáo trải nghiệm giáo viên (10/10/2026)
 
 - Sửa 3D Helix không thấy hạt và đường xoắn: chiếu quỹ đạo thật theo khung nhìn tự động, hiển thị 1,5 vòng, vẽ hạt sau các lớp, bổ sung nút “Vừa khung”. Không thay đổi phương trình Lorentz.

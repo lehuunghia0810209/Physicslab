@@ -2,6 +2,7 @@ import './electricity.css';
 import { createCircuit, CIRCUIT_DEFAULTS } from '../../core/circuits.js';
 import { format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
+import { clampSceneValue } from '../../core/direct-manipulation.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -14,7 +15,7 @@ export function mount(main, context) {
   let model = createCircuit(params);
   progress.visit(id, 'Khám phá định luật Ohm và mạch điện');
   main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">ĐIỆN HỌC · LỚP 11</p><h1>Định luật Ohm và mạch điện</h1><p>Đổi sơ đồ nối tiếp/song song, điều chỉnh điện áp và điện trở để đo dòng điện, hiệu điện thế và công suất.</p></div><a class="button secondary" href="#/simulations">Quay lại thư viện</a></div>
-    <div class="circuit-layout"><section class="panel circuit-workbench"><div class="circuit-topline"><span class="tag">MẠCH ĐIỆN MỘT CHIỀU</span><strong id="circuit-topology-label"></strong></div><div id="circuit-schematic"></div>
+    <div class="circuit-layout"><section class="panel circuit-workbench"><div class="circuit-topline"><span class="tag">MẠCH ĐIỆN MỘT CHIỀU</span><strong id="circuit-topology-label"></strong></div><div id="circuit-schematic"></div><p class="circuit-gesture-hint">Giữ và kéo điện trở R₁ hoặc R₂ theo phương ngang để thay đổi giá trị. Số đo I, U và P sẽ cập nhật tức thì.</p>
       <div class="circuit-measurements">${[
         ['equivalentResistance', 'Điện trở tương đương', 'Ω'], ['current', 'Dòng điện tổng', 'A'],
         ['current1', 'Dòng qua R₁', 'A'], ['current2', 'Dòng qua R₂', 'A'],
@@ -41,10 +42,11 @@ export function mount(main, context) {
   const abort = new AbortController();
   const bind = (selector, event, handler) => main.querySelector(selector).addEventListener(event, handler, { signal: abort.signal });
   function persist() { progress.session(id, { parameters: { ...params } }); }
+  let highlightedResistor = null;
   function renderSchematic(state) {
     const parallel = params.topology === 'parallel';
     const common = 'fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
-    const resistor = (x, y, label, value) => `<path d="M${x} ${y} l12 -14 16 28 16 -28 16 28 16 -28 16 28 16 -28 12 14" ${common}/><text x="${x + 60}" y="${y - 22}" text-anchor="middle">${label} = ${value} Ω</text>`;
+    const resistor = (x, y, label, value) => `<g data-resistor="${label === 'R₁' ? 'resistance1' : 'resistance2'}" class="circuit-resistor${highlightedResistor === (label === 'R₁' ? 'resistance1' : 'resistance2') ? ' active' : ''}" role="slider" aria-label="Kéo sang phải để tăng điện trở ${label}" aria-valuemin="1" aria-valuemax="1000" aria-valuenow="${value}"><path d="M${x} ${y} l12 -14 16 28 16 -28 16 28 16 -28 16 28 16 -28 12 14" ${common}/><rect x="${x}" y="${y - 30}" width="125" height="60" fill="transparent"/><text x="${x + 60}" y="${y - 29}" text-anchor="middle">${label} = ${value} Ω</text></g>`;
     const drawing = parallel
       ? `<path d="M130 80 H190 M310 80 H500 M130 165 H190 M310 165 H500 M500 80 V165" ${common}/>${resistor(190, 80, 'R₁', params.resistance1)}${resistor(190, 165, 'R₂', params.resistance2)}`
       : `<path d="M130 80 H190 M310 80 H340 M460 80 H500 V165 H130" ${common}/>${resistor(190, 80, 'R₁', params.resistance1)}${resistor(340, 80, 'R₂', params.resistance2)}`;
@@ -87,6 +89,32 @@ export function mount(main, context) {
       main.querySelector('#circuit-status').textContent = error.message;
     }
   }
+  const schematic = main.querySelector('#circuit-schematic');
+  let dragResistor = null;
+  function moveResistance(event) {
+    if (!dragResistor) return;
+    const bounds = schematic.getBoundingClientRect();
+    if (bounds.width <= 0) return;
+    const virtualDx = (event.clientX - dragResistor.startX) * 620 / bounds.width;
+    const value = Math.round(clampSceneValue(dragResistor.initial * Math.exp(virtualDx / 105), 1, 1000));
+    if (params[dragResistor.key] !== value) update({ ...params, [dragResistor.key]: value });
+  }
+  schematic.addEventListener('pointerdown', event => {
+    const target = event.target.closest('[data-resistor]');
+    if (!target || (event.button !== 0 && event.pointerType === 'mouse')) return;
+    const key = target.dataset.resistor;
+    highlightedResistor = key;
+    dragResistor = { key, startX: event.clientX, initial: params[key], pointerId: event.pointerId };
+    schematic.setPointerCapture?.(event.pointerId);
+    moveResistance(event);
+  }, { signal: abort.signal });
+  schematic.addEventListener('pointermove', event => { if (event.pointerId === dragResistor?.pointerId) moveResistance(event); }, { signal: abort.signal });
+  const stopResistance = event => {
+    if (event.pointerId !== dragResistor?.pointerId) return;
+    highlightedResistor = null; dragResistor = null;
+  };
+  schematic.addEventListener('pointerup', stopResistance, { signal: abort.signal });
+  schematic.addEventListener('pointercancel', stopResistance, { signal: abort.signal });
   bind('#topology', 'change', event => update({ ...params, topology: event.target.value }));
   for (const key of ['voltage', 'resistance1', 'resistance2']) bind(`#circuit-${key}`, 'input', event => update({ ...params, [key]: Number(event.target.value) }));
   graphCurrent.setModel(model);
