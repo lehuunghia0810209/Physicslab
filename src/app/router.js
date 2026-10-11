@@ -1,5 +1,6 @@
 import { updateNavigation } from './shell.js';
 import { escapeHtml } from './icons.js';
+import { addExperimentGuide } from './experiment-guide.js';
 const pages = {
   home: () => import('../pages/home.js'), simulations: () => import('../pages/library.js'),
   learning: () => import('../pages/learning.js'), lab: () => import('../pages/lab.js'), tools: () => import('../pages/tools.js'),
@@ -23,6 +24,7 @@ export function createRouter(main, context) {
       if (token !== sequence) return;
       const result = module.mount(main, context);
       dispose = typeof result === 'function' ? result : () => {};
+      if (route === 'simulation') addExperimentGuide(main, id);
       document.title = `${route === 'simulation' ? badge || 'Mô phỏng' : document.querySelector('[data-nav].active span')?.textContent || 'PhysicsLab'} · PhysicsLab`;
       window.scrollTo(0, 0); main.focus({ preventScroll: true });
     } catch (error) {

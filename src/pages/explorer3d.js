@@ -6,7 +6,7 @@ import { createHelixViewport } from '../core/helix-viewport.js';
 
 export function mount(main) {
   main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">KHÔNG GIAN BA CHIỀU</p><h1>Khám phá mô hình vật lý không gian</h1><p>Chọn hệ vật lý, điều chỉnh điều kiện ban đầu và kéo khung vẽ để xoay góc nhìn.</p></div><a class="button secondary" href="#/tools">Quay lại bàn công cụ</a></div>
-    <section class="panel explorer3d-layout"><div class="explorer3d-stage"><canvas id="explorer3d-canvas" aria-label="Mô hình ba chiều quỹ đạo hạt tích điện trong từ trường" tabindex="0"></canvas><p id="explorer3d-help">Kéo để xoay · Bấm “Vừa khung” để xem trọn quỹ đạo · Dùng phím mũi tên khi chọn canvas.</p></div>
+    <section class="panel explorer3d-layout"><div class="explorer3d-stage"><div class="explorer3d-view-presets" role="group" aria-label="Góc nhìn camera"><button type="button" data-camera="isometric">Phối cảnh</button><button type="button" data-camera="side">Nhìn bên</button><button type="button" data-camera="front">Nhìn dọc B</button><label><input id="explorer3d-vectors" type="checkbox" checked> Hiện véc-tơ</label></div><canvas id="explorer3d-canvas" aria-label="Mô hình ba chiều quỹ đạo hạt tích điện trong từ trường" tabindex="0"></canvas><p id="explorer3d-help">Kéo để xoay · Bấm “Vừa khung” để xem trọn quỹ đạo · Dùng phím mũi tên khi chọn canvas.</p></div>
       <aside class="explorer3d-controls"><label class="field explorer3d-scene-select" for="explorer3d-scene"><span>Hệ vật lý</span><select id="explorer3d-scene"><option value="helix">Hạt tích điện trong từ trường</option><option value="projectile">Chuyển động ném xiên</option></select></label>
         <div id="explorer3d-helix-controls"><span class="tag">QUỸ ĐẠO XOẮN · LỰC LORENTZ</span><label class="explorer3d-parameter" for="explorer3d-angle"><span>Góc vận tốc với B</span><strong id="explorer3d-angle-value"></strong><input id="explorer3d-angle" type="range" min="0" max="90" step="1" value="35" aria-label="Góc giữa vận tốc với từ trường"></label>
           <label class="explorer3d-parameter" for="explorer3d-charge"><span>Điện tích</span><select id="explorer3d-charge" aria-label="Dấu điện tích"><option value="1">Dương (+q)</option><option value="-1">Âm (−q)</option></select></label>
@@ -37,6 +37,7 @@ export function mount(main) {
   let elevation = 0.35;
   let zoom = 1;
   let phase = 0.35;
+  let showVectors = true;
   let drag = null;
   let bounds;
   let rafId = null;
@@ -115,12 +116,14 @@ export function mount(main) {
       y: state.y + state.vy * vectorTime,
       z: state.z + state.vz * vectorTime
     });
-    context.beginPath(); context.moveTo(particle.x, particle.y);
-    context.lineTo(velocityEnd.x, velocityEnd.y);
-    context.strokeStyle = '#d44f5c'; context.lineWidth = 3; context.stroke();
-    context.fillStyle = '#d44f5c'; context.font = '600 13px system-ui';
-    context.fillText('v', Math.min(bounds.width - 15, Math.max(8, velocityEnd.x + 5)),
-      Math.min(bounds.height - 9, Math.max(16, velocityEnd.y - 8)));
+    if (showVectors) {
+      context.beginPath(); context.moveTo(particle.x, particle.y);
+      context.lineTo(velocityEnd.x, velocityEnd.y);
+      context.strokeStyle = '#e67979'; context.lineWidth = 3; context.stroke();
+      context.fillStyle = '#e67979'; context.font = '600 13px system-ui';
+      context.fillText('v', Math.min(bounds.width - 15, Math.max(8, velocityEnd.x + 5)),
+        Math.min(bounds.height - 9, Math.max(16, velocityEnd.y - 8)));
+    }
     // Paint the particle last so it cannot be hidden by the trajectory/axes.
     context.beginPath(); context.arc(particle.x, particle.y, 8, 0, 2 * Math.PI);
     context.fillStyle = '#da842f'; context.fill();
@@ -165,10 +168,10 @@ export function mount(main) {
     context.beginPath(); context.arc(particle.x, particle.y, 8, 0, 2 * Math.PI);
     context.fillStyle = '#da842f'; context.fill();
     const maximum = at(model.apexTime);
-    context.setLineDash([5, 5]); context.strokeStyle = '#4384ba'; context.lineWidth = 1.5;
+    context.setLineDash([5, 5]); context.strokeStyle = '#7cbbe3'; context.lineWidth = 1.5;
     const maximumGround = atPosition(model.at(model.apexTime).x, 0);
     context.beginPath(); context.moveTo(maximum.x, maximum.y); context.lineTo(maximumGround.x, maximumGround.y); context.stroke(); context.setLineDash([]);
-    context.fillStyle = '#4384ba'; context.fillText('Hmax', maximum.x + 7, maximum.y - 8);
+    if (showVectors) { context.fillStyle = '#7cbbe3'; context.fillText('Hmax', maximum.x + 7, maximum.y - 8); }
     main.querySelector('#explorer3d-v0-value').textContent = `${format(projectile.speed)} m/s`;
     main.querySelector('#explorer3d-projectile-angle-value').textContent = `${projectile.angle}°`;
     main.querySelector('#explorer3d-height-value').textContent = `${format(projectile.height)} m`;
@@ -207,6 +210,13 @@ export function mount(main) {
     lastFrame = null;
     rafId = requestAnimationFrame(frame);
   }, { signal: abort.signal });
+  const cameraPresets = { isometric: [-0.55, 0.35], side: [0, 0], front: [0, Math.PI / 2 - .12] };
+  main.querySelectorAll('[data-camera]').forEach(button => button.addEventListener('click', () => {
+    [yaw, elevation] = cameraPresets[button.dataset.camera];
+    render();
+    canvas.focus({ preventScroll: true });
+  }, { signal: abort.signal }));
+  main.querySelector('#explorer3d-vectors').addEventListener('change', event => { showVectors = event.target.checked; render(); }, { signal: abort.signal });
   main.querySelector('#explorer3d-fit').addEventListener('click', () => {
     yaw = -0.55; elevation = 0.35; zoom = 1;
     main.querySelector('#explorer3d-zoom').value = '1';

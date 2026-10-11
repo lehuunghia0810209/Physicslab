@@ -2,6 +2,7 @@ import { categories, lessons } from '../data/curriculum.js';
 import { summarizeLearningProgress } from '../core/learning-analytics.js';
 import { icon } from '../app/icons.js';
 import { filterLessons, isExperimentVerified } from '../core/lesson-filter.js';
+import { guideForSimulation } from '../data/experiment-guides.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -23,6 +24,8 @@ export function mount(main, context) {
     let savedPrediction = data.sessions[`learning-${lesson.id}`]?.setup?.prediction;
     const experimentBaseline = data.sessions[`learning-${lesson.id}`]?.setup?.experimentBaseline;
     const simulationHref = lesson.simulation === 'lab' ? '#/lab' : `#/simulation/${lesson.simulation}`;
+    const guide = guideForSimulation(lesson.simulation);
+    const guideHtml = guide ? `<div class="lesson-experiment-tips"><strong>Nhiệm vụ quan sát trong mô phỏng</strong><ol>${guide.map(step => `<li>${step}</li>`).join('')}</ol></div>` : '';
     main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">HỌC TỪ NHỮNG GÌ BẠN QUAN SÁT</p><h1>Học tập tương tác</h1><p>${lessons.length} bài khám phá · Dự đoán, thử nghiệm, giải thích và kiểm tra.</p></div></div>
       <section class="learning-filters" aria-label="Tìm và lọc bài học">
         <label for="learning-search">Tìm bài học<input id="learning-search" type="search" placeholder="Ví dụ: ném xiên, điện trường..." autocomplete="off"></label>
@@ -38,7 +41,7 @@ export function mount(main, context) {
           <button class="button secondary" id="prediction" type="submit">Lưu dự đoán ${icon('check')}</button><p id="prediction-result" role="status">${savedPrediction ? 'Đã lưu dự đoán. Hãy kiểm tra bằng mô phỏng.' : ''}</p>
         </form>
         <hr><span class="tag">02 / THỬ NGHIỆM</span><h2>Thay đổi tham số và quan sát hiện tượng</h2><p>Trong mô phỏng, thay đổi một đại lượng mỗi lần để so sánh công bằng. Ghi nhận thời gian, đồ thị hoặc kết quả đo trước khi kết luận.</p>
-        <a class="button primary" id="lesson-simulation-link" href="${simulationHref}">Mở mô phỏng hoặc thí nghiệm liên quan ${icon('arrow')}</a>
+        <a class="button primary" id="lesson-simulation-link" href="${simulationHref}">Mở mô phỏng hoặc thí nghiệm liên quan ${icon('arrow')}</a>${guideHtml}
         <div class="experiment-checklist" role="group" aria-label="Điều kiện hoàn thành thử nghiệm"><strong>Để xác nhận đã thử nghiệm:</strong><ul id="experiment-requirements"></ul></div>
         <button class="button secondary experiment-confirm" id="experiment-done" type="button" disabled>Tôi đã thực hiện thử nghiệm</button>
         <hr><span class="tag">03 / QUAN SÁT</span><h2>Đối chiếu với mô hình</h2><p>${lesson.observation}</p><p id="prediction-outcome" role="status"></p><button class="button secondary" id="observation" type="button">Tôi đã đối chiếu kết quả ${icon('check')}</button>

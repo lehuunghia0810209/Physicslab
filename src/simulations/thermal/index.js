@@ -4,6 +4,8 @@ import { format } from '../../core/units.js';
 import { GraphRenderer } from '../../engines/graph.js';
 import { Timeline } from '../../engines/timeline.js';
 import { quantizeParameter, clampSceneValue } from '../../core/direct-manipulation.js';
+import { particlePositions } from '../../core/gas-particles.js';
+import { volumeToPistonX, pistonXToVolume } from '../../core/scene-geometry.js';
 
 export function mount(main, context) {
   const { progress } = context;
@@ -24,8 +26,8 @@ export function mount(main, context) {
   progress.visit(id, 'Khám phá định luật khí lí tưởng');
   main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">NHIỆT HỌC · LỚP 12</p><h1>Khí lí tưởng và các quá trình</h1><p>Điều khiển piston và quan sát mối liên hệ giữa áp suất, thể tích, nhiệt độ cùng trao đổi năng lượng.</p></div><a class="button secondary" href="#/simulations">Quay lại thư viện</a></div>
     <div class="gas-layout"><section class="panel gas-workbench"><div class="gas-topline"><span class="tag">MÔ HÌNH KHÍ LÍ TƯỞNG ĐƠN NGUYÊN TỬ</span><strong id="gas-time"></strong></div>
-      <svg id="gas-scene" viewBox="0 0 620 300" role="img" aria-label="Piston chứa khí lí tưởng"><rect class="gas-cylinder" x="100" y="55" width="420" height="190" rx="12"/><g id="gas-particles"></g><rect id="gas-piston" class="gas-piston" x="300" y="55" width="24" height="190" tabindex="0" role="slider" aria-label="Kéo piston để điều chỉnh thể tích cuối" aria-valuemin="0.001" aria-valuemax="0.4" aria-valuenow="0.04"/><text id="gas-piston-label" y="272"></text></svg>
-      <p class="gas-gesture-hint">Kéo piston sang trái hoặc phải để thay đổi thể tích cuối. Khi chọn đẳng tích, piston được cố định. Hình chỉ minh họa tỉ lệ thay đổi thể tích.</p>
+      <svg id="gas-scene" viewBox="0 0 620 300" role="img" aria-label="Bình khí có piston kéo được, các phân tử khí minh họa chuyển động nhiệt"><defs><clipPath id="gas-particle-clip"><rect id="gas-clip-rect" x="116" y="65" width="184" height="172" rx="3"/></clipPath></defs><rect class="gas-cylinder" x="100" y="55" width="420" height="190" rx="12"/><g id="gas-particles" clip-path="url(#gas-particle-clip)"></g><rect id="gas-piston" class="gas-piston" x="300" y="55" width="24" height="190" tabindex="0" role="slider" aria-label="Kéo piston để điều chỉnh thể tích cuối" aria-valuemin="0.001" aria-valuemax="0.4" aria-valuenow="0.04"/><g class="gas-piston-handle" aria-hidden="true"><path id="gas-handle-rod" d="M324 150H557"/><rect x="535" y="125" width="24" height="50" rx="7"/></g><text id="gas-piston-label" x="306" y="272"></text><text class="gas-scene-label" x="112" y="38">KHÍ LÍ TƯỞNG · MÔ HÌNH VI MÔ</text><text class="gas-scene-label" x="505" y="286" text-anchor="end">KÉO PISTON ↔</text></svg><div class="gas-live-legend"><span><i class="gas-legend-dot"></i> Phân tử khí đang chuyển động</span><span>Chuyển động minh họa · số đo lấy từ PV = nRT</span></div>
+      <p class="gas-gesture-hint">Kéo piston sang trái hoặc phải để thay đổi thể tích cuối. Khi chọn đẳng tích, piston được cố định. Vị trí piston dùng thang logarit để dễ thấy cả thể tích nhỏ; số đo và công thức luôn sử dụng thể tích thực.</p>
       <div class="gas-readouts">${[['pressure','Áp suất P','Pa'],['volume','Thể tích V','m³'],['temperature','Nhiệt độ T','K'],['internalEnergy','Nội năng U','J'],['work','Công W','J'],['heat','Nhiệt lượng Q','J']].map(([key,label,unit])=>`<div><span>${label}</span><strong id="gas-${key}"></strong><small>${unit}</small></div>`).join('')}</div>
       <div class="gas-playback"><button class="button primary" id="play">Chạy</button><button class="button secondary" id="reset">Đặt lại</button><label class="speed-control">Tốc độ<select id="playback-rate" aria-label="Tốc độ phát"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
       <label class="timeline-label" for="scrubber">Tiến trình <span id="duration-label"></span></label><input id="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Tiến trình quá trình nhiệt"></section>
@@ -48,21 +50,20 @@ export function mount(main, context) {
     main.querySelector('#duration-label').textContent = `/ ${format(model.duration)} s`;
     scrubber.value = String(state.progress * 1000);
     play.textContent = timeline.state.get().playing ? 'Tạm dừng' : (state.time >= model.duration ? 'Chạy lại' : 'Chạy');
-    const range = params.finalVolume - params.initialVolume;
-    const fraction = range === 0 ? .5 : clampSceneValue((state.volume - params.initialVolume) / range, 0, 1);
-    const pistonX = range > 0 ? 185 + 250 * fraction : range < 0 ? 435 - 250 * fraction : 310;
+    // Piston area tracks volume linearly for each set of endpoints. The minimum
+    // 18px width keeps small but nonzero volumes visible; numeric values stay exact.
+    const pistonX = volumeToPistonX(Math.max(.001, Math.min(.4, state.volume)));
     main.querySelector('#gas-piston').setAttribute('x', pistonX);
     main.querySelector('#gas-piston').setAttribute('aria-valuenow', String(params.finalVolume));
     main.querySelector('#gas-piston').setAttribute('aria-valuetext', `${format(params.finalVolume, 3)} mét khối`);
-    main.querySelector('#gas-piston-label').setAttribute('x', pistonX + 12);
-    main.querySelector('#gas-piston-label').textContent = `Piston · V = ${format(state.volume, 3)} m³`;
-    const width = pistonX - 112;
-    main.querySelector('#gas-particles').innerHTML = Array.from({ length: 16 }, (_, index) => {
-      const column = index % 4, row = Math.floor(index / 4);
-      const x = 126 + (width - 28) * (column + 0.5) / 4;
-      const y = 90 + row * 38 + ((index * 17 + Math.floor(time * 6)) % 11) - 5;
-      return `<circle class="gas-particle" cx="${x}" cy="${y}" r="${4 + (state.temperature - 100) / 450}"/>`;
-    }).join('');
+    main.querySelector('#gas-piston-label').setAttribute('x', Math.min(510, Math.max(155, pistonX + 10)));
+    main.querySelector('#gas-piston-label').textContent = `V = ${format(state.volume, 3)} m³`;
+    main.querySelector('#gas-clip-rect').setAttribute('width', Math.max(12, pistonX - 118));
+    main.querySelector('#gas-handle-rod').setAttribute('d', `M${pistonX + 24} 150H557`);
+    const width = Math.max(16, pistonX - 118);
+    main.querySelector('#gas-particles').innerHTML = particlePositions({ time, temperature: state.temperature }).map(p =>
+      `<circle class="gas-particle" cx="${118 + p.x * width}" cy="${66 + p.y * 171}" r="${p.radius}"/>`
+    ).join('');
     main.querySelector('#gas-equation').textContent = `PV = nRT · P = ${format(state.pressure)} Pa · W = ${format(state.work)} J · ΔU = ${format(state.changeInInternalEnergy)} J · Q = ΔU + W`;
     graph.update(time);
   }
@@ -76,6 +77,10 @@ export function mount(main, context) {
       for (const key of Object.keys(IDEAL_GAS_DEFAULTS)) {
         const input = main.querySelector(`#gas-${key}`);
         if (input) input.value = params[key];
+      }
+      for (const key of ['amount','initialVolume','finalVolume','initialTemperature','finalTemperature']) {
+        const unit = key.includes('Volume') ? 'm³' : key.includes('Temperature') ? 'K' : 'mol';
+        main.querySelector(`[data-gas-param="${key}"]`).textContent = `${format(params[key])} ${unit}`;
       }
       graph.setModel(model);
       timeline.reset(model.duration);
@@ -109,8 +114,7 @@ export function mount(main, context) {
     if (params.process === 'isochoric') return;
     const matrix = gasScene.getScreenCTM(); if (!matrix) return;
     const pos = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
-    const fraction = clampSceneValue((pos.x - 150) / 330, 0, 1);
-    const volume = quantizeParameter(fraction, { min: .001, max: .4, step: .001 });
+    const volume = quantizeParameter(pistonXToVolume(pos.x), { min: .001, max: .4, step: .001 });
     replaceModel({ ...params, finalVolume: volume });
   }
   piston.addEventListener('pointerdown', event => {

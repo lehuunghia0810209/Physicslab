@@ -7,6 +7,7 @@ import './styles/content.css';
 import './styles/polish.css';
 import './styles/graph-experience.css';
 import './styles/simulation-experience.css';
+import './styles/phet-experience.css';
 import { shell } from './app/shell.js';
 import { installQuickSearch } from './app/quick-search.js';
 import { createRouter } from './app/router.js';

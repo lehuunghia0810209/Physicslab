@@ -34,3 +34,25 @@
 .circuit-graphs .graph--blue { color: var(--blue); }
 @media (max-width: 900px) { .circuit-layout { grid-template-columns: 1fr; } }
 @media (max-width: 650px) { .circuit-graphs .graphs-grid { grid-template-columns: 1fr; } }
+/* Illustrated circuits use authentic series/parallel connectivity, not a generic icon. */
+.circuit-scene-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin:12px 0; }
+.circuit-topology-buttons { display:flex; gap:7px; }
+.circuit-topology-buttons button { min-height:44px; border:1px solid var(--line); border-radius:12px; padding:9px 16px; background:var(--surface); color:var(--ink); cursor:pointer; font-weight:700; }
+.circuit-topology-buttons button[aria-pressed=true] { background:var(--primary); color:white; border-color:var(--primary); }
+#circuit-schematic { border-radius:18px; background:linear-gradient(150deg,color-mix(in srgb,var(--blue) 8%,var(--surface)),var(--surface-alt)); }
+#circuit-schematic svg { min-height:240px; max-height:410px; }
+#circuit-schematic .circuit-wire { fill:none; stroke:var(--primary); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+#circuit-schematic .circuit-component { fill:color-mix(in srgb,var(--amber) 12%,var(--surface)); stroke:var(--amber); stroke-width:2; }
+#circuit-schematic .circuit-resistor-zig { stroke:var(--amber); stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round; fill:none; }
+#circuit-schematic .circuit-battery-plus { stroke:var(--amber); stroke-width:6; }
+#circuit-schematic .circuit-battery-minus { stroke:var(--amber); stroke-width:3.2; }
+#circuit-schematic .circuit-charge-dot { fill:#ffe09f; stroke:#5e440f; stroke-width:1; filter:drop-shadow(0 0 3px rgba(240,187,75,.55)); }
+#circuit-schematic .circuit-flow-path { fill:none; stroke:transparent; pointer-events:none; }
+#circuit-schematic .circuit-label { fill:var(--ink); font-size:15px; font-weight:700; }
+#circuit-schematic .circuit-sub-label { fill:var(--muted); font-size:12px; }
+#circuit-schematic .circuit-source-label { fill:var(--amber); font-size:16px; font-weight:800; }
+#circuit-schematic .circuit-footer-label { fill:var(--muted); font-size:12px; }
+#circuit-schematic .circuit-resistor { cursor:ew-resize; touch-action:none; }
+#circuit-schematic .circuit-resistor:hover .circuit-component,
+#circuit-schematic .circuit-resistor:focus-visible .circuit-component { stroke-width:4; fill:color-mix(in srgb,var(--amber) 24%,var(--surface)); }
+body[data-theme=dark] #circuit-schematic { background:linear-gradient(145deg,#203b40,#122b33); }

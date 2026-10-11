@@ -128,3 +128,21 @@ body[data-theme=dark] #circuit-schematic { background:linear-gradient(155deg,#1c
 body[data-theme=dark] #em-scene { background:linear-gradient(160deg,#292f45,#1b2936); }
 
 .graph-svg[tabindex='0'] { touch-action:pan-y; }
+/* Unified three-step exploration aid, explicitly optional during teacher presentation. */
+.experiment-guide { margin: 0 0 22px; padding: 0 18px; border: 1px solid color-mix(in srgb,var(--primary) 34%,var(--line)); border-radius: 17px; background: color-mix(in srgb,var(--primary) 5%,var(--surface)); box-shadow: var(--shadow); }
+.experiment-guide summary { min-height: 52px; display: flex; align-items: center; cursor: pointer; font-size: 15px; font-weight: 750; color: var(--ink); }
+.experiment-guide summary:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 6px; }
+.experiment-guide p { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 0 0 8px; }
+.experiment-guide ol { list-style: none; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; padding: 0 0 16px; margin: 0; counter-reset: guide; }
+.experiment-guide li { counter-increment: guide; padding: 13px; background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-radius: 12px; line-height: 1.6; font-size: 13px; }
+.experiment-guide li::before { content: counter(guide, decimal-leading-zero); display: inline-block; padding: 3px 8px; margin-right: 8px; border-radius: 6px; color: var(--primary); background: var(--surface-alt); font-weight: 800; }
+.experiment-guide li strong { color: var(--ink); }
+body.presentation-mode .experiment-guide { display: none; }
+.graph-tools { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
+.graph-tools-hint { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.graph-tools [role=group] { display: flex; flex-wrap: wrap; gap: 5px; }
+.graph-tools button { min-width: 44px; min-height: 44px; padding: 7px 9px; font-size: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-alt); color: var(--ink); cursor: pointer; }
+.graph-tools button:hover:not(:disabled), .graph-tools button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.graph-tools button:disabled { opacity: .36; cursor: not-allowed; }
+.graph-svg { touch-action: pan-y; }
+@media(max-width:780px) {.experiment-guide ol { grid-template-columns: 1fr; } .graph-tools-hint { flex-basis: 100%; } }

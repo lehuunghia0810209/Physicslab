@@ -1,8 +1,50 @@
+# PhysicsLab 1.2.1 Beta — Interactive Experience (PhET-inspired)
+
+**Bản phát triển dựa trực tiếp trên PhysicsLab 1.2.0.** Giữ nguyên toàn bộ 13 mô phỏng, 16 bài học, 15 cấu hình Lab, 3D Explorer, giao diện tiếng Việt và dữ liệu `physicslab.progress.v1`. Đây **không phải** mã PhET được sao chép hoặc một bản PhET đổi tên.
+
+## Thay đổi trong bản này
+
+- **Khí lí tưởng:** hạt khí minh họa chuyển động và phản xạ, phụ thuộc nhiệt độ; piston kéo trực tiếp, thang biểu diễn logarit để thấy được thể tích nhỏ. Các phép đo, áp suất và nhiệt động lực học luôn lấy từ mô hình SI hiện có.
+- **Mạch điện:** sơ đồ nối tiếp/song song đúng cấu trúc, trực quan dòng điện quy ước bằng các hạt chuyển động minh họa, chọn nhanh hai cách mắc, kéo và dùng phím mũi tên chỉnh điện trở. Điều khiển tạm dừng chuyển động; không làm giả số đo.
+- **Phòng thí nghiệm:** danh mục 16 bàn thực hành tách riêng (Hooke chuyên sâu + 15 chủ đề); sơ đồ minh họa riêng cho từng thí nghiệm; kéo chấm trên sơ đồ để đổi đại lượng, đọc số đo và dụng cụ từ mô hình gốc; có hiệu chuẩn và sổ tay/CSV.
+- **3D Explorer:** chỉnh lại khoảng cách chữ, số đo, khu vực canvas, bố cục tablet/desktop/mobile, giới hạn tràn bảng.
+- **Test:** unit tests mở rộng, cập nhật browser checks tương ứng các tương tác mới.
+
+**Chưa đạt parity với PhET:** Chưa phải bộ lắp mạch tự do hay môi trường thực nghiệm liên tục cho toàn bộ 15 adapter Lab; các cảnh generic là sơ đồ minh họa tương tác và kết quả đo được tính bằng mô hình. Muốn xây chức năng lắp thiết bị đa chiều như PhET cần thêm những bộ công cụ mô phỏng chuyên dụng.
+
+## Chạy thử trước khi đẩy Cloudflare
+
+```powershell
+npm ci
+npm run check
+npm run dev -- --port 5188
+# Terminal thứ hai
+npm run check:browser
+```
+
+Chỉ đẩy GitHub sau khi cả build và browser tests thành công trên máy Windows và đã kiểm tra trực quan ở 320/390/768/1440px. Giữ nguyên `.git` và `node_modules` khi cập nhật mã nguồn, không xóa tiến độ trình duyệt. Xem `docs/PHET_EXPERIENCE_QA.md`.
+
+---
+
 # PhysicsLab 1.2 — Beta 1 UX Rework (Balanced)
+
+> **PhysicsLab 1.2 — bản nguồn hướng tới phát hành chính thức.** Đã gộp phần việc β2 (tương tác sâu) và RC (chất lượng, accessibility, QA) vào một đợt phát triển. Kiểm thử lõi tự động PASS nhưng Vite build và browser acceptance vẫn cần xác nhận trên Windows vì môi trường bàn giao không có native Vite Linux và chặn Chromium localhost. **Không push production trước khi ba lệnh check/build/browser PASS.**
+
+## Những thay đổi cuối cùng của 1.2
+
+- **13 mô phỏng có hướng dẫn trực quan ba bước:** Thử, Quan sát, Giải thích; không ghi tiến độ giả, không thay đổi công thức. Bộ tương tác kéo thả của β1 UX Rework vẫn được giữ.
+- **Graph Engine nâng cấp chung:** zoom 2×, 4×, 8× theo trục ngang, trở về vừa khung, điểm thăm dò, hỗ trợ bàn phím, xuất CSV các điểm thực do mô hình tạo ra; đường đồ thị được clip đúng vùng vẽ và giữ `fill:none`.
+- **Virtual Lab Hooke:** thêm mô hình lệch điểm 0 có thể chọn, bù sai lệch trước khi ghi mẫu, xem ảnh hưởng của hiệu chuẩn; bảng đo hiển thị ước lượng bất định chuẩn u(k) từ độ chia lực kế và thước (mô hình bù sai lệch chỉ là giả định sư phạm). Đặt lại thiết lập không xóa sổ đo.
+- **Learning 2.0:** yêu cầu thử nghiệm cụ thể được hiển thị ngay trong bài học, đồng bộ với hướng dẫn trên từng mô phỏng; giữ toàn bộ 16 bài và điều kiện hoàn thành thực.
+- **3D Explorer:** thêm góc nhìn phối cảnh/bên/dọc B và bật/tắt vectơ; giữ nút Vừa khung, kéo-xoay, tua thời gian và hai cảnh hiện có.
+- **Kiểm thử và bảo vệ tích hợp:** thêm hồi quy graph/calibration/learning, kiểm tra named exports trước build, mở rộng Playwright cho các chức năng mới. Giữ tương thích `physicslab.progress.v1`.
+
+Xem [báo cáo nghiệm thu 1.2](docs/QA_1_2.md) và [trạng thái xác minh](docs/DEVELOPMENT_STATUS.md).
+
 
 **PhysicsLab** là một website Vật lý tương tác, **độc lập**, bằng **tiếng Việt** dành cho học sinh THPT. Triết lý: **“Không chỉ đọc Vật lý — hãy nhìn thấy và tương tác với nó.”**
 
-> **Trạng thái mã nguồn: `1.2.0-beta.1-ux.1` (cột mốc beta đầu tiên của lộ trình Balanced, chưa phải 1.2 stable).** Đã qua kiểm tra mã nguồn + 116 unit tests trong môi trường hiện tại (có bản vá Build Fix sửa thiếu export `updateNavigation`). Việc dựng Vite và kiểm thử trình duyệt thực tế cần xác nhận trên máy có đủ npm dependencies. Xem [báo cáo thử nghiệm](docs/TEST_REPORT.md).
+> **Trạng thái mã nguồn: `1.2.0` (cột mốc beta đầu tiên của lộ trình Balanced, chưa phải 1.2 stable).** Đã qua kiểm tra mã nguồn + 116 unit tests trong môi trường hiện tại (có bản vá Build Fix sửa thiếu export `updateNavigation`). Việc dựng Vite và kiểm thử trình duyệt thực tế cần xác nhận trên máy có đủ npm dependencies. Xem [báo cáo thử nghiệm](docs/TEST_REPORT.md).
 
 
 

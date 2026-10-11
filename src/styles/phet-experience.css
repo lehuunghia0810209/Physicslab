@@ -1,0 +1,25 @@
+/* PhysicsLab interaction-first polish: inspired by exploratory pedagogy, not PhET assets. */
+:root { --stage-border: color-mix(in srgb,var(--primary) 23%,var(--line)); }
+main .page-heading { gap:22px; margin-bottom:24px; }
+main .page-heading > div { min-width:0; }
+main .page-heading h1 { text-wrap:balance; letter-spacing:-.045em; }
+main .page-heading p { max-width:75ch; line-height:1.7; }
+main .panel { min-width:0; }
+main .panel h2 { font-size:clamp(19px,1.5vw,24px); letter-spacing:-.025em; }
+main .panel h3 { font-size:clamp(16px,1.15vw,19px); }
+main .panel p { line-height:1.7; }
+main button, main select, main .button { transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease; }
+main button:focus-visible,main [role=slider]:focus-visible { outline:3px solid var(--amber); outline-offset:3px; }
+#gas-scene,#circuit-schematic,#hooke-apparatus,.lab-figure,#explorer3d-canvas { border-color:var(--stage-border); box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ink) 4%,transparent); }
+.gas-layout .panel,.circuit-layout .panel { padding:clamp(15px,1.7vw,27px); }
+.gas-readouts > div,.circuit-measurements > div { min-width:0; }
+.gas-readouts strong,.circuit-measurements strong { overflow-wrap:anywhere; }
+.gas-process select,.circuit-controls select { width:100%; }
+.gas-playback,.circuit-scene-toolbar { border-color:var(--line); }
+#circuit-schematic,#gas-scene,.lab-figure { isolation:isolate; }
+body[data-theme=dark] #gas-scene,body[data-theme=dark] #circuit-schematic,body[data-theme=dark] #hooke-apparatus { border-color:#375a60; }
+body[data-theme=dark] .lab-drag-dot { fill:#9df0d7; }
+@media(min-width:1180px) { .gas-layout,.circuit-layout { grid-template-columns:minmax(0,1.5fr) minmax(305px,.75fr); } }
+@media(max-width:900px) { .gas-layout,.circuit-layout { grid-template-columns:minmax(0,1fr); } .gas-layout .gas-controls,.circuit-layout .circuit-controls { order:2; } }
+@media(max-width:600px) { .gas-workbench,.circuit-workbench { padding:13px !important; } .gas-readouts strong,.circuit-measurements strong { font-size:17px; } }
+@media(prefers-reduced-motion:reduce){main button,main select,main .button{transition:none!important;} .lab-discovery-card:hover{transform:none;}}

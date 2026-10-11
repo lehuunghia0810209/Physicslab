@@ -36,3 +36,16 @@
 .gas-graph .graph-dot { fill: currentColor; }
 @media (max-width: 900px) { .gas-layout { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .gas-readouts { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+/* Kinetic stage: the visual dots are qualitative; all readouts remain analytic. */
+#gas-scene { min-height:230px; background:linear-gradient(150deg, color-mix(in srgb,var(--blue) 12%,var(--surface)),var(--surface-alt)); }
+.gas-piston { fill:#65cbbb; stroke:#13584f; stroke-width:2.5; }
+.gas-piston-handle { fill:#6d8b8d; stroke:color-mix(in srgb,var(--muted) 60%,transparent); stroke-width:8; }
+.gas-piston-handle rect { fill:var(--surface-alt); stroke:var(--muted); stroke-width:2; }
+.gas-particle { fill:#f0b761; opacity:.95; stroke:#fddba3; stroke-width:.8; }
+#gas-scene .gas-scene-label { font-size:11px; fill:var(--muted); letter-spacing:.7px; font-weight:700; }
+.gas-live-legend { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 15px; font-size:12px; color:var(--muted); padding:4px 3px 12px; }
+.gas-legend-dot { display:inline-block; width:10px; height:10px; background:#f0b761; border-radius:50%; margin-right:5px; }
+.gas-readouts > div { min-width:0; padding:12px; }
+.gas-readouts strong { font-size:clamp(17px,1.6vw,22px); color:var(--ink); }
+.gas-controls { overflow-wrap:anywhere; }
+@media(prefers-reduced-motion:reduce){.gas-piston{transition:none}}

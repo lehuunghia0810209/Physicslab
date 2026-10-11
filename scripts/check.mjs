@@ -26,4 +26,32 @@ for (const file of paths.filter(p => /\.[cm]?js$/.test(p))) {
 // Metadata must stay data-only: simulation implementation is only imported dynamically.
 const registry = await readFile(resolve(root, 'src/data/registry.js'), 'utf8');
 if (/from\s+['"].*simulations\//.test(registry)) throw new Error('Simulation must be lazy loaded.');
-console.log(`Syntax OK: ${count} JS modules. Relative imports OK: ${imports}. Lazy registry OK.`);
+// Verify named exports across relative JS modules. This catches integration failures
+// (e.g. an imported updateNavigation that was lost from shell.js) before Vite build.
+let namedExports = 0;
+function declaredExports(source) {
+  const names = new Set();
+  for (const match of source.matchAll(/\bexport\s+(?:async\s+)?(?:function|class|const|let|var)\s+([A-Za-z_$][\w$]*)/g)) names.add(match[1]);
+  for (const match of source.matchAll(/\bexport\s*\{([^}]*)\}/g)) {
+    for (const spec of match[1].split(',')) {
+      const words = spec.trim().split(/\s+as\s+/);
+      if (words[0]) names.add((words[1] || words[0]).trim());
+    }
+  }
+  return names;
+}
+for (const file of paths.filter(p => /\.[cm]?js$/.test(p))) {
+  const source = await readFile(file, 'utf8');
+  for (const match of source.matchAll(/\bimport\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/gs)) {
+    if (!match[2].startsWith('.') || !/\.js$/.test(match[2])) continue;
+    const dependency = resolve(dirname(file), match[2]);
+    const exports = declaredExports(await readFile(dependency, 'utf8'));
+    for (const spec of match[1].split(',')) {
+      const name = spec.trim().split(/\s+as\s+/)[0];
+      if (!name || name === 'type') continue;
+      if (!exports.has(name)) throw new Error(`Missing named export ${name} from ${relative(root, dependency)} (imported by ${relative(root, file)})`);
+      namedExports++;
+    }
+  }
+}
+console.log(`Syntax OK: ${count} JS modules. Relative imports OK: ${imports}. Named exports OK: ${namedExports}. Lazy registry OK.`);

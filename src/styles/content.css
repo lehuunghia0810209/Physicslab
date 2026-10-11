@@ -48,3 +48,9 @@ body[data-theme='dark'] .field input,
 body[data-theme='dark'] .field select,
 body[data-theme='dark'] .learning-filters input,
 body[data-theme='dark'] .learning-filters select { background: var(--surface); }
+
+/* Guided discovery uses the same physical experiment goals as the simulation page. */
+.lesson-experiment-tips { margin:18px 0; border-left:4px solid var(--primary); border-radius:0 12px 12px 0; background:var(--surface-alt); padding:16px 19px; }
+.lesson-experiment-tips strong { font-size:14px; color:var(--ink); }
+.lesson-experiment-tips ol { margin:9px 0 0; padding-left:22px; font-size:14px; color:var(--muted); line-height:1.75; }
+.lesson-experiment-tips li { padding:4px 0; }

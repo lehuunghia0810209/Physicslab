@@ -1,3 +1,21 @@
+## 1.2.1-beta.1 — Interactive Experience (PhET-inspired)
+
+- Cảnh khí lí tưởng có phân tử minh họa chuyển động và phản xạ; piston điều khiển qua ánh xạ logarit có thể đảo.
+- Bàn mạch điện hiển thị nối tiếp/song song riêng, chuyển topology trực tiếp, điểm dòng điện quy ước và điện trở điều khiển bằng chuột/phím.
+- Danh mục 16 bàn thí nghiệm, sơ đồ theo thí nghiệm và điểm kéo trên sơ đồ; bảo toàn số đo, hiệu chuẩn và các thiết bị đo trước đây.
+- 3D Explorer cải thiện căn khung bảng điều khiển, nhãn và số liệu dễ đọc hơn ở màn hẹp.
+- 5 bài unit tests bổ sung cho hình minh họa khí/piston và lab; tổng 127 bài PASS.
+
+## 1.2.0 — Interactive Science Experience (2026-10-11)
+
+- Gộp β2 + RC thành một đợt nâng cấp phát hành 1.2, kế thừa mọi nội dung của β1 UX Rework.
+- Hướng dẫn thực hành ba bước riêng cho 13 mô phỏng, tích hợp tương tự tại bước thử nghiệm trong 16 bài học liên quan.
+- Công cụ đồ thị toàn hệ thống: phóng/thu/vừa khung trục ngang, giới hạn clip, đọc từng mẫu bằng chuột/bàn phím, CSV có BOM UTF-8. Không sửa kết quả tính toán Vật lý.
+- Lab Hooke: mô phỏng lệch điểm 0 xác định trước, bật/tắt bù lệch; bổ sung u(k) từ truyền độ không đảm bảo chuẩn (phân bố đều độc lập trong ±½ độ chia F, Δx); sao lưu cấu hình trong schema tiến độ v1. Lệnh Đặt lại cấu hình không còn xóa phép đo.
+- 3D Explorer: camera presets, tùy chọn vectơ, giữ phép chiếu và mô hình khoa học gốc.
+- Bổ sung kiểm tra liên kết named exports, regression tests, kiểm thử trình duyệt các tính năng mới; chỉnh sửa UI/CSS responsive và giảm chuyển động.
+- Kiểm thử lõi và kiểm tra cú pháp đã thực thi trong môi trường này. **Vite build, browser tests và thiết bị thật cần chạy trên Windows trước khi chốt Stable/deploy.**
+
 ## 1.2.0-beta.1-ux.1 — Simulation Experience Rework
 
 - Sửa SVG GraphRenderer path không có fill:none ở những route không tải projectile.css.

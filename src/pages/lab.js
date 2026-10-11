@@ -7,6 +7,8 @@ import { GraphRenderer } from '../engines/graph.js';
 import { format } from '../core/units.js';
 import { analyzeHookeRows } from '../core/hooke-analysis.js';
 import { quantizeParameter, clampSceneValue } from '../core/direct-manipulation.js';
+import { calibrateReading, hookeStiffnessUncertainty } from '../core/lab-calibration.js';
+import { labSceneMarkup, labDragParameter } from './lab-scenes.js';
 
 export function mount(main, context = {}) {
   const { progress } = context;
@@ -28,12 +30,16 @@ export function mount(main, context = {}) {
     workspace = createHookeWorkspace({ ...DEFAULT_HOOKE, rulerId: 'ruler-0.1mm', forceGaugeId: 'force-sensor-0.01n' });
   }
   let current = workspace.experiment;
+  const calibration = { forceSteps: Number.isInteger(persistedSetup.forceSteps) ? Math.max(-2, Math.min(2, persistedSetup.forceSteps)) : 0,
+    rulerSteps: Number.isInteger(persistedSetup.rulerSteps) ? Math.max(-2, Math.min(2, persistedSetup.rulerSteps)) : 0,
+    compensated: persistedSetup.compensated !== 0 };
 
   function persist() {
     progress?.session?.('hooke-lab', {
       setup: {
         springId: current.springId, mass: current.mass, gravity: current.gravity,
-        rulerId: workspace.ruler.id, forceGaugeId: workspace.forceSensor.id
+        rulerId: workspace.ruler.id, forceGaugeId: workspace.forceSensor.id,
+        forceSteps: calibration.forceSteps, rulerSteps: calibration.rulerSteps, compensated: Number(calibration.compensated)
       },
       measurements: rows
     });
@@ -89,7 +95,7 @@ export function mount(main, context = {}) {
   let genericAbort = new AbortController();
 
   function renderTable() {
-    const body = rows.length ? rows.map((row, index) => `<tr><td>${index + 1}</td><td>${SPRINGS.find(item => item.id === row.springId)?.label || 'Dữ liệu cũ'}</td><td>${row.mass.toFixed(3)}</td><td>${row.force.toFixed(3)}</td><td>${row.extension.toFixed(4)}</td><td>${row.springConstant.toFixed(2)}</td><td>${getEquipment(row.rulerId).shortLabel}</td><td>${getEquipment(row.forceGaugeId).shortLabel}</td></tr>`).join('') : '<tr><td colspan="8" class="empty-cell">Chưa có dữ liệu đo nào. Ghi mẫu để bắt đầu.</td></tr>';
+    const body = rows.length ? rows.map((row, index) => `<tr><td>${index + 1}</td><td>${SPRINGS.find(item => item.id === row.springId)?.label || 'Dữ liệu cũ'}</td><td>${row.mass.toFixed(3)}</td><td>${row.force.toFixed(3)}</td><td>${row.extension.toFixed(4)}</td><td>${row.springConstant.toFixed(2)}</td><td>±${format(hookeStiffnessUncertainty(row.force,row.extension,getEquipment(row.forceGaugeId).resolution / 2,getEquipment(row.rulerId).resolution / 2).uncertainty,3)}</td><td>${getEquipment(row.rulerId).shortLabel}</td><td>${getEquipment(row.forceGaugeId).shortLabel}</td></tr>`).join('') : '<tr><td colspan="9" class="empty-cell">Chưa có dữ liệu đo nào. Ghi mẫu để bắt đầu.</td></tr>';
     main.querySelector('#hooke-table-body').innerHTML = body;
     main.querySelector('#csv-export').disabled = rows.length === 0;
     main.querySelector('#clear-results').disabled = rows.length === 0;
@@ -135,20 +141,34 @@ export function mount(main, context = {}) {
     main.querySelector('#force-sensor-select').value = workspace.forceSensor.id;
     main.querySelector('#equipment-list').innerHTML = workspace.equipment.map(item => `<li><strong>${item.label}</strong>${item.description ? ` · ${item.description}` : ''}</li>`).join('');
     main.querySelector('#instrument-info').textContent = `Độ chia thước: ${workspace.ruler.resolution * 1000} mm · Độ chia lực kế: ${workspace.forceSensor.resolution} N`;
-    const extensionHeight = Math.min(115, current.extension * 80);
-    const massY = 48 + extensionHeight;
-    main.querySelector('#hooke-apparatus').innerHTML = `<svg viewBox="0 0 420 230" role="img" aria-label="Giá treo lò xo ${spring.label}, khối lượng ${current.mass} kg, độ dãn ${current.extension.toFixed(3)} m">
-      <line x1="105" y1="20" x2="105" y2="198" stroke="var(--muted)" stroke-width="7" />
-      <line x1="78" y1="198" x2="150" y2="198" stroke="var(--muted)" stroke-width="9" stroke-linecap="round" />
-      <line x1="105" y1="25" x2="285" y2="25" stroke="var(--muted)" stroke-width="7" stroke-linecap="round" />
-      <path d="M220 28 L220 42 ${Array.from({ length: 8 }, (_, index) => `L${index % 2 ? 230 : 210} ${50 + index * (extensionHeight / 8)}`).join(' ')} L220 ${massY}" fill="none" stroke="var(--primary)" stroke-width="4" />
-      <rect data-hooke-weight="true" x="184" y="${massY}" width="72" height="42" rx="7" fill="var(--blue)" />
-      <text x="220" y="${massY + 27}" text-anchor="middle" fill="white" font-size="15">m = ${current.mass} kg</text>
-      <line x1="306" y1="32" x2="306" y2="${massY + 40}" stroke="var(--amber)" stroke-width="2" />
-      ${Array.from({ length: 8 }, (_, index) => `<line x1="298" y1="${32 + index * ((massY + 8) / 8)}" x2="314" y2="${32 + index * ((massY + 8) / 8)}" stroke="var(--amber)" stroke-width="2" />`).join('')}
-      <text x="326" y="${Math.max(60, massY / 2 + 30)}" fill="var(--ink)" font-size="14">Δx = ${current.extension.toFixed(3)} m</text>
+    // Vertical illustration uses a fixed physical reference of 1 metre;
+    // extension (from Hooke's model) controls the mass, not a preset animation.
+    const extensionHeight = Math.max(10, Math.min(138, current.extension * 138));
+    const massY = 60 + extensionHeight;
+    const springTop = 44;
+    main.querySelector('#hooke-apparatus').innerHTML = `<svg viewBox="0 0 500 310" role="img" aria-label="Giá treo lò xo ${spring.label}, khối lượng ${current.mass} kg, độ dãn ${current.extension.toFixed(3)} m">
+      <defs><linearGradient id="hooke-weight-gradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--primary)"/></linearGradient></defs>
+      <path d="M75 26H350M103 26V280M70 280H160" fill="none" stroke="var(--muted)" stroke-width="9" stroke-linecap="round"/>
+      <path d="M248 26V${springTop}" fill="none" stroke="var(--muted)" stroke-width="4"/>
+      <path d="M248 ${springTop} ${Array.from({length:20},(_,i)=>`L${i%2?262:234} ${springTop+10+(i+1)*(massY-springTop-10)/21}`).join(' ')} L248 ${massY}" fill="none" stroke="var(--primary)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect data-hooke-weight="true" tabindex="0" role="slider" aria-label="Kéo quả nặng để thay đổi khối lượng" aria-valuemin="0.1" aria-valuemax="3" aria-valuenow="${current.mass}" x="204" y="${massY}" width="88" height="56" rx="11" fill="url(#hooke-weight-gradient)" />
+      <path d="M214 ${massY+10}h67" stroke="white" opacity=".26" stroke-width="3"/>
+      <text x="248" y="${massY+35}" text-anchor="middle" fill="white" font-size="17" font-weight="700" pointer-events="none">${current.mass.toFixed(1)} kg</text>
+      <path d="M346 46V260" stroke="var(--amber)" stroke-width="4" stroke-linecap="round"/>
+      ${Array.from({length:13},(_,i)=>`<path d="M346 ${54+i*16}h${i%2?11:20}" stroke="var(--amber)" stroke-width="2" />`).join('')}
+      <path d="M306 ${massY+25}h26" stroke="var(--primary)" stroke-width="2" stroke-dasharray="5 4" />
+      <text x="378" y="72" fill="var(--ink)" font-size="16" font-weight="600">Thước</text>
+      <text x="378" y="101" fill="var(--muted)" font-size="14">Δx</text>
+      <text x="378" y="124" fill="var(--ink)" font-size="19" font-weight="700">${current.extension.toFixed(3)} m</text>
+      <text x="248" y="291" text-anchor="middle" fill="var(--muted)" font-size="13">KÉO QUẢ NẶNG ↕</text>
     </svg>`;
     main.querySelector('#equipment-status').textContent = '';
+    main.querySelector('#force-zero-offset').value = String(calibration.forceSteps);
+    main.querySelector('#ruler-zero-offset').value = String(calibration.rulerSteps);
+    main.querySelector('#calibration-compensate').checked = calibration.compensated;
+    main.querySelector('#calibration-status').textContent = calibration.compensated
+      ? 'Đã bật bù điểm 0: số đọc được hiệu chỉnh trước khi tính k. Độ chia dụng cụ vẫn giới hạn độ chính xác.'
+      : 'Chưa bù điểm 0: số đọc có thể lệch giá trị đúng; hãy ghi mẫu rồi bật bù để so sánh.';
     renderGraph();
     renderTable();
   }
@@ -166,8 +186,9 @@ export function mount(main, context = {}) {
     persist();
   }
 
-  main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">PHÒNG THÍ NGHIỆM ẢO</p><h1>Định luật Hooke</h1><p>Thử nghiệm kéo dãn lò xo, đo lực và xác định hằng số đàn hồi.</p></div><span class="version-pill">Thí nghiệm ảo 0.5</span></div>
-    <section class="panel"><div class="header-row"><div><h2>Thiết lập dụng cụ</h2><p>Chọn lò xo, khối lượng, trọng trường và thiết bị đo có độ phân giải cụ thể.</p></div><button class="button secondary" id="reset-lab">Đặt lại</button></div>
+  main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">PHÒNG THÍ NGHIỆM ẢO</p><h1>Khám phá và thực hành</h1><p>Chọn thí nghiệm, thao tác trên mô hình rồi ghi số đo. Dữ liệu của từng thí nghiệm được lưu riêng.</p></div><span class="version-pill">16 không gian thực hành</span></div>
+    <section class="lab-discovery" aria-label="Chọn thí nghiệm"><div class="lab-discovery-head"><strong>Chọn bàn thí nghiệm</strong><span>Chạm một thí nghiệm để bắt đầu</span></div><div class="lab-discovery-grid"><button type="button" class="lab-discovery-card" id="lab-open-hooke" aria-pressed="true"><span class="lab-discovery-icon">♧</span><strong>Lò xo Hooke</strong><small>Kéo quả nặng · Đo độ dãn · Hiệu chuẩn</small></button>${LAB_EXPERIMENTS.map(item=>`<button type="button" class="lab-discovery-card" data-open-lab="${item.id}" aria-pressed="false"><span class="lab-discovery-icon">${({mechanics:'⚙',electricity:'⚡'})[item.category]||'◇'}</span><strong>${item.title}</strong><small>${item.description}</small></button>`).join('')}</div></section>
+    <div id="hooke-workspace"><section class="panel"><div class="lab-workspace-header"><h2>Thí nghiệm Hooke: kéo lò xo</h2><p>Kéo quả nặng hoặc chọn khối lượng, đọc số đo thực nghiệm trước khi kết luận.</p></div><div class="header-row"><div><h2>Thiết lập dụng cụ</h2><p>Chọn lò xo, khối lượng, trọng trường và thiết bị đo có độ phân giải cụ thể.</p></div><button class="button secondary" id="reset-lab">Đặt lại</button></div>
       <div class="lab-grid">
         <label class="field"><span>Lò xo</span><select id="spring-select">${SPRINGS.map(s => `<option value="${s.id}">${s.label} · k = ${s.constant} N/m</option>`).join('')}</select></label>
         <label class="field"><span>Khối lượng</span><select id="mass-select">${Array.from({ length: 30 }, (_, i) => {
@@ -178,6 +199,7 @@ export function mount(main, context = {}) {
         <label class="field"><span>Thước đo độ dãn</span><select id="ruler-select">${EQUIPMENT_CATALOG.filter(item => item.type === 'ruler').map(item => `<option value="${item.id}">${item.label} · độ chia ${(item.resolution * 1000).toLocaleString('vi-VN')} mm</option>`).join('')}</select></label>
         <label class="field"><span>Lực kế</span><select id="force-sensor-select">${EQUIPMENT_CATALOG.filter(item => item.type === 'force-sensor').map(item => `<option value="${item.id}">${item.label}</option>`).join('')}</select></label>
       </div>
+      <section class="calibration-workbench" aria-labelledby="calibration-title"><div><h3 id="calibration-title">Hiệu chuẩn dụng cụ đo · Điểm 0</h3><p>Thử tạo sai lệch điểm 0 đã biết để quan sát tác dụng của việc bù sai số. Đây là sai lệch mô phỏng do bạn chọn, không phải nhiễu cảm biến thực.</p></div><div class="calibration-controls"><label class="field">Lực kế lệch điểm 0 <select id="force-zero-offset"><option value="-2">−2 độ chia</option><option value="-1">−1 độ chia</option><option value="0">Không lệch</option><option value="1">+1 độ chia</option><option value="2">+2 độ chia</option></select></label><label class="field">Thước lệch điểm 0 <select id="ruler-zero-offset"><option value="-2">−2 độ chia</option><option value="-1">−1 độ chia</option><option value="0">Không lệch</option><option value="1">+1 độ chia</option><option value="2">+2 độ chia</option></select></label><label class="calibration-toggle"><input id="calibration-compensate" type="checkbox" checked> Bù lệch điểm 0 khi ghi số đo</label></div><p id="calibration-status" role="status" aria-live="polite"></p></section>
       <div class="virtual-lab"><div><h3>Bố trí phòng thí nghiệm</h3><p>Thiết bị được lắp thành một bộ thí nghiệm Hooke có thể cấu hình lại.</p><div id="hooke-apparatus" class="hooke-apparatus"></div><p class="hooke-gesture-hint">Kéo trực tiếp quả nặng lên/xuống để thử thay đổi khối lượng; các phép đo không tự ghi cho đến khi bấm “Ghi kết quả”.</p></div><div class="equipment-inventory"><h3>Bộ dụng cụ đang dùng</h3><ul id="equipment-list"></ul><p id="instrument-info"></p><p id="equipment-status" role="status"></p></div></div>
       <div class="summary-grid">
         <div class="stat-card"><span>Hằng số lò xo</span><strong id="spring-constant">0</strong></div>
@@ -191,15 +213,15 @@ export function mount(main, context = {}) {
     <section class="panel">
       <h2>Đồ thị lực - giãn dài</h2>
       <div id="hooke-graph" class="graph-canvas"></div>
-      <p id="graph-summary" class="helper-text">Sử dụng dữ liệu đo thực để xác định k.</p>
+      <p id="graph-summary" class="helper-text">Sử dụng các số đo mô phỏng để xác định k. u(k) là độ không đảm bảo chuẩn tổng hợp, giả sử sai số làm tròn độc lập và đều trong ± nửa độ chia.</p>
     </section>
     <section class="panel">
       <div class="header-row"><div><h2>Bảng đo</h2><p>Mỗi hàng là một lần đặt khối lượng và đọc dãn dài.</p></div><span class="tag" id="spring-name">Lò xo chuẩn</span></div>
-      <div class="table-scroll"><table><thead><tr><th>STT</th><th>Lò xo</th><th>m (kg)</th><th>F (N)</th><th>Δx (m)</th><th>k đo (N/m)</th><th>Thước</th><th>Lực kế</th></tr></thead><tbody id="hooke-table-body"></tbody></table></div>
+      <div class="table-scroll"><table><thead><tr><th>STT</th><th>Lò xo</th><th>m (kg)</th><th>F (N)</th><th>Δx (m)</th><th>k đo (N/m)</th><th>u(k) (N/m)</th><th>Thước</th><th>Lực kế</th></tr></thead><tbody id="hooke-table-body"></tbody></table></div>
     </section>
     <section class="panel"><h2>Kết luận</h2><p>Trong vùng đàn hồi, lực hồi phục của lò xo tỉ lệ thuận với độ dãn dài: <strong>F = kΔx</strong>. Mỗi lần thay khối lượng sẽ làm thay đổi lực và sự giãn dài, và đồ thị sẽ cho thấy tuyến tính gần đúng trong miền hợp lý.</p></section>
-    <section class="panel generic-lab" aria-labelledby="generic-lab-title">
-      <div class="header-row"><div><span class="tag">WORKSPACE THÍ NGHIỆM TÁI SỬ DỤNG</span><h2 id="generic-lab-title">Bàn thí nghiệm Vật lý</h2><p>Lắp dụng cụ, thay đổi điều kiện, ghi phép đo đã lượng tử hóa theo độ chia thiết bị, dựng đồ thị và xuất báo cáo.</p></div></div>
+    </div><section class="panel generic-lab" id="lab-generic-workspace" aria-labelledby="generic-lab-title" hidden>
+      <div class="header-row"><div><span class="tag">THÍ NGHIỆM THEO CHỦ ĐỀ</span><h2 id="generic-lab-title">Bàn thí nghiệm Vật lý</h2><p>Quan sát hình bố trí, điều chỉnh điều kiện, ghi số đo theo độ chia dụng cụ và rút kết luận.</p></div></div>
       <div class="generic-lab-setup"><label class="field"><span>Thí nghiệm</span><select id="generic-experiment">${LAB_EXPERIMENTS.map(item => `<option value="${item.id}">${item.title}</option>`).join('')}</select></label><div id="generic-apparatus" class="generic-apparatus"></div>
         <div id="generic-parameters" class="generic-parameters"></div><div id="generic-instruments" class="generic-instruments"></div></div>
       <p id="generic-lab-status" role="status" aria-live="polite"></p>
@@ -216,10 +238,18 @@ export function mount(main, context = {}) {
     const diagram = apparatus.querySelector('svg');
     const matrix = diagram?.getScreenCTM(); if (!matrix) return;
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
-    const amount = quantizeParameter(clampSceneValue((point.y - 48) / 160, 0, 1), { min: .1, max: 3, step: .1 });
+    const extension = clampSceneValue((point.y - 60) / 138, 0, 1);
+    const estimatedMass = extension * current.springConstant / current.gravity;
+    const amount = quantizeParameter(clampSceneValue((estimatedMass - .1) / 2.9,0,1), { min: .1, max: 3, step: .1 });
     main.querySelector('#mass-select').value = String(Number(amount.toFixed(1)));
     refreshFromControls();
   }
+  apparatus.addEventListener('keydown',event=>{
+    if(!event.target.closest('[data-hooke-weight]')||!['ArrowUp','ArrowDown'].includes(event.key))return;
+    event.preventDefault();
+    const next=clampSceneValue(Number((current.mass+(event.key==='ArrowDown'?.1:-.1)).toFixed(1)),.1,3);
+    main.querySelector('#mass-select').value=String(next);refreshFromControls();apparatus.querySelector('[data-hooke-weight]')?.focus();
+  });
   apparatus.addEventListener('pointerdown', event => {
     if (!event.target.closest('[data-hooke-weight]')) return;
     if (event.button !== 0 && event.pointerType === 'mouse') return;
@@ -238,8 +268,16 @@ export function mount(main, context = {}) {
   main.querySelector('#gravity-select').addEventListener('change', refreshFromControls);
   main.querySelector('#ruler-select').addEventListener('change', refreshFromControls);
   main.querySelector('#force-sensor-select').addEventListener('change', refreshFromControls);
+  for (const id of ['force-zero-offset', 'ruler-zero-offset', 'calibration-compensate']) {
+    main.querySelector(`#${id}`).addEventListener('change', () => {
+      calibration.forceSteps = Number(main.querySelector('#force-zero-offset').value);
+      calibration.rulerSteps = Number(main.querySelector('#ruler-zero-offset').value);
+      calibration.compensated = main.querySelector('#calibration-compensate').checked;
+      updateSummary(); persist();
+    });
+  }
   main.querySelector('#reset-lab').addEventListener('click', () => {
-    rows = [];
+    calibration.forceSteps = 0; calibration.rulerSteps = 0; calibration.compensated = true;
     workspace = createHookeWorkspace({ ...DEFAULT_HOOKE, rulerId: 'ruler-0.1mm', forceGaugeId: 'force-sensor-0.01n' });
     current = workspace.experiment;
     renderTable();
@@ -247,9 +285,12 @@ export function mount(main, context = {}) {
     persist();
   });
   main.querySelector('#record-measurement').addEventListener('click', () => {
+    try {
     const sample = createHookeExperiment({ springId: current.springId, mass: current.mass, gravity: current.gravity });
-    const force = readInstrument(workspace.forceSensor.id, sample.force);
-    const extension = readInstrument(workspace.ruler.id, sample.extension);
+    const forceSample = calibrateReading(workspace.forceSensor.id, sample.force, calibration.forceSteps, calibration.compensated);
+    const extensionSample = calibrateReading(workspace.ruler.id, sample.extension, calibration.rulerSteps, calibration.compensated);
+    const force = forceSample.value;
+    const extension = extensionSample.value;
     rows.push({
       mass: sample.mass, force, extension, springId: current.springId,
       springConstant: force / extension,
@@ -257,9 +298,11 @@ export function mount(main, context = {}) {
       forceGaugeId: workspace.forceSensor.id
     });
     rows = rows.slice(-12);
+    main.querySelector('#equipment-status').textContent = `Đã đo F = ${format(force)} ±${format(forceSample.bound,4)} N; Δx = ${format(extension,5)} ±${format(extensionSample.bound,5)} m. ${calibration.compensated ? 'Đã bù điểm 0.' : 'Chưa bù điểm 0.'}`;
     renderTable();
     renderGraph();
     persist();
+    } catch (error) { main.querySelector('#equipment-status').textContent = `Không thể ghi số đo: ${error.message}`; }
   });
   main.querySelector('#clear-results').addEventListener('click', () => {
     rows = [];
@@ -330,7 +373,7 @@ export function mount(main, context = {}) {
   }
   function renderGenericExperiment() {
     const experiment = selectedExperiment();
-    main.querySelector('#generic-apparatus').innerHTML = `<strong>Bố trí dụng cụ</strong><ul>${experiment.apparatus.map(item => `<li>${item}</li>`).join('')}</ul><p>${experiment.description}</p>`;
+    main.querySelector('#generic-apparatus').innerHTML = `<h3>${experiment.title}</h3>${labSceneMarkup(experiment,genericSetup)}<details class="lab-apparatus-details"><summary>Thiết bị và mô hình đo</summary><ul>${experiment.apparatus.map(item => `<li>${item}</li>`).join('')}</ul><p>${experiment.description}</p></details>`;
     main.querySelector('#generic-parameters').innerHTML = experiment.parameters.map(parameter => {
       const value = genericSetup[parameter.key] ?? parameter.value;
       if (parameter.type === 'select') return `<label class="field"><span>${parameter.label}</span><select data-generic-parameter="${parameter.key}">${parameter.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}</select></label>`;
@@ -345,7 +388,26 @@ export function mount(main, context = {}) {
     setupInstrumentSelectors(experiment);
     drawGenericTable(experiment);
     genericStatus();
+    main.querySelectorAll('[data-open-lab]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.openLab===activeExperimentId && !main.querySelector('#lab-generic-workspace').hidden)));
   }
+  const hookeWorkspace = main.querySelector('#hooke-workspace');
+  const genericWorkspace = main.querySelector('#lab-generic-workspace');
+  const hookeCard = main.querySelector('#lab-open-hooke');
+  function showWorkspace(mode) {
+    const isHooke = mode === 'hooke';
+    hookeWorkspace.hidden = !isHooke;
+    genericWorkspace.hidden = isHooke;
+    hookeCard.setAttribute('aria-pressed',String(isHooke));
+    main.querySelectorAll('[data-open-lab]').forEach(button=>button.setAttribute('aria-pressed',String(!isHooke && button.dataset.openLab===activeExperimentId)));
+
+  }
+  hookeCard.addEventListener('click',()=>{showWorkspace('hooke');hookeWorkspace.scrollIntoView({block:'start',behavior:'smooth'});},{signal:genericAbort.signal});
+  main.querySelectorAll('[data-open-lab]').forEach(button=>button.addEventListener('click',()=>{
+    main.querySelector('#generic-experiment').value = button.dataset.openLab;
+    main.querySelector('#generic-experiment').dispatchEvent(new Event('change',{bubbles:true}));
+    showWorkspace('generic');
+    genericWorkspace.scrollIntoView({block:'start',behavior:'smooth'});
+  },{signal:genericAbort.signal}));
   main.querySelector('#generic-experiment').value = activeExperimentId;
   main.querySelector('#generic-experiment').addEventListener('change', event => {
     genericSetups[activeExperimentId] = { ...genericSetup };
@@ -363,8 +425,42 @@ export function mount(main, context = {}) {
     const value = main.querySelector(`[data-generic-value="${key}"]`);
     if (value) value.textContent = `${format(genericSetup[key])} ${selectedExperiment().parameters.find(item => item.key === key).unit}`;
     persistGenericLab();
+    main.querySelector('#generic-apparatus').querySelector('.lab-figure')?.remove();
+    main.querySelector('#generic-apparatus').querySelector('h3')?.insertAdjacentHTML('afterend',labSceneMarkup(selectedExperiment(),genericSetup));
     genericStatus();
   }
+  // Scene manipulation is bound to the exact same quantized parameter control.
+  const labScene = main.querySelector('#generic-apparatus');
+  let activeScenePointer = null;
+  function setSceneParameter(clientX) {
+    const sceneSvg=labScene.querySelector('svg');
+    const param=labDragParameter(selectedExperiment());
+    if(!sceneSvg || !param) return;
+    const matrix=sceneSvg.getScreenCTM(); if(!matrix) return;
+    const point=new DOMPoint(clientX,0).matrixTransform(matrix.inverse());
+    const fraction=clampSceneValue((point.x-90)/540,0,1);
+    const value=quantizeParameter(fraction,param);
+    const input=main.querySelector(`[data-generic-parameter="${param.key}"]`);
+    if(input && Number(input.value)!==value){input.value=String(value);input.dispatchEvent(new Event('input',{bubbles:true}));}
+  }
+  labScene.addEventListener('pointerdown',event=>{
+    if(!event.target.closest('[data-lab-drag-handle]'))return;
+    if(event.pointerType==='mouse' && event.button!==0)return;
+    activeScenePointer=event.pointerId;
+    labScene.setPointerCapture?.(event.pointerId);
+    setSceneParameter(event.clientX);
+  },{signal:genericAbort.signal});
+  labScene.addEventListener('pointermove',event=>{if(activeScenePointer===event.pointerId)setSceneParameter(event.clientX);},{signal:genericAbort.signal});
+  const endScenePointer=event=>{if(activeScenePointer===event.pointerId)activeScenePointer=null;};
+  labScene.addEventListener('pointerup',endScenePointer,{signal:genericAbort.signal});
+  labScene.addEventListener('pointercancel',endScenePointer,{signal:genericAbort.signal});
+  labScene.addEventListener('keydown',event=>{
+    if(!event.target.closest('[data-lab-drag-handle]')|| !['ArrowLeft','ArrowRight'].includes(event.key))return;
+    event.preventDefault();
+    const param=labDragParameter(selectedExperiment()); if(!param)return;
+    const input=main.querySelector(`[data-generic-parameter="${param.key}"]`);
+    if(input){input.stepUp(event.key==='ArrowRight'?1:-1);input.dispatchEvent(new Event('input',{bubbles:true}));labScene.querySelector('[data-lab-drag-handle]')?.focus();}
+  },{signal:genericAbort.signal});
   main.querySelector('#generic-parameters').addEventListener('input', updateGenericParameter, { signal: genericAbort.signal });
   main.querySelector('#generic-parameters').addEventListener('change', updateGenericParameter, { signal: genericAbort.signal });
   main.querySelector('#generic-instruments').addEventListener('change', event => {
@@ -454,6 +550,7 @@ export function mount(main, context = {}) {
   }, { signal: genericAbort.signal });
   renderGenericExperiment();
   persistGenericLab();
+  showWorkspace('hooke');
 
   updateSummary();
   renderTable();
@@ -462,7 +559,7 @@ export function mount(main, context = {}) {
   return () => {
     genericAbort.abort();
     progress?.session?.('hooke-lab', {
-      setup: { springId: current.springId, mass: current.mass, gravity: current.gravity, rulerId: workspace.ruler.id, forceGaugeId: workspace.forceSensor.id },
+      setup: { springId: current.springId, mass: current.mass, gravity: current.gravity, rulerId: workspace.ruler.id, forceGaugeId: workspace.forceSensor.id, forceSteps: calibration.forceSteps, rulerSteps: calibration.rulerSteps, compensated: Number(calibration.compensated) },
       measurements: rows
     });
   };
