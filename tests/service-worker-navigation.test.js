@@ -66,3 +66,47 @@ test('PWA static cache failures retry through network', async () => {
   assert.equal(await response.text(), 'network');
   assert.equal(h.requests.length, 1);
 });
+
+test('PWA activation preserves two preceding hashed builds for tabs still open', async () => {
+  const callbacks = new Map();
+  const deleted = [];
+  const cacheNames = [
+    'physicslab-static-111111111111',
+    'physicslab-static-222222222222',
+    'physicslab-static-333333333333',
+    'physicslab-static-obsolete',
+    'physicslab-static-444444444444'
+  ];
+  let claimed = false;
+  vm.runInNewContext(source, {
+    CACHE: 'physicslab-static-444444444444', ASSETS: [],
+    URL, Response,
+    self: {
+      location: { origin: new URL(origin).origin }, registration: { scope: origin },
+      addEventListener: (name, callback) => callbacks.set(name, callback),
+      clients: { claim: async () => { claimed = true; } }
+    },
+    caches: {
+      keys: async () => cacheNames,
+      delete: async name => { deleted.push(name); return true; }
+    }
+  });
+  let activation;
+  callbacks.get('activate')({ waitUntil: work => { activation = work; } });
+  await activation;
+  assert.equal(claimed, true);
+  assert.deepEqual(deleted.sort(), ['physicslab-static-111111111111', 'physicslab-static-obsolete'].sort());
+});
+
+test('PWA old hashed simulation/tools chunks remain usable from retained CacheStorage', async () => {
+  let networkRequests = 0;
+  for (const filename of ['newton-DodSuFs5.js', 'tools-Dp2AVa4O.js']) {
+    const h = workerHarness({
+      cached: new Response('older-but-valid-JavaScript', { headers: { 'Content-Type': 'application/javascript' } }),
+      fetchImpl: async () => { networkRequests++; throw new Error('Cloudflare removed the old chunk'); }
+    });
+    const response = await h.respond({ method: 'GET', url: `${origin}assets/${filename}`, mode: 'cors' });
+    assert.equal(await response.text(), 'older-but-valid-JavaScript');
+  }
+  assert.equal(networkRequests, 0);
+});

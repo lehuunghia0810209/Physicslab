@@ -1,5 +1,6 @@
 import { updateNavigation } from './shell.js';
 import { escapeHtml } from './icons.js';
+import { isLazyModuleLoadFailure } from './chunk-recovery.js';
 import { addExperimentGuide } from './experiment-guide.js';
 import { installSimulationStudio } from './simulation-studio.js';
 import { SIMULATION_STAGE_SELECTORS } from '../core/simulation-stage-layout.js';
@@ -49,7 +50,23 @@ export function createRouter(main, context) {
       document.title = `${route === 'simulation' ? badge || 'Mô phỏng' : document.querySelector('[data-nav].active span')?.textContent || 'PhysicsLab'} · PhysicsLab`;
       window.scrollTo(0, 0); main.focus({ preventScroll: true });
     } catch (error) {
-      if (token === sequence) main.innerHTML = `<div class="empty-state"><h1>Chưa thể mở trang này</h1><p>${escapeHtml(error.message)}</p><a class="button primary" href="#/home">Về Tổng quan</a></div>`;
+      if (token !== sequence) return;
+      if (isLazyModuleLoadFailure(error)) {
+        // A tab may still reference chunks from an older Cloudflare deployment.
+        // Never clear site data: notes and measured results live in localStorage.
+        main.innerHTML = '<div class="empty-state"><h1>PhysicsLab cần tải phiên bản mới</h1>'
+          + '<p>Một phần của website đã thay đổi sau lần cập nhật. Hãy kết nối Internet rồi tải lại để tiếp tục.</p>'
+          + '<button type="button" class="button primary" data-reload-chunks>Cập nhật và thử lại</button>'
+          + '<a class="button" href="#/home">Về Tổng quan</a></div>';
+        main.querySelector('[data-reload-chunks]')?.addEventListener('click', () => {
+          window.dispatchEvent(new Event('physicslab:before-update'));
+          // Navigation in the current SW is network-first, including a safe
+          // offline fallback. Reloading requests the newest HTML/chunk hashes.
+          window.location.reload();
+        }, { once: true });
+      } else {
+        main.innerHTML = `<div class="empty-state"><h1>Chưa thể mở trang này</h1><p>${escapeHtml(error?.message || 'Đã xảy ra lỗi không xác định.')}</p><a class="button primary" href="#/home">Về Tổng quan</a></div>`;
+      }
     }
   }
   window.addEventListener('hashchange', render);

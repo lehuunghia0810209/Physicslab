@@ -44,6 +44,20 @@ const path = require('node:path');
       await fs.writeFile(htmlPath, originalHtml);
     }
 
+    // Deployment regression: the two routes that used to fail from stale
+    // Cloudflare hashed chunks must work with the SW controlling the document.
+    for (const [route, readySelector] of [
+      ['simulation/newton', '#play'],
+      ['tools', '#app .page-header, #app .tools-page, #app h1']
+    ]) {
+      await page.evaluate(next => { location.hash = `#/${next}`; }, route);
+      await page.locator(readySelector).first().waitFor();
+      assert.equal(await page.locator('.empty-state').count(), 0, `${route} failed under SW control`);
+    }
+    console.log('PASS Service Worker-controlled Newton and Tools lazy routes load after repeated navigation');
+    await page.evaluate(() => { location.hash = '#/home'; });
+    await page.getByRole('heading', { name: /Hôm nay/ }).waitFor();
+
     await context.setOffline(true);
     await page.reload(); await page.getByRole('heading', { name: /Hôm nay/ }).waitFor();
     await page.evaluate(() => { location.hash = '#/simulation/projectile-motion'; });

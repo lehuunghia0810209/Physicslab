@@ -6,11 +6,20 @@ self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
 });
 
+// Preserve the two preceding releases so an already-open tab can still load
+// hashed lazy chunks after deployment. Cloudflare may no longer host old hashes.
+// CacheStorage.keys() returns caches in their creation order.
+const CACHE_PREFIX = 'physicslab-static-';
+const VALID_RELEASE_CACHE = /^physicslab-static-[0-9a-f]{12}$/;
+const PREVIOUS_RELEASES_TO_KEEP = 2;
+
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
+    const previous = keys.filter(key => VALID_RELEASE_CACHE.test(key) && key !== CACHE);
+    const keep = new Set([CACHE, ...previous.slice(-PREVIOUS_RELEASES_TO_KEEP)]);
     await Promise.all(keys
-      .filter(key => key.startsWith('physicslab-static-') && key !== CACHE)
+      .filter(key => key.startsWith(CACHE_PREFIX) && !keep.has(key))
       .map(key => caches.delete(key)));
     await self.clients.claim();
   })());
