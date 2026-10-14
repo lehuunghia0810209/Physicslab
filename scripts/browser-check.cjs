@@ -55,6 +55,10 @@ async function ensureBrowserServer() {
   const requests = []; page.on('request', r => requests.push(r.url()));
   await page.goto(base); await page.getByRole('heading', { name: /Hôm nay/ }).waitFor();
   assert.ok(!requests.some(u => /(?:simulations\/projectile\/(?:index|scene)\.js|assets\/projectile-.*\.js)/.test(u))); ok('Home loads without projectile implementation');
+  assert.equal(await page.locator('[data-billing], .pricing-plans, .pricing-faq').count(), 0);
+  assert.equal(await page.getByRole('heading', { name: 'PhysicsLab miễn phí cho mọi người' }).count(), 1);
+  assert.ok(await page.getByRole('link', { name: 'Bắt đầu học miễn phí' }).count());
+  ok('Home has free access for students and teachers, with no pricing or billing UI');
   await page.screenshot({ path: path.join(out, 'home-desktop.png'), fullPage: true });
   await page.locator('#quick-search-toggle').click();
   await page.locator('#quick-search-input').fill('dien truong');

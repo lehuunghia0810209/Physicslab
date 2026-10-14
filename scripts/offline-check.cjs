@@ -1,5 +1,7 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
 (async () => {
   const { preview } = await import('vite');
@@ -21,6 +23,25 @@ const assert = require('node:assert/strict');
     const cachedUrls = await page.evaluate(async name => (await (await caches.open(name)).keys()).map(request => request.url), initialCaches[0]);
     for (const group of ['projectile-', 'learning-', 'lab-', 'tools-', 'explorer3d-']) {
       assert.ok(cachedUrls.some(url => url.includes(group)), `${group} feature bundle missing from precache`);
+    }
+
+    // Regression: after the worker controls the page, network HTML must win over
+    // the precached copy. This fails with the old cache-first navigation handler.
+    const htmlPath = path.resolve('dist/index.html');
+    const originalHtml = await fs.readFile(htmlPath, 'utf8');
+    try {
+      const freshHtml = originalHtml.replace('</head>', '<meta name="physicslab-network-document" content="fresh"></head>');
+      assert.notEqual(freshHtml, originalHtml);
+      await fs.writeFile(htmlPath, freshHtml);
+      for (let n = 0; n < 10; n++) {
+        await page.reload({ waitUntil: 'load' });
+        await page.getByRole('heading', { name: /Hôm nay/ }).waitFor();
+        assert.equal(await page.locator('meta[name="physicslab-network-document"]').count(), 1,
+          `Navigation ${n + 1} came from old cached HTML instead of the network`);
+      }
+      console.log('PASS Service worker uses live network HTML over cached HTML on 10 successive reloads');
+    } finally {
+      await fs.writeFile(htmlPath, originalHtml);
     }
 
     await context.setOffline(true);

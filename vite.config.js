@@ -23,11 +23,8 @@ function offlineWorker() {
       for (const file of files) hash.update(file).update(await readFile(resolve(directory, file)));
       const cache = `physicslab-static-${hash.digest('hex').slice(0, 12)}`;
       const assets = files.map(file => `./${file}`);
-      const source = `const CACHE=${JSON.stringify(cache)};\nconst ASSETS=${JSON.stringify(assets)};\n` +
-        `self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\n` +
-        `self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('physicslab-static-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));\n` +
-        `self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});\n` +
-        `self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin)return;event.respondWith(request.mode==='navigate'?caches.match('./index.html',{ignoreVary:true}).then(cached=>cached||fetch(request)):caches.match(request,{ignoreVary:true}).then(cached=>cached||fetch(request)));});\n`;
+      const source = `const CACHE=${JSON.stringify(cache)};\nconst ASSETS=${JSON.stringify(assets)};\n`
+        + await readFile(resolve('scripts/service-worker-runtime.js'), 'utf8');
       await writeFile(resolve(directory, 'sw.js'), source);
     }
   };
