@@ -1,0 +1,36 @@
+/* Compact challenge lab shared across all 13 simulations; presets modify real inputs. */
+.simulation-studio-bar{align-items:start;gap:12px;}
+.studio-discovery{flex:1 0 100%;min-width:0;display:grid;grid-template-columns:minmax(200px,.9fr) minmax(300px,1.4fr);gap:12px 22px;border-top:1px solid var(--line);padding-top:14px;}
+.studio-discovery-title{min-width:0;}.studio-discovery-index{color:var(--primary);font-size:11px;font-weight:800;letter-spacing:.11em;}
+.studio-discovery-title h2{font-size:17px;line-height:1.35;margin:4px 0 5px;color:var(--ink);}
+.studio-discovery-title p{font-size:13px;line-height:1.6;color:var(--muted);margin:0;}
+.studio-presets{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-self:center;}
+.studio-preset{min-width:0;min-height:65px;padding:10px 8px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:680;cursor:pointer;line-height:1.4;overflow-wrap:anywhere;}
+.studio-preset:hover,.studio-preset:focus-visible,.studio-preset[aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 9%,var(--surface));outline-offset:2px;}
+.studio-preset-number{display:block;color:var(--primary);font-size:11px;letter-spacing:.11em;margin-bottom:3px;}
+.studio-prediction{grid-column:1 / -1;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 12px;}
+.studio-prediction summary{cursor:pointer;font-size:13px;font-weight:750;line-height:1.5;padding:11px 0;min-height:43px;}
+.studio-question{font-size:14px;margin:0 0 10px;line-height:1.6;}
+.studio-choices{display:flex;flex-wrap:wrap;gap:8px;}
+.studio-choices button{color:var(--ink);background:var(--surface-alt);border:1px solid var(--line);border-radius:9px;font-size:13px;padding:9px 11px;min-height:40px;cursor:pointer;}
+.studio-choices button[aria-pressed=true]{border-color:var(--primary);color:var(--primary);font-weight:700;}
+.studio-feedback{font-size:13px;line-height:1.65;overflow-wrap:anywhere;margin:10px 0 13px;color:var(--muted);}
+.studio-feedback[data-answer-status=correct]{color:var(--primary);font-weight:650;}
+.studio-lab-link{grid-column:1/-1;color:var(--primary);font-size:13px;font-weight:750;line-height:1.55;}
+@media(max-width:850px){.studio-discovery{grid-template-columns:1fr}.studio-presets{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:475px){.studio-presets{gap:5px}.studio-preset{font-size:11px;padding:8px 5px;min-height:75px}.studio-choices{display:grid;grid-template-columns:1fr}.studio-discovery-title h2{font-size:16px}}
+
+/* Teacher-only orchestration. Layer switches hide presentation, never model state. */
+.teacher-studio{display:none;margin:-12px 0 25px;padding:17px 20px;border:1px solid color-mix(in srgb,var(--blue) 38%,var(--line));border-radius:18px;background:color-mix(in srgb,var(--blue) 7%,var(--surface));}
+body[data-role=teacher] .teacher-studio{display:block;}
+.teacher-studio-heading{display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap;}
+.teacher-studio-heading h2{font-size:18px;margin:4px 0;}.teacher-studio-heading p{font-size:13px;line-height:1.55;color:var(--muted);margin:0;max-width:660px;}
+.teacher-studio-actions{display:flex;gap:8px;flex-wrap:wrap;}.teacher-studio-actions .button{font-size:13px;}
+.teacher-visibility{display:flex;gap:10px 18px;flex-wrap:wrap;margin:14px 0 0;padding:12px;border:1px solid var(--line);border-radius:12px;}
+.teacher-visibility legend{padding:0 7px;font-size:12px;font-weight:800;color:var(--muted);}.teacher-visibility label{display:flex;align-items:center;gap:7px;min-height:44px;font-size:13px;font-weight:650;}.teacher-visibility input{width:20px;height:20px;accent-color:var(--primary);}
+.teacher-studio-status{font-size:12px;color:var(--muted);margin:9px 0 0;}
+.teacher-hide-measurements :is(.measurement-strip,.mechanics-measurements,.circuit-measurements,.cwb-meter-strip,.field-readouts,.em-readouts,.wave-readouts,.gas-readouts,.optics-readouts){display:none!important;}
+.teacher-hide-vectors :is(.vector,.newton-vector,.force-arrow,#inclined-vector-markers,#field-arrows,.em-force,.em-vector-label){display:none!important;}
+.teacher-hide-graphs :is(.graphs-section,.mechanics-graphs,.circuit-graphs,.inclined-graph-section,.wave-graphs,.gas-graph,.em-graph,.optics-graph){display:none!important;}
+.teacher-hide-explanations :is(.experiment-guide,.studio-discovery,.assumptions,.mechanics-note,.circuit-assumptions,.cwb-challenge,.cwb-disclaimer,.field-assumption,.em-assumption,.wave-assumption,.gas-assumption,.optics-assumption,.equations-panel){display:none!important;}
+@media(max-width:680px){.teacher-studio{padding:14px}.teacher-studio-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.teacher-studio-actions [data-teacher-pause]{grid-column:1/-1}.teacher-visibility{display:grid;grid-template-columns:1fr 1fr;}}

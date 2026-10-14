@@ -16,9 +16,22 @@ export function createHelixViewport(model, { width, height, yaw = -0.55, elevati
     return { x: x * cy - y * sy, y: z * cp - horizontal * sp };
   }
   const path = Array.from({ length: 241 }, (_, index) => model.at(duration * index / 240));
-  const axisStart = { x: 0, y: 0, z: 0 };
-  const axisEnd = { x: 0, y: 0, z: model.parallel * duration };
-  const fitted = [...path, axisStart, axisEnd].map(rotate);
+  const pathEnd = model.parallel * duration;
+  const referenceExtent = Math.max(model.radius * 1.45, Math.abs(pathEnd) * .08, .5);
+  const referencePlane = [
+    { x: -referenceExtent, y: -referenceExtent, z: 0 },
+    { x: referenceExtent, y: -referenceExtent, z: 0 },
+    { x: referenceExtent, y: referenceExtent, z: 0 },
+    { x: -referenceExtent, y: referenceExtent, z: 0 }
+  ];
+  const axisStart = { x: 0, y: 0, z: Math.min(0, pathEnd) - referenceExtent * .2 };
+  const axisEnd = { x: 0, y: 0, z: Math.max(0, pathEnd) + referenceExtent * .45 };
+  const axes = Object.freeze({
+    x: Object.freeze([{ x: -referenceExtent, y: 0, z: 0 }, { x: referenceExtent, y: 0, z: 0 }]),
+    y: Object.freeze([{ x: 0, y: -referenceExtent, z: 0 }, { x: 0, y: referenceExtent, z: 0 }]),
+    z: Object.freeze([axisStart, axisEnd])
+  });
+  const fitted = [...path, ...referencePlane, ...Object.values(axes).flat()].map(rotate);
   const minX = Math.min(...fitted.map(point => point.x));
   const maxX = Math.max(...fitted.map(point => point.x));
   const minY = Math.min(...fitted.map(point => point.y));
@@ -35,5 +48,6 @@ export function createHelixViewport(model, { width, height, yaw = -0.55, elevati
     const rotated = rotate(point);
     return { x: width / 2 + (rotated.x - centerX) * scale, y: height / 2 - (rotated.y - centerY) * scale };
   }
-  return Object.freeze({ maxPhase, duration, path, project, axisStart, axisEnd, margin });
+  return Object.freeze({ maxPhase, duration, path, project, axisStart, axisEnd, axes,
+    referencePlane: Object.freeze(referencePlane), referenceExtent, margin });
 }

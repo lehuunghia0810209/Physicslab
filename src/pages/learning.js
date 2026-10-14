@@ -3,37 +3,83 @@ import { summarizeLearningProgress } from '../core/learning-analytics.js';
 import { icon } from '../app/icons.js';
 import { filterLessons, isExperimentVerified } from '../core/lesson-filter.js';
 import { guideForSimulation } from '../data/experiment-guides.js';
+import { THPT_PROGRAM } from '../data/thpt-program.js';
+import { COMPLETE_LESSONS, completeLesson } from '../data/learning/lesson-content.js';
+import { QUESTION_BANK, questionsForLesson } from '../data/learning/question-bank.js';
+import { getLearningStore } from '../core/learning-session.js';
+import { buildLearningCatalog, lessonRoute } from '../core/learning-catalog.js';
+import { mountLearningOverview } from '../app/learning-overview.js';
+import { mountLessonReader } from '../app/lesson-reader.js';
+import { mountRevisionHome } from '../app/revision-home.js';
+import '../styles/thpt-learning.css';
 
 export function mount(main, context) {
   const { progress } = context;
-  const savedLessonId = progress.get().sessions['learning-active']?.setup?.lessonId;
-  let activeId = lessons.some(item => item.id === savedLessonId) ? savedLessonId : lessons[0].id;
-  let catalogFilters = { grade: 'all', category: 'all', query: '' };
+  const learningStore=getLearningStore();
+  const readerCatalog=buildLearningCatalog(COMPLETE_LESSONS,THPT_PROGRAM);
+  const requestedLesson=location.hash.match(/^#\/learning\/([a-z0-9-]+)$/)?.[1];
+  const route=lessonRoute(requestedLesson, new Set(readerCatalog.map(item=>item.id)), new Set(lessons.map(item=>item.id)));
+  // Legacy discovery progress and the new Learning store are intentionally distinct.
+  const activeId=route.type==='explore'?route.id:lessons[0].id;
+  let catalogFilters = { grade: String(lessons.find(item => item.id === activeId)?.grade || 10), category: 'all', query: '' };
 
   function renderTopicProgress(data) {
-    return `<h3>Kết quả theo chủ đề</h3><p>Điểm tốt nhất trung bình của các bài đã kiểm tra.</p>${summarizeLearningProgress(lessons, categories, data).map(topic => {
+    return `<h3>Tiến độ Khám phá nhanh theo chủ đề</h3><p>Thống kê riêng 16 hoạt động Khám phá nhanh. Tiến độ 49 bài Learning 3.0 được theo dõi trong trang Học tập và Ôn tập.</p>${summarizeLearningProgress(lessons, categories, data).map(topic => {
       const score = topic.averageBestScore;
       return `<div class="learning-mastery-item"><div><strong>${topic.title}</strong><span>${score === null ? 'Chưa kiểm tra' : `Điểm tốt nhất TB: ${score}%`}</span></div><progress max="100" value="${score ?? 0}" aria-label="${topic.title}: ${score === null ? 'chưa kiểm tra' : `${score}%`}"></progress><small>Đã kiểm tra ${topic.attemptedCount}/${topic.lessonCount} · Hoàn thành ${topic.completedCount}/${topic.lessonCount}</small></div>`;
     }).join('')}`;
   }
 
   function renderLesson() {
+    if(route.type==='overview') {
+      mountLearningOverview(main,{catalog:readerCatalog,legacy:lessons,learningStore,progress});
+      return;
+    }
+    if(route.type==='missing') {
+      main.innerHTML=`<div class="empty-state"><h1>Không tìm thấy bài học</h1><p>Đường dẫn này không nằm trong chương trình đã xuất bản.</p><a class="button primary" href="#/learning">Xem chương trình học</a></div>`;
+      return;
+    }
+    if(requestedLesson==='revision'){
+      main.innerHTML=`<div class="page-heading"><div><p class="eyebrow">LEARNING 3.0 · ÔN TẬP</p><h1>Revision Home</h1><p>Công thức trọng tâm, câu sai và đề tổng hợp theo lớp.</p></div><a class="button secondary" href="#/learning">Trở lại lộ trình</a></div><div data-revision-home></div>`;
+      mountRevisionHome(main.querySelector('[data-revision-home]'),{contents:COMPLETE_LESSONS,questions:QUESTION_BANK,store:learningStore,progress});return;
+    }
     const lesson = lessons.find(item => item.id === activeId) || lessons[0];
+    const content=route.type==='reader'?completeLesson(route.id):null;
     const data = progress.get();
+    if(route.type==='reader'){
+      if (progress.get().sessions['learning-active']?.setup?.lessonId !== content.id) {
+        progress.session('learning-active',{setup:{lessonId:content.id}});
+      }
+      const order=new Map(THPT_PROGRAM.map((item,index)=>[item.id,index]));
+      const sameGrade=COMPLETE_LESSONS.filter(x=>x.grade===content.grade).sort((a,b)=>(order.get(a.programId)??999)-(order.get(b.programId)??999));
+      const currentIndex=sameGrade.findIndex(x=>x.id===content.id);
+      const previous=sameGrade[currentIndex-1],next=sameGrade[currentIndex+1];
+      const learningAttempts=learningStore.get().attempts;
+      const gradeAttempted=sameGrade.filter(item=>learningAttempts[item.id]).length;
+      const legacyCompanion=lessons.find(item=>item.id===content.id);
+      const gradePosition=`${currentIndex+1}/${sameGrade.length}`;
+      main.innerHTML=`<div class="page-heading"><div><p class="eyebrow">LEARNING 3.0 · LỚP ${content.grade}</p><h1>${content.title}</h1><p>${gradePosition} bài · ${content.topic}. Lí thuyết, ví dụ và thực nghiệm đi kèm.</p></div></div>
+        <nav class="learning-reader-tools" aria-label="Điều hướng bài học"><a href="#/learning">← Chương trình học</a><a href="#/learning/revision">Ôn tập lớp ${content.grade}</a>${previous?`<a href="#/learning/${previous.id}">← Bài trước</a>`:''}${next?`<a href="#/learning/${next.id}">Bài tiếp theo →</a>`:''}${legacyCompanion?`<a href="#/learning/explore-${legacyCompanion.id}">Khám phá nhanh ↗</a>`:''}</nav>
+        <div class="learning-layout learning-reader-layout"><section class="panel lesson-content"><div data-complete-lesson></div></section><aside class="panel learning-aside"><h2>Tiến độ ôn tập lớp ${content.grade}</h2><p>Đang đọc bài ${gradePosition}. Đã có kết quả kiểm tra ở ${gradeAttempted}/${sameGrade.length} bài; số này không đồng nghĩa đã học thuộc hoặc được giáo viên xác nhận.</p><progress max="${sameGrade.length}" value="${gradeAttempted}" aria-label="${gradeAttempted} trên ${sameGrade.length} bài đã có kết quả kiểm tra"></progress><p>${learningAttempts[content.id]?`Điểm kiểm tra gần nhất của bài: ${learningAttempts[content.id].score}%.`:'Bài này chưa có kết quả kiểm tra.'}</p><a class="button secondary" href="#/learning/revision">Ôn tập lớp ${content.grade}</a><a class="button secondary" href="#/learning">Danh sách bài học</a></aside></div>`;
+      mountLessonReader(main.querySelector('[data-complete-lesson]'),{content,questions:questionsForLesson(content.id),progress,store:learningStore});
+      return;
+    }
     const completed = data.lessons[lesson.id] || 0;
     let savedPrediction = data.sessions[`learning-${lesson.id}`]?.setup?.prediction;
     const experimentBaseline = data.sessions[`learning-${lesson.id}`]?.setup?.experimentBaseline;
-    const simulationHref = lesson.simulation === 'lab' ? '#/lab' : `#/simulation/${lesson.simulation}`;
+    const simulationHref = lesson.simulation === 'lab' ? '#/lab/hooke' : `#/simulation/${lesson.simulation}`;
     const guide = guideForSimulation(lesson.simulation);
     const guideHtml = guide ? `<div class="lesson-experiment-tips"><strong>Nhiệm vụ quan sát trong mô phỏng</strong><ol>${guide.map(step => `<li>${step}</li>`).join('')}</ol></div>` : '';
     main.innerHTML = `<div class="page-heading"><div><p class="eyebrow">HỌC TỪ NHỮNG GÌ BẠN QUAN SÁT</p><h1>Học tập tương tác</h1><p>${lessons.length} bài khám phá · Dự đoán, thử nghiệm, giải thích và kiểm tra.</p></div></div>
+      <nav class="learning-reader-tools" aria-label="Quay lại chương trình học"><a href="#/learning">← Toàn bộ 49 bài học</a><a href="#/learning/revision">Ôn tập</a></nav>
+      <p class="lesson-coverage-notice"><strong>Khám phá nhanh:</strong> hoạt động thực nghiệm 4 bước dành cho thực hành. Để đọc lí thuyết, ví dụ và luyện tập theo chương trình, chọn <a href="#/learning">Học tập THPT</a>.</p>
       <section class="learning-filters" aria-label="Tìm và lọc bài học">
         <label for="learning-search">Tìm bài học<input id="learning-search" type="search" placeholder="Ví dụ: ném xiên, điện trường..." autocomplete="off"></label>
         <label for="learning-grade">Khối lớp<select id="learning-grade"><option value="all">Tất cả lớp</option><option value="10">Lớp 10</option><option value="11">Lớp 11</option><option value="12">Lớp 12</option></select></label>
         <label for="learning-topic">Chủ đề<select id="learning-topic"><option value="all">Tất cả chủ đề</option>${categories.filter(item => item.id !== 'all').map(item => `<option value="${item.id}">${item.title}</option>`).join('')}</select></label>
         <p id="learning-filter-count" role="status" aria-live="polite"></p>
       </section>
-      <section class="learning-catalog" aria-label="Chọn bài khám phá">${lessons.map(item => `<button type="button" class="learning-choice ${item.id === lesson.id ? 'selected' : ''}" data-lesson="${item.id}" aria-pressed="${item.id === lesson.id}"><span>LỚP ${item.grade} · ${Math.min(4, data.lessons[item.id] || 0)}/4 bước</span><strong>${item.title}</strong></button>`).join('')}</section>
+      <section class="learning-catalog" aria-label="Chọn bài khám phá">${lessons.map(item => `<a href="#/learning/explore-${item.id}" class="learning-choice ${item.id === lesson.id ? 'selected' : ''}" data-lesson="${item.id}" aria-current="${item.id === lesson.id?'page':'false'}"><span>LỚP ${item.grade} · ${Math.min(4, data.lessons[item.id] || 0)}/4 bước</span><strong>${item.title}</strong></a>`).join('')}</section>
       <p id="learning-filter-empty" class="learning-filter-empty" hidden>Không tìm thấy bài học phù hợp. Hãy thử thay đổi bộ lọc.</p>
       <div class="learning-layout"><section class="panel lesson-content">
         <span class="tag">01 / DỰ ĐOÁN</span><h2>${lesson.prompt}</h2>
@@ -79,7 +125,6 @@ export function mount(main, context) {
     topicSelect.addEventListener('change', () => { catalogFilters.category = topicSelect.value; updateCatalog(); });
     searchInput.addEventListener('input', () => { catalogFilters.query = searchInput.value; updateCatalog(); });
     updateCatalog();
-
     function refreshExperimentGate() {
       const currentStep = progress.get().lessons[lesson.id] || 0;
       const predictionSaved = Boolean(savedPrediction && savedPrediction !== 'not-recorded');
@@ -99,11 +144,7 @@ export function mount(main, context) {
     }
     refreshExperimentGate();
 
-    main.querySelectorAll('[data-lesson]').forEach(button => button.addEventListener('click', () => {
-      activeId = button.dataset.lesson;
-      progress.session('learning-active', { setup: { lessonId: activeId } });
-      renderLesson();
-    }));
+    main.querySelectorAll('[data-thpt-open-lesson],[data-lesson]').forEach(link=>link.addEventListener('click',()=>progress.session('learning-active',{setup:{lessonId:link.dataset.thptOpenLesson||link.dataset.lesson}})));
     main.querySelector('#prediction-form').addEventListener('submit', event => {
       event.preventDefault();
       const prediction = new FormData(event.target).get('prediction');

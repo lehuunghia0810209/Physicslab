@@ -14,7 +14,8 @@ for (const input of [
     const model = createHelix(input);
     for (const [width, height] of [[320,300],[768,380],[1440,520]]) {
       const view = createHelixViewport(model, { width, height });
-      const projected = view.path.map(view.project);
+      const physicalGeometry = [...view.path, ...view.referencePlane, ...Object.values(view.axes).flat()];
+      const projected = physicalGeometry.map(view.project);
       assert.ok(projected.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
       assert.ok(projected.every(p => p.x >= 20 && p.x <= width-20 && p.y >= 20 && p.y <= height-20),
         `Out of frame at ${width}x${height}`);
@@ -31,4 +32,6 @@ test('Helix fit rejects invalid viewport and physically tracks end of visible pa
   const end = view.path.at(-1);
   assert.ok(Math.abs(end.z - model.parallel * view.duration) < 1e-8);
   assert.ok(Math.abs(view.maxPhase - 3*Math.PI) < 1e-8);
+  assert.ok(view.referenceExtent > 0);
+  assert.deepEqual(Object.keys(view.axes), ['x', 'y', 'z']);
 });

@@ -1,0 +1,60 @@
+/* PhysicsLab 1.5 — hands-on experiment bench. Distinct from numeric control sidebar. */
+.lab15-workbench{display:grid;gap:15px;min-width:0;margin:16px 0 20px;color:var(--ink);}
+.lab15-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 16px;border-radius:17px;background:var(--surface-alt);border:1px solid var(--line)}
+.lab15-tool-label{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-width:0}
+.lab15-tool-label strong{font-size:13px;letter-spacing:.07em;line-height:1.4}
+.lab15-tool-label small{font-size:13px;color:var(--muted);line-height:1.5}
+.lab15-live-pip{width:10px;height:10px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 15%,transparent);flex:none}
+.lab15-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.lab15-actions .button{min-height:42px;padding:10px 13px;font-size:13px}
+.lab15-actions [aria-pressed=true]{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 20%,transparent)}
+.lab15-canvas-frame{position:relative;background:#0a2030;overflow:hidden;border-radius:18px;box-shadow:0 14px 28px rgba(5,19,33,.12);isolation:isolate}
+.lab15-canvas-frame canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;max-height:600px;cursor:grab;touch-action:none;outline-offset:-5px}
+.lab15-canvas-frame canvas:active{cursor:grabbing}
+.lab15-canvas-frame canvas:focus-visible{outline:3px solid #ffd478}
+.lab15-badge{position:absolute;right:14px;top:13px;border:1px solid #78959e55;background:#0c2534dd;color:#dce9ec;border-radius:12px;font-size:11px;padding:7px 11px;pointer-events:none;max-width:50%;line-height:1.35}
+.lab15-readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lab15-readouts>div{min-width:0;display:grid;gap:5px;background:var(--surface-alt);padding:13px 15px;border-radius:14px;border:1px solid var(--line)}
+.lab15-readouts small{font-size:11px;line-height:1.4;font-weight:750;letter-spacing:.04em;color:var(--muted)}
+.lab15-readouts strong{font-size:clamp(20px,2vw,29px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--ink)}
+.lab15-readouts span{font-size:12px;color:var(--muted);overflow-wrap:anywhere;line-height:1.5}
+.lab15-lower{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.9fr);gap:12px}
+.lab15-guide{min-width:0;padding:17px 18px;background:var(--surface-alt);border:1px solid var(--line);border-radius:16px}
+.lab15-guide strong{font-size:15px}
+.lab15-guide ol{margin:10px 0 0;padding-left:24px;display:grid;gap:7px}
+.lab15-guide li,.lab15-guide p{font-size:14px;line-height:1.65;color:var(--ink)}
+.lab15-measure{display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.lab15-measure p{margin:0}
+.lab15-measure .button{width:100%;min-height:46px;white-space:normal}
+.lab15-science{border:1px solid var(--line);border-radius:12px;padding:3px 14px;color:var(--muted);font-size:13px;line-height:1.7}
+.lab15-science summary{cursor:pointer;font-weight:700;padding:10px 0;color:var(--ink)}
+.lab15-science p{margin:4px 0 13px}
+/* The live scene is wide, and controls are secondary and collapsed until requested. */
+.generic-lab-setup.lab15-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.lab15-layout .generic-apparatus{grid-column:1/-1;grid-row:auto;position:static;padding:clamp(10px,1.4vw,20px)}
+.lab15-layout .generic-parameters,.lab15-layout .generic-instruments{grid-column:auto;grid-row:auto}
+.lab15-advanced{grid-column:1/-1;border:1px solid var(--line);border-radius:17px;padding:6px 14px;background:var(--surface-alt);min-width:0}
+.lab15-advanced>summary{padding:14px 4px;cursor:pointer;font-weight:750;list-style-position:inside;font-size:14px}
+.lab15-advanced:not([open]) .generic-parameters,.lab15-advanced:not([open]) .generic-instruments{display:none}
+.lab15-advanced-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding:4px 0 15px}
+.lab15-advanced .generic-parameters,.lab15-advanced .generic-instruments{min-width:0;background:var(--surface);padding:16px;border:1px solid var(--line);border-radius:13px}
+.lab15-advanced .field{font-size:14px;line-height:1.5;min-width:0}
+.lab15-advanced input,.lab15-advanced select{max-width:100%}
+.lab15-advanced .field strong{white-space:normal;overflow-wrap:anywhere}
+.lab15-layout #generic-apparatus>h3{font-size:clamp(20px,2.1vw,27px);margin:0 0 8px}
+.lab15-layout .lab-stage-lead{margin:0 0 12px;max-width:930px}
+.lab15-layout .lab-activity-flow{margin:0 0 14px}
+.lab15-layout .lab-apparatus-details{margin-top:12px}
+.lab15-layout .lab-live-strip{margin-top:14px}
+.lab15-layout .lab-live-strip .button{min-height:42px}
+.lab15-shortcuts{padding:10px 13px;border-radius:12px;background:var(--surface-alt);font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:12px}
+.lab15-active-card-label{font-size:12px;font-weight:700;color:var(--primary)}
+.lab15-layout .generic-parameters .field,.lab15-layout .generic-instruments .field{padding-block:6px}
+.lab15-layout .generic-parameters .field>span,.lab15-layout .generic-instruments .field>span{line-height:1.5}
+@media(max-width:900px){.lab15-advanced-wrap{grid-template-columns:1fr}.lab15-lower{grid-template-columns:1fr}.lab15-canvas-frame canvas{max-height:none}}
+@media(max-width:580px){.lab15-toolbar{padding:12px}.lab15-actions{width:100%}.lab15-actions .button{flex:1}.lab15-badge{position:static;border-radius:0;padding:8px 10px;max-width:100%}.lab15-readouts{grid-template-columns:repeat(2,minmax(0,1fr))}.lab15-readouts>div:last-child{grid-column:1/-1}.lab15-readouts strong{font-size:20px}.lab15-tool-label small{flex-basis:100%;padding-left:18px}.lab15-layout .lab-activity-flow{gap:8px}}
+@media(prefers-reduced-motion:reduce){.lab15-live-pip{box-shadow:none}}
+
+/* Keep the bottom stage reachable above mobile navigation. */
+.lab15-canvas-frame{scroll-margin-block:84px 110px}
+@media(max-width:600px){#lab-generic-workspace{scroll-margin-top:75px}.lab15-canvas-frame{scroll-margin-bottom:112px}}

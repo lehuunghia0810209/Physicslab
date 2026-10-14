@@ -31,3 +31,31 @@
 .optics-graph .graph-cursor { stroke: currentColor; opacity: .6; stroke-dasharray: 3 3; }
 .optics-graph .graph-dot { fill: currentColor; }
 @media (max-width: 900px) { .optics-layout { grid-template-columns: 1fr; } }
+/* Deep remake: a fixed, gesture-stable optical bench with independently movable screen. */
+.optics-direct-layout {grid-template-columns:minmax(0,1.55fr) minmax(270px,.72fr);}
+.optics-direct-workbench {padding:18px;}
+.optics-topline {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+#optics-focus-state {font-size:14px;color:var(--primary);}
+.optics-quick-actions {display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px;}
+.optics-quick-actions .button {min-height:44px;padding:9px 12px;}
+#optics-scene {border-radius:16px;max-height:none;min-height:0;touch-action:pan-y;background:var(--surface-alt);}
+#optics-scene .optics-scene-back {fill:color-mix(in srgb,var(--primary) 9%,var(--surface-alt));}
+#optics-scene .optics-scene-title {font-size:16px;font-weight:750;letter-spacing:.03em;fill:var(--ink);}
+#optics-scene .optics-bottom-label {font-size:14px;fill:var(--ink);font-weight:700;}
+#optics-scene .optics-screen-shaft {fill:color-mix(in srgb,var(--primary) 46%,var(--surface));stroke:var(--primary);stroke-width:2;}
+#optics-scene .optics-screen-base {fill:var(--muted);}
+#optics-scene .optics-screen-grip {fill:var(--primary);stroke:var(--surface);stroke-width:3;}
+#optics-scene #optics-screen.in-focus .optics-screen-shaft {fill:color-mix(in srgb,#40dca8 72%,var(--surface));}
+#optics-scene .optics-hit-area {fill:transparent;stroke:transparent;}
+#optics-scene .optics-object-knob {fill:var(--primary);stroke:var(--surface);stroke-width:3;}
+#optics-scene [data-object-handle],#optics-scene [data-screen-handle] {cursor:ew-resize;touch-action:none;outline:none;}
+#optics-scene [data-object-handle]:focus-visible .optics-object-knob,#optics-scene [data-screen-handle]:focus-visible .optics-screen-grip {stroke-width:6;filter:drop-shadow(0 0 7px var(--primary));}
+#optics-scene .optics-ray.virtual {stroke-dasharray:5 6;opacity:.72;}
+#optics-scene .optics-image {stroke:var(--amber);fill:var(--amber);}
+.optics-gesture-hint {font-size:14px;line-height:1.55;margin:6px 0 14px;}
+@media(max-width:1100px){.optics-direct-layout{grid-template-columns:1fr;}}
+@media(max-width:600px){#optics-object-hit,#optics-screen .optics-hit-area{r:80px;} .optics-direct-workbench{padding:12px;}.optics-quick-actions .button{font-size:12px;}.optics-quick-actions{gap:6px;}.optics-topline strong{font-size:12px;}}
+.optics-ray-toggle{display:inline-flex;gap:8px;align-items:center;min-height:44px;padding:0 8px;color:var(--ink);font-size:14px;cursor:pointer}
+.optics-ray-toggle input{width:18px;height:18px;accent-color:var(--primary)}
+#optics-scene .optics-projected-spot{fill:var(--amber);opacity:.66;stroke:var(--surface);stroke-width:1.5;pointer-events:none}
+#optics-scene .optics-spot-label{fill:var(--amber);font-size:12px;font-weight:750;pointer-events:none}

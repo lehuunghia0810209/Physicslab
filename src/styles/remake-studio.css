@@ -1,0 +1,123 @@
+/* PhysicsLab Remake: unified hands-on stage language. No third-party assets. */
+.vector-showcase,.lab-studio-hero,.remake-control-card { --studio-accent:var(--primary); }
+.vector-workbench { border:1px solid color-mix(in srgb,var(--primary) 38%,var(--line)); border-radius:24px; background:var(--surface); overflow:hidden; box-shadow:0 16px 40px color-mix(in srgb,var(--primary) 6%,transparent); margin:24px 0 32px; }
+.vector-workbench-intro { padding:26px clamp(20px,3vw,34px) 12px; }
+.vector-workbench-intro h2 { font-size:clamp(23px,2.3vw,31px); margin:9px 0; }
+.vector-workbench-intro p { color:var(--muted); font-size:15px; max-width:760px; margin:0 0 8px; line-height:1.65; }
+.vector-workbench-layout { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(280px,.8fr); gap:20px; padding:18px; }
+.vector-stage-area { border:1px solid var(--line); border-radius:18px; background:color-mix(in srgb,var(--primary) 5%,var(--surface-alt)); overflow:hidden; }
+.vector-stage-area svg { width:100%; max-height:480px; display:block; background:radial-gradient(circle at 46% 52%,color-mix(in srgb,var(--primary) 11%,transparent),transparent 65%); touch-action:none; }
+.vector-axis { stroke:color-mix(in srgb,var(--muted) 65%,transparent);stroke-width:2;fill:none; }
+.vector-origin { fill:var(--muted); }
+.vector-arrow { stroke-width:4;stroke-linecap:round;fill:none; }
+.vector-a { stroke:#50c5ad; }.vector-b { stroke:#e3a347; }.vector-r { stroke:#79aef7;stroke-width:5; }
+.vector-construction { stroke:var(--muted);stroke-width:1.6;stroke-dasharray:6 7;fill:none;opacity:.5; }
+.vector-handle { cursor:grab;touch-action:none;stroke:var(--surface);stroke-width:4;fill:rgba(255,255,255,.65);pointer-events:none; }
+.vector-handle-hit { cursor:grab;touch-action:none;fill:transparent;stroke:transparent; }
+.vector-handle-hit:focus-visible + .vector-handle { stroke:var(--ink);stroke-width:5; }
+.vector-handle:hover,.vector-handle:focus-visible { stroke:var(--ink);outline:none; }
+.vector-label { font-size:16px;font-weight:700;fill:var(--ink);pointer-events:none; }
+.vector-label-a{fill:#50c5ad}.vector-label-b{fill:#e3a347}.vector-label-r{fill:#79aef7}
+.vector-footnote { font-size:12px;fill:var(--muted); }
+.vector-stage-hint { font-size:13px;line-height:1.5;padding:12px 18px;color:var(--muted); }
+.vector-controls { display:flex; flex-direction:column;gap:10px;min-width:0; padding:14px; border:1px solid var(--line); border-radius:18px; }
+.vector-controls h3 { font-size:18px; margin:3px 0; }
+.vector-input-group { margin:0;padding:12px;border-radius:12px;border:1px solid var(--line); }
+.vector-input-group legend { padding:0 8px; font-size:14px;font-weight:700;color:var(--ink); }
+.vector-input-group label { display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;font-size:13px;color:var(--ink);margin:10px 0; }
+.vector-input-group input { grid-column:1/-1;width:100%;min-height:40px; }
+.vector-input-group output { font-variant-numeric:tabular-nums;color:var(--primary);font-weight:700; }
+.vector-result { border-radius:15px;background:color-mix(in srgb,var(--blue) 11%,var(--surface-alt));border:1px solid color-mix(in srgb,var(--blue) 28%,var(--line));padding:16px; }
+.vector-result span {font-weight:750;letter-spacing:.08em;font-size:11px;color:var(--muted)}
+.vector-result strong {display:block;margin:7px 0;font-size:clamp(26px,3vw,36px);font-variant-numeric:tabular-nums;}
+.vector-result p {font-size:13px;line-height:1.5;margin:6px 0;}
+body[data-theme=dark] .vector-handle {fill:#223b41;}
+@media(max-width:1000px){.vector-workbench-layout{grid-template-columns:1fr}.vector-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.vector-controls h3{grid-column:1/-1}.vector-result{grid-column:1/-1}}
+@media(max-width:640px){.vector-workbench-layout{padding:10px}.vector-controls{display:flex}.vector-workbench-intro{padding:18px 16px 8px}.vector-stage-hint{font-size:12px}.vector-label{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.vector-workbench *{animation:none!important;transition:none!important}}
+/* Laboratory catalog: a discoverable shelf, not one long parameter form. */
+.lab-discovery {padding:clamp(16px,2.4vw,30px);border-radius:24px;}
+.lab-directory-tools {display:grid;gap:12px;margin:12px 0 20px;}
+.lab-directory-search {display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center;gap:12px;color:var(--muted);font-size:13px;font-weight:700;max-width:510px;}
+.lab-directory-search input {min-height:44px;border-radius:12px;padding:10px 14px;width:100%;min-width:0;background:var(--surface-alt);color:var(--ink);border:1px solid var(--line);}
+.lab-topic-filters {display:flex;flex-wrap:wrap;gap:8px;}
+.lab-topic-chip {padding:9px 15px;border-radius:999px;background:var(--surface-alt);color:var(--ink);border:1px solid var(--line);font-size:13px;cursor:pointer;min-height:44px;}
+.lab-topic-chip[aria-pressed=true] {background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700;}
+.lab-discovery-grid {max-height:none;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;overflow:visible;}
+.lab-discovery-card {min-height:194px;transition:border-color .15s,transform .15s,background .15s;}
+.lab-discovery-card:hover {transform:translateY(-2px);}
+.lab-discovery-card[hidden]{display:none;}
+#lab-directory-count {font-size:12px;color:var(--muted)}
+.lab-live-strip {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:13px;padding:14px;background:color-mix(in srgb,var(--primary) 7%,var(--surface));border-radius:13px;border:1px solid var(--line);margin-top:12px;}
+.lab-live-strip small {display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:5px;}
+.lab-live-strip output {display:block;font-variant-numeric:tabular-nums;line-height:1.55;font-weight:700;overflow-wrap:anywhere;}
+.lab-stage-lead {font-size:15px;line-height:1.6;max-width:750px;}
+.generic-lab-setup {display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,.8fr);gap:15px;align-items:start;}
+.generic-lab-setup > .field {grid-column:1/-1;max-width:520px;margin:0;}
+.generic-apparatus {grid-column:1;grid-row:2/4;min-width:0;padding:clamp(12px,1.6vw,22px);border-radius:18px;position:sticky;top:84px;}
+.generic-apparatus .lab-figure svg {min-height:250px;max-height:540px;}
+.generic-parameters {grid-column:2;grid-row:2;border-radius:18px;}
+.generic-instruments {grid-column:2;grid-row:3;border-radius:18px;}
+.generic-parameters .field {font-size:14px;}
+.generic-parameters .field strong {font-size:15px;}
+.generic-lab-graph,.generic-table-heading {margin-top:28px;}
+.lab-discovery-card[aria-pressed=true] {box-shadow:inset 0 0 0 1.5px var(--primary);}
+@media(max-width:1040px){.generic-lab-setup{grid-template-columns:1fr}.generic-lab-setup > .field,.generic-apparatus,.generic-parameters,.generic-instruments{grid-column:1;grid-row:auto}.generic-apparatus{position:static}}
+@media(max-width:600px){.lab-discovery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lab-directory-search{grid-template-columns:1fr}.lab-live-strip .button{width:100%}.lab-discovery-card{min-height:150px;padding:12px}.lab-discovery-card small{font-size:11px}}
+/* Reversible classroom-first view for every existing simulation; controls remain mounted. */
+.simulation-studio-bar {display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:15px 0 25px;padding:17px 20px;border:1px solid color-mix(in srgb,var(--primary) 36%,var(--line));background:linear-gradient(110deg,color-mix(in srgb,var(--primary) 10%,var(--surface)),var(--surface));border-radius:19px;}
+.simulation-studio-caption {flex:1 1 340px;min-width:0;}
+.simulation-studio-kicker {font-size:11px;letter-spacing:.12em;color:var(--primary);font-weight:800;}
+.simulation-studio-caption p {color:var(--ink);margin:7px 0 0;font-size:14px;line-height:1.55;}
+.simulation-studio-actions {display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.simulation-studio-actions .button {font-size:13px;white-space:normal;}
+.simulation-studio-actions [aria-pressed=true] {border-color:var(--primary);color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary);}
+.sim-studio-focus .simulation-layout,.sim-studio-focus .mechanics-layout,.sim-studio-focus .circuit-layout,.sim-studio-focus .field-layout,.sim-studio-focus .em-layout,.sim-studio-focus .gas-layout,.sim-studio-focus .optics-layout {grid-template-columns:minmax(0,1fr)!important;}
+.sim-studio-focus .control-panel,.sim-studio-focus .mechanics-panel,.sim-studio-focus .circuit-controls,.sim-studio-focus .field-controls,.sim-studio-focus .em-controls,.sim-studio-focus .gas-controls,.sim-studio-focus .optics-controls,.sim-studio-focus .wave-parameters,.sim-studio-focus .graphs-section,.sim-studio-focus .mechanics-graphs,.sim-studio-focus .wave-graphs,.sim-studio-focus .gas-graph,.sim-studio-focus .em-graph,.sim-studio-focus .optics-graph {display:none!important;}
+.sim-studio-focus .simulation-workbench,.sim-studio-focus .mechanics-workbench {max-width:1200px;margin:0 auto;width:100%;}
+.sim-studio-focus .mechanics-scene {min-height:clamp(280px,42vw,520px);}
+.sim-studio-focus .gas-workbench,.sim-studio-focus .field-workbench,.sim-studio-focus .circuit-workbench {width:100%;}
+.sim-studio-focus .experiment-guide {display:none;}
+/* Non-focused scene is prominent as well: reduce panel clutter without hiding science. */
+.simulation-layout,.mechanics-layout,.circuit-layout,.field-layout,.gas-layout,.em-layout,.optics-layout {min-width:0;}
+.simulation-layout >*,.mechanics-layout >*,.circuit-layout >*,.field-layout >*,.gas-layout >*,.em-layout >*,.optics-layout >* {min-width:0;}
+.simulation-workbench,.mechanics-viewport,.circuit-workbench,.field-workbench,.gas-workbench,.em-workbench,.optics-workbench,.wave-viewport {border-radius:20px;}
+.simulation-workbench svg,.circuit-workbench svg,.gas-workbench svg,.optics-workbench svg,.wave-viewport svg,.field-workbench svg {max-width:100%;}
+.graph-card {isolation:isolate;}
+@media(max-width:780px){.simulation-studio-bar{padding:13px}.simulation-studio-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.simulation-studio-actions .button{padding-inline:8px}.simulation-studio-actions [data-studio-focus]{grid-column:1/-1}}
+/* Explorer 3D: large central viewport, compact progressive inspector. */
+.explorer3d-layout {display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,.73fr);gap:18px;padding:clamp(12px,1.8vw,25px);align-items:start;}
+.explorer3d-stage {position:sticky;top:82px;min-width:0;}
+.explorer3d-view-presets {border:1px solid var(--line);border-radius:14px;padding:8px;margin:0 0 10px;background:var(--surface-alt);}
+#explorer3d-canvas {height:clamp(420px,47vw,680px);border-radius:18px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary) 23%,var(--line));}
+.explorer3d-controls {min-width:0;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--surface);}
+.explorer3d-controls label,.explorer3d-controls dl,.explorer3d-controls dd,.explorer3d-controls dt,.explorer3d-controls p,.explorer3d-controls select {min-width:0;max-width:100%;}
+.explorer3d-controls .explorer3d-parameter{padding:9px 0;margin:5px 0;border-bottom:1px solid var(--line);}
+.explorer3d-controls .tag{font-size:12px;white-space:normal;margin:12px 0;}
+.explorer3d-advanced {margin:13px 0;border:1px solid var(--line);border-radius:15px;padding:4px 13px;background:var(--surface-alt);}
+.explorer3d-advanced summary {font-size:14px;font-weight:700;cursor:pointer;min-height:46px;padding:12px 0;line-height:1.4;}
+.explorer3d-advanced[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px;}
+.explorer3d-advanced .explorer3d-readouts {grid-template-columns:repeat(2,minmax(0,1fr));}
+.explorer3d-advanced .explorer3d-readouts > div {padding:12px;overflow-wrap:anywhere;}
+.explorer3d-advanced .explorer3d-equation {font-size:13px;line-height:1.75;}
+.explorer3d-stage .explorer3d-playback {background:var(--surface-alt);padding:12px;border:1px solid var(--line);border-radius:14px;margin:10px 0;}
+.explorer3d-stage [for=explorer3d-phase] {margin:0;padding:10px 5px;}
+.explorer3d-stage [for=explorer3d-phase] input {min-height:44px;}
+@media(max-width:1150px){.explorer3d-layout{grid-template-columns:1fr}.explorer3d-stage{position:relative;top:auto}#explorer3d-canvas{height:clamp(310px,52vw,530px)}}
+@media(max-width:550px){.explorer3d-layout{padding:8px}.explorer3d-controls{padding:12px}#explorer3d-canvas{height:330px}.explorer3d-view-presets button{flex:1}.explorer3d-stage .explorer3d-playback{gap:7px}.explorer3d-stage .explorer3d-playback button{flex:1}}
+/* Hands-on DC circuit: visual measuring instruments and touch-friendly source. */
+.circuit-meters rect {fill:color-mix(in srgb,var(--primary) 11%,var(--surface));stroke:color-mix(in srgb,var(--primary) 35%,var(--line));stroke-width:2;}
+#circuit-schematic .circuit-meter-label {font-size:12px;letter-spacing:.06em;fill:var(--muted);font-weight:700;}
+#circuit-schematic .circuit-meter-value {font-size:19px;fill:var(--ink);font-weight:750;}
+#circuit-schematic [data-voltage-source]:hover .circuit-battery-plus,
+#circuit-schematic [data-voltage-source]:focus-visible .circuit-battery-plus {stroke:var(--primary);}
+#circuit-schematic .circuit-resistor,#circuit-schematic [data-voltage-source]{outline:none;}
+#circuit-schematic svg {min-height:260px;max-height:460px;}
+
+.lab-card-preview{display:block;width:100%;min-height:94px;max-height:105px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:color-mix(in srgb,var(--primary) 7%,var(--surface));margin-bottom:3px;}
+.lab-card-preview svg{width:100%;height:100%;display:block;}
+.lab-card-preview .lab-figure-label{font-size:20px;}
+.lab-discovery-card .lab-discovery-icon {display:none;}
+.lab-discovery-grid .lab-discovery-card{justify-content:flex-start;}
+.lab-discovery-card[aria-pressed=true] .lab-card-preview{border-color:color-mix(in srgb,var(--primary) 60%,var(--line));}
+@media(max-width:600px){.lab-discovery-card{min-height:196px}.lab-card-preview{min-height:76px;max-height:85px}}

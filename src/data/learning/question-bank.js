@@ -1,0 +1,28 @@
+import { GRADE10_QUESTIONS } from './grade10.js';
+import { GRADE10_MECHANICS_QUESTIONS } from './grade10-mechanics.js';
+import { GRADE11_QUESTIONS } from './grade11.js';
+import { GRADE12_QUESTIONS } from './grade12.js';
+
+const common=(id,lessonId,grade,level,prompt,explanation,review)=>({id,lessonId,grade,level,prompt,explanation,review});
+export const QUESTION_BANK=Object.freeze([
+ ...GRADE10_QUESTIONS,
+ ...GRADE10_MECHANICS_QUESTIONS,
+ ...GRADE11_QUESTIONS,
+ ...GRADE12_QUESTIONS,
+ {...common('n3-single-inertia','newton-discovery',10,'thông hiểu','Khi hợp lực lên vật bằng 0, kết luận nào luôn đúng?','Theo định luật I, gia tốc bằng 0 nên vận tốc không đổi; vận tốc có thể bằng 0 hoặc khác 0.','Định luật I Newton.'),type:'single',options:[{id:'a',text:'Vật luôn đứng yên.'},{id:'b',text:'Vận tốc của vật không đổi.'},{id:'c',text:'Vật luôn chuyển động nhanh dần.'}],answer:'b'},
+ {...common('n3-tf-forces','newton-discovery',10,'thông hiểu','Đánh giá các nhận định về lực.','Phải lập phương trình cho từng vật và cộng các lực cùng tác dụng lên vật đó.','Hợp lực và cặp lực–phản lực.'),type:'true-false',statements:[{id:'a',text:'Lực và phản lực tác dụng lên hai vật khác nhau.',answer:true,explanation:'Đây là đặc điểm bắt buộc của cặp lực theo định luật III.'},{id:'b',text:'Vật chuyển động theo chiều dương thì hợp lực luôn dương.',answer:false,explanation:'Vật có thể chậm dần khi hợp lực ngược chiều vận tốc.'}]},
+ {...common('n3-num-basic','newton-discovery',10,'vận dụng','Hợp lực 18 N tác dụng lên vật 6 kg. Tính gia tốc.','a = ΣF/m = 18/6 = 3 m/s².','Công thức ΣF = ma.'),type:'numeric',answer:3,tolerance:{absolute:.01},unit:'m/s²',formula:'a=ΣF/m'},
+ {...common('n3-num-friction','newton-discovery',10,'vận dụng','Vật 4 kg chịu lực kéo 20 N và ma sát 8 N ngược chiều. Tính gia tốc.','ΣF = 20 − 8 = 12 N; a = 12/4 = 3 m/s².','Chọn chiều dương và tính hợp lực trước.'),type:'numeric',answer:3,tolerance:{absolute:.01},unit:'m/s²',formula:'a=(F-f)/m'},
+ {...common('n3-short-resultant','newton-discovery',10,'nhận biết','Đại lượng vectơ bằng tổng tất cả lực ngoài tác dụng lên vật gọi là gì?','Đó là hợp lực (hay lực tổng hợp).','Khái niệm hợp lực.'),type:'short',accepted:['hợp lực','lực tổng hợp']},
+ {...common('w3-single-medium','wave-discovery',11,'thông hiểu','Trong sóng cơ trên dây, đại lượng nào truyền dọc dây?','Các phần tử dây dao động quanh vị trí cân bằng; trạng thái dao động và năng lượng lan truyền.','Bản chất truyền sóng.'),type:'single',options:[{id:'a',text:'Toàn bộ vật chất của dây.'},{id:'b',text:'Pha dao động và năng lượng.'},{id:'c',text:'Khối lượng từ nguồn đến đầu dây.'}],answer:'b'},
+ {...common('w3-num-speed','wave-discovery',11,'vận dụng','Sóng có f = 2 Hz và λ = 3 m. Tính tốc độ truyền.','v = fλ = 2 × 3 = 6 m/s.','Hệ thức v = fλ.'),type:'numeric',answer:6,tolerance:{absolute:.01},unit:'m/s',formula:'v=fλ'},
+ {...common('w3-tf-phase','wave-discovery',11,'thông hiểu','Đánh giá các nhận định về bước sóng.','Bước sóng gắn với độ lệch pha và quãng đường pha truyền trong một chu kì.','Định nghĩa bước sóng.'),type:'true-false',statements:[{id:'a',text:'Hai đỉnh liên tiếp cách nhau một bước sóng.',answer:true,explanation:'Hai đỉnh liên tiếp là hai điểm gần nhau nhất cùng pha.'},{id:'b',text:'Một đỉnh và đáy kề nhau cách một bước sóng.',answer:false,explanation:'Khoảng đỉnh–đáy kề nhau bằng λ/2.'}]},
+ {...common('w3-num-wavelength','wave-discovery',11,'vận dụng','Sóng truyền với v = 4 m/s và f = 8 Hz. Tính bước sóng.','λ = v/f = 4/8 = 0,5 m.','Biến đổi λ = v/f.'),type:'numeric',answer:.5,tolerance:{absolute:.005},unit:'m',formula:'λ=v/f'},
+ {...common('w3-short-node','wave-discovery',11,'nhận biết','Điểm luôn có biên độ bằng 0 trong sóng dừng gọi là gì?','Đó là nút sóng.','Nút và bụng sóng.'),type:'short',accepted:['nút sóng','nút']},
+ {...common('g3-single-kelvin','ideal-gas-discovery',12,'thông hiểu','Vì sao tỉ số nhiệt độ trong định luật khí phải dùng kelvin?','Kelvin có mốc 0 tuyệt đối nên tỉ lệ nhiệt độ có ý nghĩa vật lí trong phương trình trạng thái.','Nhiệt độ tuyệt đối.'),type:'single',options:[{id:'a',text:'Vì kelvin không có giá trị âm trong miền mô hình.'},{id:'b',text:'Vì mọi nhiệt kế chỉ đo kelvin.'},{id:'c',text:'Vì độ C luôn bằng kelvin.'}],answer:'a'},
+ {...common('g3-num-isochoric','ideal-gas-discovery',12,'vận dụng','Khí ở bình cứng có p₁ = 100 kPa, T₁ = 300 K. Tăng đến T₂ = 600 K. Tính p₂.','Đẳng tích: p₂ = p₁T₂/T₁ = 200 kPa.','Quá trình đẳng tích.'),type:'numeric',answer:200,tolerance:{absolute:.5},unit:'kPa',formula:'p₂=p₁T₂/T₁'},
+ {...common('g3-tf-model','ideal-gas-discovery',12,'thông hiểu','Đánh giá giới hạn mô hình khí lí tưởng.','Khí lí tưởng là mô hình gần đúng và phương trình trạng thái dùng nhiệt độ tuyệt đối.','Giả định khí lí tưởng.'),type:'true-false',statements:[{id:'a',text:'Mô hình bỏ qua kích thước phân tử so với khoảng cách giữa chúng.',answer:true,explanation:'Đó là một giả định của mô hình khí lí tưởng.'},{id:'b',text:'Có thể dùng trực tiếp °C thay K trong p/T.',answer:false,explanation:'Tỉ số phải dùng nhiệt độ tuyệt đối tính bằng kelvin.'}]},
+ {...common('g3-num-boyle','ideal-gas-discovery',12,'vận dụng','Khí đẳng nhiệt có p₁ = 100 kPa, V₁ = 3 L; nén đến p₂ = 150 kPa. Tính V₂.','V₂ = p₁V₁/p₂ = 100×3/150 = 2 L.','Định luật Boyle.'),type:'numeric',answer:2,tolerance:{absolute:.01},unit:'L',formula:'V₂=p₁V₁/p₂'},
+ {...common('g3-short-temperature','ideal-gas-discovery',12,'nhận biết','Nhiệt độ đo từ mốc 0 tuyệt đối gọi là gì?','Đó là nhiệt độ tuyệt đối, đơn vị kelvin.','Thang nhiệt độ Kelvin.'),type:'short',accepted:['nhiệt độ tuyệt đối']}
+]);
+export const questionsForLesson=id=>QUESTION_BANK.filter(q=>q.lessonId===id);

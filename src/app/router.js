@@ -1,6 +1,25 @@
 import { updateNavigation } from './shell.js';
 import { escapeHtml } from './icons.js';
 import { addExperimentGuide } from './experiment-guide.js';
+import { installSimulationStudio } from './simulation-studio.js';
+import { SIMULATION_STAGE_SELECTORS } from '../core/simulation-stage-layout.js';
+
+// All 13 routes: show the active phenomenon before long explanations and teacher panels.
+function promoteSimulationStage(main,id){
+  const selector=SIMULATION_STAGE_SELECTORS[id];
+  if(!selector)return;
+  const stage=main.querySelector(selector);
+  if(!stage)return;
+  let after=stage;
+  for(const selector of ['.simulation-studio-bar','.experiment-guide','.teacher-studio']){
+    const section=main.querySelector(selector);
+    if(!section)continue;
+    if(selector==='.experiment-guide')section.open=false;
+    after.insertAdjacentElement('afterend',section);
+    after=section;
+  }
+}
+
 const pages = {
   home: () => import('../pages/home.js'), simulations: () => import('../pages/library.js'),
   learning: () => import('../pages/learning.js'), lab: () => import('../pages/lab.js'), tools: () => import('../pages/tools.js'),
@@ -23,8 +42,10 @@ export function createRouter(main, context) {
       else throw new Error('Trang bạn tìm chưa có trong PhysicsLab.');
       if (token !== sequence) return;
       const result = module.mount(main, context);
-      dispose = typeof result === 'function' ? result : () => {};
-      if (route === 'simulation') addExperimentGuide(main, id);
+      const simulationDispose = typeof result === 'function' ? result : () => {};
+      let studioDispose = () => {};
+      if (route === 'simulation') { addExperimentGuide(main, id); studioDispose = installSimulationStudio(main, id, context); promoteSimulationStage(main,id); }
+      dispose = () => { studioDispose(); simulationDispose(); };
       document.title = `${route === 'simulation' ? badge || 'Mô phỏng' : document.querySelector('[data-nav].active span')?.textContent || 'PhysicsLab'} · PhysicsLab`;
       window.scrollTo(0, 0); main.focus({ preventScroll: true });
     } catch (error) {

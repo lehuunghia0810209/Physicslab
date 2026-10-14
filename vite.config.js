@@ -1,2 +1,36 @@
 import { defineConfig } from 'vite';
-export default defineConfig({ base: './', build: { target: 'es2022' } });
+import { createHash } from 'node:crypto';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+async function outputFiles(directory, prefix = '') {
+  const entries = await readdir(resolve(directory, prefix), { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const name = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) files.push(...await outputFiles(directory, name));
+    else if (name !== 'sw.js') files.push(name);
+  }
+  return files.sort();
+}
+
+function offlineWorker() {
+  return { name: 'physicslab-offline-worker', apply: 'build',
+    async closeBundle() {
+      const directory = resolve('dist');
+      const files = await outputFiles(directory);
+      const hash = createHash('sha256');
+      for (const file of files) hash.update(file).update(await readFile(resolve(directory, file)));
+      const cache = `physicslab-static-${hash.digest('hex').slice(0, 12)}`;
+      const assets = files.map(file => `./${file}`);
+      const source = `const CACHE=${JSON.stringify(cache)};\nconst ASSETS=${JSON.stringify(assets)};\n` +
+        `self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));\n` +
+        `self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('physicslab-static-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));\n` +
+        `self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});\n` +
+        `self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin)return;event.respondWith(request.mode==='navigate'?caches.match('./index.html',{ignoreVary:true}).then(cached=>cached||fetch(request)):caches.match(request,{ignoreVary:true}).then(cached=>cached||fetch(request)));});\n`;
+      await writeFile(resolve(directory, 'sw.js'), source);
+    }
+  };
+}
+
+export default defineConfig({ base: './', plugins: [offlineWorker()], build: { target: 'es2022' } });

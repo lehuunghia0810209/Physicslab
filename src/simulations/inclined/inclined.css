@@ -5,6 +5,7 @@
 .inclined-block { fill:var(--primary); stroke:var(--surface); stroke-width:2; }
 .inclined-block-text { fill:var(--button-ink); font-size:17px; font-weight:750; }
 .inclined-grip-ring { fill:var(--amber); stroke:var(--surface); stroke-width:4; }
+.inclined-grip-hit { fill:transparent; stroke:transparent; }
 #inclined-grip { cursor:ns-resize; touch-action:none; }
 #inclined-grip path { stroke:var(--button-ink); stroke-width:3; stroke-linecap:round; }
 #inclined-grip:focus-visible .inclined-grip-ring, #inclined-grip:hover .inclined-grip-ring { stroke-width:6; filter:drop-shadow(0 0 7px var(--amber)); }
@@ -15,3 +16,18 @@
 .inclined-measurements { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .inclined-graph-section { margin-top:24px; }
 @media(max-width:660px){.inclined-measurements{grid-template-columns:repeat(2,minmax(0,1fr));}.inclined-info{font-size:10px}.inclined-gesture-hint{font-size:12px}}
+/* Deep remake: separate angle grip and movable release cart, no overlapping labels. */
+.inclined-quick-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 16px;}
+.inclined-quick-actions .button{min-height:44px;padding:9px 13px;}
+.inclined-vector-toggle{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 9px;font-size:14px;}
+.inclined-vector-toggle input{width:20px;height:20px;accent-color:var(--primary);}
+.inclined-angle-leader{stroke:var(--amber);stroke-width:2;stroke-dasharray:5 4;}
+.inclined-cart-hit{fill:transparent;stroke:transparent;}
+.inclined-cart-ring{fill:var(--primary);stroke:var(--surface);stroke-width:3;}
+#inclined-cart-grip{cursor:grab;touch-action:none;outline:none;}
+#inclined-cart-grip:active{cursor:grabbing;}
+#inclined-cart-grip:hover .inclined-cart-ring,#inclined-cart-grip:focus-visible .inclined-cart-ring{stroke-width:5;filter:drop-shadow(0 0 7px var(--primary));}
+.inclined-normal{stroke:var(--blue);stroke-width:3;}
+.inclined-friction{stroke:var(--amber);stroke-width:3;stroke-dasharray:4 3;}
+#inclined-scene{touch-action:pan-y;}
+@media(max-width:650px){.inclined-quick-actions{gap:6px;}.inclined-quick-actions .button{font-size:12px;padding:9px 10px;}}

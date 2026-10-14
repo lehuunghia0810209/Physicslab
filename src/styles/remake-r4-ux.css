@@ -1,0 +1,23 @@
+/* PhysicsLab R4 — readable science UI. No functionality is hidden on desktop. */
+:where(.gas-workbench,.circuit-workbench,.optics-workbench,.em-workbench,.field-workbench,.mechanics-viewport,.wave-viewport) {min-width:0;}
+:where(.gas-controls,.circuit-controls,.optics-controls,.em-controls,.field-controls,.mechanics-panel,.wave-parameters) {min-width:0;padding:clamp(16px,1.7vw,25px);border-radius:18px;overflow-wrap:anywhere;}
+:where(.gas-controls,.circuit-controls,.optics-controls,.em-controls,.field-controls,.mechanics-panel,.wave-parameters) h2{font-size:clamp(18px,1.5vw,22px);line-height:1.35;margin-bottom:18px;}
+:where(.gas-parameter,.optics-parameter,.em-parameter,.circuit-parameter,.wave-parameter,.mechanics-parameter){min-width:0;gap:8px 12px;padding-block:9px;margin-block:5px;}
+:where(.gas-parameter,.optics-parameter,.em-parameter,.circuit-parameter,.wave-parameter,.mechanics-parameter)>span{min-width:0;font-size:14px;line-height:1.55;overflow-wrap:anywhere;}
+:where(.gas-parameter,.optics-parameter,.em-parameter,.circuit-parameter,.wave-parameter,.mechanics-parameter)>strong{min-width:0;font-size:14px;line-height:1.5;text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+:where(.gas-parameter,.optics-parameter,.em-parameter,.circuit-parameter,.wave-parameter,.mechanics-parameter) input[type=range]{min-width:0;width:100%;accent-color:var(--primary);cursor:pointer;}
+:where(.gas-readouts,.circuit-measurements,.em-readouts,.optics-readouts,.mechanics-measurements) >div{min-width:0;overflow-wrap:anywhere;padding:clamp(12px,1.2vw,18px);}
+:where(.gas-readouts,.circuit-measurements,.em-readouts,.optics-readouts,.mechanics-measurements) span{line-height:1.55;font-size:12px;}
+:where(.gas-readouts,.circuit-measurements,.em-readouts,.optics-readouts,.mechanics-measurements) strong{font-size:clamp(16px,1.45vw,21px);line-height:1.45;min-width:0;overflow-wrap:anywhere;}
+:where(.gas-equation,.em-equation,.optics-equation,.circuit-equations,.mechanics-note){font-size:14px;line-height:1.75;overflow-wrap:anywhere;}
+.simulation-studio-bar,.lab-discovery{max-width:100%;min-width:0;}
+.gas-layout,.em-layout,.optics-layout,.field-layout,.circuit-layout,.mechanics-layout{align-items:start;gap:clamp(15px,2vw,26px);}
+.graphs-grid>*,.graph-card{min-width:0;}
+.graph-card .graph-value{overflow-wrap:anywhere;}
+/* Stationery and drawing guides should be visible in both themes. */
+.scene-gesture-hint,.gas-gesture-hint,.optics-gesture-hint,.circuit-gesture-hint,.em-gesture-hint{line-height:1.7;font-size:14px;color:var(--muted);}
+button,input,select{font-family:inherit;}
+button:focus-visible,input:focus-visible,select:focus-visible,[role=slider]:focus-visible{outline:3px solid var(--primary);outline-offset:3px;}
+@media(max-width:900px){.gas-layout,.em-layout,.optics-layout,.field-layout,.circuit-layout,.mechanics-layout{grid-template-columns:minmax(0,1fr);}}
+@media(max-width:550px){:where(.gas-controls,.circuit-controls,.optics-controls,.em-controls,.field-controls,.mechanics-panel,.wave-parameters){padding:14px;}:where(.gas-readouts,.em-readouts,.optics-readouts,.circuit-measurements,.mechanics-measurements){grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(prefers-reduced-motion:reduce){.scene-grabbable,.studio-preset,.explorer3d-experiments button{transition:none!important;}}

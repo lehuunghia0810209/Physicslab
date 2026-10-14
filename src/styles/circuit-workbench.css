@@ -1,0 +1,113 @@
+/* Circuit Workbench: dedicated visual lab, separate from numerical lab cards. */
+.cwb{--cwb-fill:var(--surface);--cwb-stroke:var(--ink);--cwb-grid:color-mix(in srgb,var(--primary) 24%,transparent);--cwb-board:color-mix(in srgb,var(--surface) 88%,#c8e8dc);font-family:var(--font);min-width:0;color:var(--ink)}
+.cwb *{box-sizing:border-box}
+.cwb-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin:0 0 17px}
+.cwb-heading>div{min-width:0;flex:1}
+.cwb-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:1.4px;color:var(--primary);margin-bottom:9px}
+.cwb h2{font-size:clamp(25px,3vw,35px);letter-spacing:-.035em;line-height:1.15;margin:0 0 9px;overflow-wrap:anywhere}
+.cwb-heading p{font-size:14px;color:var(--muted);line-height:1.6;margin:0;max-width:660px}
+.cwb-heading strong{color:var(--ink)}
+.cwb-chip{font-size:11px;white-space:nowrap;border:1px solid var(--line);border-radius:50px;padding:8px 12px;background:var(--surface-alt);color:var(--primary);font-weight:750}
+.cwb-templates{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.cwb-templates>span{font-size:12px;font-weight:750;color:var(--muted);margin-right:6px}
+.cwb-templates button{border:1px solid var(--line);border-radius:50px;padding:9px 13px;font:700 12px var(--font);color:var(--muted);background:var(--surface);cursor:pointer;min-height:44px}
+.cwb-templates button[aria-pressed=true]{background:color-mix(in srgb,var(--primary) 15%,var(--surface));color:var(--primary);border-color:color-mix(in srgb,var(--primary) 55%,var(--line))}
+.cwb-templates button:hover{border-color:var(--primary);color:var(--ink)}
+.cwb-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(235px,270px);gap:17px;align-items:start}
+.cwb-main{min-width:0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 10px 30px #061e1608}
+.cwb-toolbox{display:flex;align-items:stretch;gap:7px;padding:13px;overflow-x:auto;background:var(--surface-alt);border-bottom:1px solid var(--line)}
+.cwb-tool-title{min-width:122px;flex:0 0 122px;font-size:12px;font-weight:800;align-self:center;line-height:1.5}
+.cwb-tool-title small{display:block;font-weight:500;color:var(--muted);font-size:10px}
+.cwb-tool{border:1px solid var(--line);border-radius:12px;min-width:84px;flex:1 0 84px;max-width:132px;padding:9px 5px;background:var(--surface);color:var(--ink);cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:700 11px var(--font);transition:transform .15s,border-color .15s}
+.cwb-tool:hover{transform:translateY(-2px);border-color:var(--primary)}
+.cwb-tool:active{cursor:grabbing}
+.cwb-tool-icon{font-size:24px;line-height:1.1}
+.cwb-plus{font-size:14px;color:var(--primary);font-weight:800}
+.cwb-stage-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 15px;background:var(--surface);border-bottom:1px solid var(--line)}
+.cwb-stage-head>span{font-size:10px;letter-spacing:1.1px;font-weight:850;color:var(--muted);white-space:nowrap}
+.cwb-live-dot{display:inline-block;width:7px;height:7px;border-radius:100%;background:#2bbd91;margin-right:4px}
+.cwb-stage-head>div{display:flex;gap:6px;flex-wrap:wrap;justify-content:end}
+.cwb-stage-head button{font:700 11px var(--font);border:1px solid var(--line);border-radius:8px;background:var(--surface-alt);color:var(--ink);min-height:44px;padding:6px 10px;cursor:pointer}
+.cwb-stage-head button:hover{border-color:var(--primary)}
+.cwb-stage-shell{position:relative;overflow:hidden;min-width:0;background:linear-gradient(160deg,var(--cwb-board),var(--surface));}
+#cwb-stage{display:block;width:100%;height:auto;min-height:305px;max-height:580px;aspect-ratio:1000/560;touch-action:none;user-select:none;color:var(--cwb-stroke)}
+#cwb-stage .cwb-part{cursor:grab}
+#cwb-stage .cwb-part:active{cursor:grabbing}
+#cwb-stage .cwb-part-name{font-size:18px;font-weight:800;fill:var(--ink);paint-order:stroke;stroke:var(--cwb-board);stroke-width:2px;stroke-linejoin:round}
+#cwb-stage .cwb-part-number{font-size:17px;font-weight:750;fill:var(--muted);paint-order:stroke;stroke:var(--cwb-board);stroke-width:3px}
+#cwb-stage .cwb-device{fill:var(--surface);stroke:var(--primary);stroke-width:4}
+#cwb-stage .cwb-battery{fill:color-mix(in srgb,var(--primary) 16%,var(--surface));stroke:var(--primary)}
+#cwb-stage .cwb-resistor{fill:color-mix(in srgb,var(--amber) 15%,var(--surface));stroke:var(--amber)}
+#cwb-stage .cwb-meter{fill:color-mix(in srgb,var(--blue) 12%,var(--surface));stroke:var(--blue)}
+#cwb-stage .cwb-sign-plus,#cwb-stage .cwb-sign-minus{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+#cwb-stage .cwb-switch-tip{fill:var(--surface);stroke:var(--cwb-stroke);stroke-width:4}
+#cwb-stage .cwb-port-hit{cursor:crosshair;fill:transparent;stroke:transparent;stroke-width:1;pointer-events:all;touch-action:none}
+#cwb-stage .cwb-port-hit:hover,#cwb-stage .cwb-port-hit:focus-visible{fill:color-mix(in srgb,var(--primary) 17%,transparent);stroke:var(--amber);stroke-width:3;outline:none}
+#cwb-stage [data-move-part]{touch-action:none}
+#cwb-stage .cwb-port{fill:var(--surface);stroke:var(--primary);stroke-width:4;transition:stroke .15s}
+#cwb-stage .cwb-port:hover,#cwb-stage .cwb-port:focus{fill:var(--mint);stroke:var(--amber);outline:none;stroke-width:6}
+#cwb-stage .is-selected>.cwb-part .cwb-device{stroke:var(--amber);stroke-width:5}
+#cwb-stage .cwb-wire-body{fill:none;stroke:var(--muted);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#cwb-stage .cwb-wire-body.is-live{stroke:color-mix(in srgb,var(--primary) 80%,var(--ink))}
+#cwb-stage .cwb-wire-hit{fill:none;stroke:transparent;stroke-width:21;cursor:pointer;pointer-events:stroke}
+#cwb-stage .cwb-wire.is-selected>.cwb-wire-body{stroke:var(--amber);stroke-width:8}
+#cwb-stage .cwb-electron{fill:#ffb133;pointer-events:none;filter:drop-shadow(0 0 3px #f6d665)}
+#cwb-stage .cwb-draft-wire{stroke:var(--amber);stroke-width:5;stroke-dasharray:8 7;stroke-linecap:round;fill:none;pointer-events:none}
+#cwb-stage .cwb-pending-halo{stroke:var(--amber);stroke-width:5;fill:color-mix(in srgb,var(--amber) 12%,transparent);pointer-events:none}
+.cwb-stage-tooltip{position:absolute;bottom:10px;left:12px;right:12px;width:fit-content;max-width:calc(100% - 24px);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);border:1px solid var(--line);padding:9px 12px;border-radius:10px;font-size:12px;box-shadow:var(--shadow);line-height:1.5;pointer-events:none}
+.cwb-stage-tooltip button{pointer-events:auto;background:var(--surface-alt);color:var(--primary);font-weight:750;border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-left:5px;cursor:pointer}
+.cwb-status{min-height:47px;display:flex;align-items:center;gap:10px;padding:11px 15px;border-top:1px solid var(--line);font-size:13px;font-weight:650;line-height:1.45;color:var(--muted);background:var(--surface-alt)}
+.cwb-status[data-mode=running]{color:var(--primary);background:color-mix(in srgb,var(--primary) 9%,var(--surface))}
+.cwb-status[data-mode=short],.cwb-status[data-mode=conflict]{color:#c25c40;background:color-mix(in srgb,#ee986c 12%,var(--surface))}
+.cwb-state-mark{font-weight:900;font-size:20px;flex:0 0 auto}
+.cwb-meter-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.cwb-meter-strip>div{display:flex;flex-direction:column;gap:7px;padding:14px 12px;min-width:0}
+.cwb-meter-strip>div+div{border-left:1px solid var(--line)}
+.cwb-meter-strip small,.cwb-part-readings small{font-size:9px;letter-spacing:.8px;font-weight:800;color:var(--muted);line-height:1.4}
+.cwb-meter-strip strong{font-weight:850;font-size:clamp(20px,2.3vw,29px);letter-spacing:-.035em;white-space:nowrap}
+.cwb-meter-strip em{font-size:12px;color:var(--muted);font-style:normal}
+.cwb-side{display:grid;gap:14px;min-width:0}
+.cwb-inspector,.cwb-challenge{padding:18px 17px;background:var(--surface);border:1px solid var(--line);border-radius:17px;min-width:0;box-shadow:0 7px 24px #092c2010}
+.cwb-side h3{font-size:16px;letter-spacing:-.02em;margin:0 0 13px}
+.cwb-side h4{font-size:20px;line-height:1.25;margin:8px 0 13px}
+.cwb-selected-type{display:block;color:var(--primary);font-size:11px;font-weight:800;letter-spacing:.65px}
+.cwb-nothing{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:155px;color:var(--muted);gap:9px}
+.cwb-nothing>span{font-size:30px}
+.cwb-nothing p{font-size:13px;line-height:1.55;margin:0}
+.cwb-value-field{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px}
+.cwb-value-field>span{display:flex;gap:8px;align-items:center;margin-top:6px}
+.cwb-value-field input{min-width:0;width:100%;max-width:160px;background:var(--surface-alt);border:1px solid var(--line);color:var(--ink);font:750 17px var(--font);padding:10px;border-radius:10px}
+.cwb-value-field b{color:var(--muted)}
+.cwb-part-readings{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.cwb-part-readings>div{display:flex;flex-direction:column;gap:5px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--surface-alt);min-width:0}
+.cwb-part-readings strong{font-size:15px;overflow-wrap:anywhere}
+.cwb-inspector-buttons{display:grid;gap:7px;margin-top:12px}
+.cwb-inspector-buttons .button,.cwb-inspector .button{width:100%;justify-content:center;white-space:normal;min-height:44px;font-size:12px}
+.cwb-inspector .cwb-wide{width:100%;margin:0 0 10px}
+.cwb-inspector .cwb-danger{color:#c4644f}
+.cwb-spotlight{display:block;font-size:11px;color:var(--muted);line-height:1.55;margin-top:12px}
+.cwb-challenge{background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 7%,var(--surface)),var(--surface))}
+.cwb-challenge ol{padding-left:18px;margin:0;color:var(--muted);font-size:13px;line-height:1.75}
+.cwb-challenge li+li{margin-top:10px}
+.cwb-challenge strong{color:var(--ink)}
+.cwb-challenge details{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.cwb-challenge summary{cursor:pointer;font-size:12px;font-weight:750;color:var(--primary)}
+.cwb-challenge details p{font-size:12px;color:var(--muted);line-height:1.65}
+.cwb-record{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0;display:grid;gap:14px}
+.cwb-record h3{font-size:18px;margin:0 0 5px}
+.cwb-record p{color:var(--muted);font-size:13px;margin:0;line-height:1.55}
+.cwb-record-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cwb-record-actions .button{min-height:44px;font-size:12px}
+.cwb-scroll{overflow-x:auto;max-width:100%}
+.cwb-scroll table{min-width:550px;width:100%;font-size:12px;border-collapse:collapse}
+.cwb-scroll th,.cwb-scroll td{padding:11px 9px;text-align:left;border-bottom:1px solid var(--line)}
+.cwb-scroll th{background:var(--surface-alt);font-weight:750;color:var(--muted)}
+.cwb-disclaimer{font-size:11px;color:var(--muted);line-height:1.65;margin:14px 2px 0}
+.lab-discovery-card#lab-open-circuit{border-color:color-mix(in srgb,var(--primary) 40%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,var(--primary) 9%,var(--surface)),var(--surface))}
+.lab-discovery-card#lab-open-circuit .lab-discovery-icon{font-size:24px}
+#circuit-workspace[hidden]{display:none!important}
+#circuit-workspace{scroll-margin-top:20px}
+@media(max-width:1180px){.cwb-layout{grid-template-columns:minmax(0,1fr)}.cwb-side{grid-template-columns:repeat(2,minmax(0,1fr))}.cwb-main{width:100%}}
+@media(max-width:720px){.cwb-heading{flex-direction:column;gap:9px}.cwb-templates{gap:6px}.cwb-stage-head{align-items:flex-start;flex-direction:column}.cwb-stage-head>div{justify-content:start}.cwb-tool-title{min-width:110px;flex-basis:110px}.cwb-tool{min-width:75px;flex-basis:75px}.cwb-side{grid-template-columns:1fr}.cwb-meter-strip small{letter-spacing:0;font-size:8px}.cwb-meter-strip>div{padding:11px 8px}.cwb-meter-strip strong{font-size:20px}.cwb-record{padding:14px}#cwb-stage{min-height:unset;min-width:700px;touch-action:pan-x}.cwb-stage-shell{overflow-x:auto;overscroll-behavior-x:contain}.cwb-stage-tooltip{font-size:10px;padding:7px 9px}}
+@media(max-width:400px){.cwb-templates button{padding:8px 10px;font-size:11px}.cwb-meter-strip strong{font-size:17px}.cwb-stage-head button{font-size:10px;padding:5px}.cwb-tool{min-width:76px}}
+@media(prefers-reduced-motion:reduce){.cwb-tool{transition:none}#cwb-stage .cwb-electron{display:none}}

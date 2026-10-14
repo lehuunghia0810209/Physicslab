@@ -1,0 +1,47 @@
+/* PhysicsLab 1.6 — Real experimental benches. The apparatus dominates the workspace. */
+.lab16-workbench{display:grid;gap:14px;max-width:1200px;margin:16px auto 22px;min-width:0;color:var(--ink)}
+.lab16-head{display:flex;align-items:start;justify-content:space-between;gap:12px;padding:5px 2px}
+.lab16-head h3{font-size:clamp(19px,2.2vw,27px);line-height:1.25;margin:3px 0 7px}
+.lab16-head p{margin:0;font-size:14px;line-height:1.6;color:var(--muted);max-width:760px}
+.lab16-eyebrow{font-weight:800;letter-spacing:.09em;font-size:11px;color:var(--primary)}
+.lab16-label-tag{flex:none;background:color-mix(in srgb,var(--primary) 12%,var(--surface-alt));border-radius:999px;border:1px solid var(--line);padding:8px 12px;font-size:11px;font-weight:800}
+.lab16-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface-alt)}
+.lab16-controls,.lab16-run{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lab16-controls{flex:1;min-width:0}
+.lab16-chip,.lab16-label{min-height:44px;display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--ink);font:700 13px/1.5 inherit;cursor:pointer}
+.lab16-chip:focus-visible,.lab16-label:focus-within{outline:3px solid var(--primary);outline-offset:3px}
+.lab16-chip:hover{border-color:var(--primary)}
+.lab16-chip.lab16-accent{background:color-mix(in srgb,var(--primary) 13%,var(--surface));border-color:var(--primary)}
+.lab16-toggle input{accent-color:var(--primary);width:17px;height:17px}
+.lab16-label select{min-height:30px;min-width:98px;border:0;background:var(--surface);font:inherit;color:var(--ink);cursor:pointer}
+.lab16-run .button{min-height:44px;font-size:14px;padding:9px 15px}
+.lab16-run [aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 15%,var(--surface))}
+.lab16-frame{position:relative;min-width:0;background:#0c2533;border-radius:20px;overflow:hidden;border:1px solid #385866;box-shadow:0 15px 35px rgba(5,22,30,.12)}
+.lab16-frame canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;touch-action:none;cursor:grab;outline-offset:-5px}
+.lab16-frame canvas[data-dragging]{cursor:grabbing}
+.lab16-frame canvas:focus-visible{outline:3px solid #ffe1a5;outline-offset:-5px}
+.lab16-status-chip{position:absolute;right:14px;top:14px;max-width:43%;pointer-events:none;border-radius:11px;padding:8px 12px;font-size:12px;color:#e7f8f9;background:#0d293acc;border:1px solid #5a899477;line-height:1.4}
+.lab16-meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lab16-meters>div{display:grid;gap:7px;min-width:0;background:var(--surface-alt);border:1px solid var(--line);border-radius:14px;padding:14px 17px}
+.lab16-meters small{font-size:12px;letter-spacing:.04em;font-weight:800;line-height:1.35;color:var(--muted)}
+.lab16-meters strong{font-size:clamp(19px,2.3vw,28px);line-height:1.25;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;color:var(--ink)}
+.lab16-education{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(230px,1fr);gap:12px}
+.lab16-education section{border-radius:16px;padding:17px 20px;border:1px solid var(--line);background:var(--surface-alt);min-width:0}
+.lab16-education h4{font-size:17px;margin:0 0 8px}
+.lab16-education ol{padding-left:22px;margin:8px 0 12px;display:grid;gap:7px}
+.lab16-education li,.lab16-education p{font-size:14px;line-height:1.65;color:var(--ink)}
+.lab16-education p{margin:8px 0 12px}.lab16-education button{min-height:46px;max-width:100%}
+.lab16-feedback{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 9px 9px 0;padding:10px 13px}
+.lab16-science{border:1px solid var(--line);border-radius:13px;padding:6px 16px;background:var(--surface-alt)}
+.lab16-science summary{cursor:pointer;padding:11px 2px;font-size:14px;font-weight:800}.lab16-science p{font-size:14px;line-height:1.7;margin:2px 0 13px}
+.lab16-a11y{color:var(--muted);font-size:12px;line-height:1.5;margin:0}
+@media(max-width:930px){.lab16-education{grid-template-columns:1fr}.lab16-head{flex-wrap:wrap}}
+@media(max-width:600px){.lab16-bar{padding:9px}.lab16-controls,.lab16-run{width:100%}.lab16-run .button{flex:1}.lab16-chip{flex:1;justify-content:center}.lab16-status-chip{position:static;max-width:100%;border-radius:0}.lab16-meters{grid-template-columns:1fr 1fr}.lab16-meters>div:last-child{grid-column:1/-1}.lab16-meters strong{font-size:21px}.lab16-education section{padding:14px}.lab16-frame{border-radius:14px}}
+@media(prefers-reduced-motion:reduce){.lab16-frame,.lab16-chip{transition:none}}
+
+/* Visibility must override generic button display declarations. */
+.lab16-run [hidden]{display:none!important}
+.lab16-stage-scroller{width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;scrollbar-width:thin;scrollbar-color:#5e9b9a transparent}
+.lab16-stage-scroller canvas{width:100%;max-width:100%}
+.lab16-mobile-hint{display:none}
+@media(max-width:600px){.lab16-controls .lab16-chip{flex:0 1 auto;min-width:98px}.lab16-stage-scroller canvas{width:760px;max-width:none}.lab16-mobile-hint{display:block;font-size:12px;line-height:1.6;color:var(--muted);margin:0 4px}.lab16-frame .lab16-status-chip{position:sticky;bottom:0;right:auto;top:auto;max-width:none}.lab16-meters{grid-template-columns:repeat(2,minmax(0,1fr))}}

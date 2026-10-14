@@ -15,9 +15,10 @@ export class ProjectileScene {
     // Direct launch-vector handle: physical v₀ and θ are still supplied by the validated model.
     this.aim = svg('g', { class: 'launch-aim-handle', tabindex: '0', role: 'slider', 'aria-label': 'Kéo đầu mũi tên để đổi vận tốc và góc phóng' });
     this.aimLine = svg('line', { class: 'launch-aim-line' });
+    this.aimHit = svg('circle', { class: 'launch-aim-hit', r: 80 });
     this.aimPoint = svg('circle', { class: 'launch-aim-point', r: 14 });
     this.aimText = svg('text', { class: 'launch-aim-text', 'text-anchor': 'middle' }, 'KÉO');
-    this.aim.append(this.aimLine, this.aimPoint, this.aimText);
+    this.aim.append(this.aimLine, this.aimHit, this.aimPoint, this.aimText);
     this.svg.append(this.aim);
     this.options = { trajectory: true, velocity: true, components: true, grid: true };
   }
@@ -51,6 +52,7 @@ export class ProjectileScene {
     const tipY = this.launchOrigin[1] - Math.sin(radians) * launchLength;
     this.aimLine.setAttribute('x1', this.launchOrigin[0]); this.aimLine.setAttribute('y1', this.launchOrigin[1]);
     this.aimLine.setAttribute('x2', tipX); this.aimLine.setAttribute('y2', tipY);
+    this.aimHit.setAttribute('cx', tipX); this.aimHit.setAttribute('cy', tipY);
     this.aimPoint.setAttribute('cx', tipX); this.aimPoint.setAttribute('cy', tipY);
     this.aimText.setAttribute('x', tipX); this.aimText.setAttribute('y', tipY + 4);
     this.aim.setAttribute('aria-valuenow', String(model.parameters.v0));

@@ -1,6 +1,7 @@
 import { readdir, readFile, access } from 'node:fs/promises';
 import { resolve, dirname, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { moduleImportSpecifiers } from './module-imports.mjs';
 const root = resolve(import.meta.dirname, '..');
 async function files(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -13,9 +14,7 @@ for (const file of paths.filter(p => /\.[cm]?js$/.test(p))) {
   const check = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
   if (check.status !== 0) throw new Error(`${relative(root, file)}\n${check.stderr}`);
   const source = await readFile(file, 'utf8');
-  const pattern = /(?:^import\s+(?:[^;\n]*?\sfrom\s*)?|\bimport\s*\(\s*)['"]([^'"]+)['"]/gm;
-  for (const match of source.matchAll(pattern)) {
-    const spec = match[1];
+  for (const spec of moduleImportSpecifiers(source)) {
     if (spec.startsWith('.')) {
       try { await access(resolve(dirname(file), spec)); } catch { throw new Error(`Missing import ${spec} in ${relative(root, file)}`); }
       imports++;
@@ -42,7 +41,7 @@ function declaredExports(source) {
 }
 for (const file of paths.filter(p => /\.[cm]?js$/.test(p))) {
   const source = await readFile(file, 'utf8');
-  for (const match of source.matchAll(/\bimport\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/gs)) {
+  for (const match of source.matchAll(/^\s*import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/gm)) {
     if (!match[2].startsWith('.') || !/\.js$/.test(match[2])) continue;
     const dependency = resolve(dirname(file), match[2]);
     const exports = declaredExports(await readFile(dependency, 'utf8'));

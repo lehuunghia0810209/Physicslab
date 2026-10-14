@@ -89,3 +89,22 @@ test('A local progress backup may be restored safely without exposing internal s
   assert.equal(progress.get().visited['../bad'], undefined);
   assert.equal(progress.get().visited['projectile-motion'], 50);
 });
+
+test('Student lab notebooks persist with bounded text and survive progress backup', () => {
+  const storage = mock(null);
+  const progress = createProgress(storage);
+  const saved = progress.notebook('newton-second-law', {
+    objective: 'Kiểm tra a = Fnet/m', hypothesis: 'Tăng lực thì gia tốc tăng.',
+    observations: 'Xe nhanh dần.', conclusion: 'Dữ liệu phù hợp mô hình.', selfAssessment: 4, updatedAt: 100
+  });
+  assert.equal(saved.selfAssessment, 4);
+  assert.equal(createProgress(storage).get().notebooks['newton-second-law'].hypothesis, 'Tăng lực thì gia tốc tăng.');
+  const backup = progress.get();
+  progress.clear();
+  progress.restore(backup);
+  assert.equal(progress.get().notebooks['newton-second-law'].conclusion, 'Dữ liệu phù hợp mô hình.');
+  assert.throws(() => progress.notebook('bad id', { objective: 'x' }), TypeError);
+  assert.throws(() => progress.notebook('newton-second-law', { selfAssessment: 9 }), RangeError);
+  progress.notebook('newton-second-law', { observations: 'x'.repeat(5000) });
+  assert.equal(progress.get().notebooks['newton-second-law'].observations.length, 4000);
+});

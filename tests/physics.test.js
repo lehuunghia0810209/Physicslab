@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createProjectile, DEFAULTS, validateParameters } from '../src/core/projectile.js';
 import { convert } from '../src/core/units.js';
 import { MeasurementSystem } from '../src/engines/measurements.js';
+import { createNewtonMotion } from '../src/core/newton.js';
 const near = (a, b, tolerance = 1e-9) => assert.ok(Math.abs(a - b) <= tolerance * Math.max(1, Math.abs(b)), `${a} != ${b}`);
 
 test('Earth 45° reproduces equal-height flight and range formulas', () => {
@@ -52,4 +53,15 @@ test('SI conversion and CSV measurement preserve real numeric values', () => {
   near(convert(123, 'length', 'cm', 'm'), 1.23); assert.throws(() => convert(NaN, 'time', 's', 'h'));
   const log = new MeasurementSystem(1); assert.equal(log.capture(createProjectile(DEFAULTS).at(1)), true); assert.equal(log.capture(createProjectile(DEFAULTS).at(2)), false);
   assert.ok(log.csv().includes('1.000000,14.142136,9.237136')); log.clear(); assert.equal(log.rows.length, 0);
+});
+test('Reusable measurement log accepts a finite model-specific schema', () => {
+  const log = new MeasurementSystem(2, [
+    { key: 't', csv: 't_s' }, { key: 'netForce', csv: 'net_force_N' }, { key: 'acceleration', csv: 'a_m_s2' }
+  ]);
+  const motion = createNewtonMotion({ mass: 5, force: 40, friction: .1, gravity: 9.81 }).at(1);
+  assert.equal(log.capture(motion), true);
+  assert.equal(log.capture({ ...motion, acceleration: NaN }), false);
+  assert.equal(log.rows.length, 1);
+  assert.match(log.csv(), /^t_s,net_force_N,a_m_s2\n1\.000000,35\.095000,7\.019000$/);
+  assert.throws(() => new MeasurementSystem(0, []), RangeError);
 });

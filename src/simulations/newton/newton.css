@@ -1,104 +1,22 @@
-.newton-scene {
-  position: relative;
-  min-height: 220px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(117, 181, 170, 0.12), rgba(117, 181, 170, 0.02));
-  overflow: hidden;
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: end;
-  padding: 30px 40px 38px;
-}
-
-.newton-floor {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 24px;
-  background: linear-gradient(180deg, rgba(112, 178, 151, 0.18), rgba(112, 178, 151, 0.35));
-}
-
-.newton-block {
-  position: relative;
-  z-index: 1;
-  width: 124px;
-  height: 64px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #1f8c77, #0d5f54);
-  box-shadow: 0 20px 30px rgba(18, 96, 84, 0.18);
-  display: grid;
-  place-items: center;
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  transition: transform 180ms ease;
-}
-
-.newton-vector {
-  position: absolute;
-  left: 0;
-  top: 45%;
-  transform: translate(-10%, -50%);
-  color: var(--amber);
-  z-index: 2;
-}
-
-.newton-vector.force { color: var(--amber); }
-.newton-vector.friction { color: var(--blue); }
-.newton-vector.net { color: var(--primary); }
-
-.newton-vector svg {
-  width: 180px;
-  height: 48px;
-  overflow: visible;
-}
-
-.newton-vector text {
-  fill: currentColor;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.newton-vector path,
-.newton-vector line {
-  stroke: currentColor;
-  stroke-width: 3;
-  fill: none;
-}
-
-.newton-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 18px;
-  margin-top: 14px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.newton-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.newton-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.newton-dot.force { background: var(--amber); }
-.newton-dot.friction { background: var(--blue); }
-.newton-dot.net { background: var(--primary); }
-
-.graph-canvas {
-  min-height: 180px;
-}
-
-.graph-canvas svg {
-  width: 100%;
-  height: 180px;
-  color: var(--primary);
-}
+.newton-scene{height:clamp(315px,35vw,455px);position:relative;overflow:hidden;isolation:isolate;touch-action:pan-y}
+.newton-floor{position:absolute;left:0;right:0;bottom:18%;height:16px;border-top:3px solid #83c7c2;background:linear-gradient(#436a6d55,#285055bb);z-index:1}
+.newton-path{position:absolute;bottom:calc(18% + 16px);height:30%;left:10%;right:10%;border-left:1px dashed #65cbc665;border-right:1px dashed #65cbc665;pointer-events:none}
+.newton-equilibrium{position:absolute;top:24%;height:55%;left:50%;border-left:2px dashed #76a8a566;pointer-events:none}
+.newton-block{position:absolute;left:50%;bottom:calc(18% + 17px);transform:translateX(-50%);z-index:4;width:clamp(76px,11vw,112px);height:clamp(62px,8vw,82px);display:grid;place-items:center;border:2px solid #b5fff2;border-radius:14px;background:linear-gradient(145deg,#2eae98,#147266);color:white;font-size:17px;font-weight:800;box-shadow:0 12px 20px #081e2880;touch-action:none;cursor:ew-resize;user-select:none;transition:none!important}
+.newton-block:focus-visible,.newton-force-handle:focus-visible{outline:3px solid #ffcb69;outline-offset:4px}
+.newton-force-handle{position:absolute;z-index:7;left:58%;top:24%;transform:translate(-50%,-50%);display:grid;justify-items:center;min-width:60px;min-height:50px;cursor:ew-resize;touch-action:none;user-select:none;color:#ffe39e}
+.newton-force-handle span{width:54px;height:46px;border:2px solid #ffc871;border-radius:14px;display:grid;place-items:center;font-size:28px;background:#694e2e;color:#fff}
+.newton-force-handle small{position:absolute;top:50px;background:#28444c;color:#ffe39e;white-space:nowrap;border:1px solid #f8be7780;border-radius:8px;padding:5px 9px;font-size:13px;font-weight:750}
+.newton-force-vector,.newton-friction-vector{position:absolute;z-index:5;bottom:calc(18% + 115px);left:calc(var(--vector-percent,50) * 1%);width:var(--vector-size,0%);height:3px;background:#ffd086;transform:translateX(0);pointer-events:none}
+.newton-force-vector[data-direction=left],.newton-friction-vector[data-direction=left]{transform:translateX(-100%)}
+.newton-force-vector::after,.newton-friction-vector::after{content:'';position:absolute;right:-1px;top:-6px;border:7px solid transparent;border-left:12px solid #ffd086}
+.newton-force-vector[data-direction=left]::after,.newton-friction-vector[data-direction=left]::after{right:auto;left:-13px;border-left:7px solid transparent;border-right:12px solid #ffd086}
+.newton-friction-vector{bottom:calc(18% + 105px);background:#9bbdff}
+.newton-friction-vector::after{border-left-color:#9bbdff}
+.newton-friction-vector[data-direction=left]::after{border-right-color:#9bbdff}
+.newton-stage-tip{position:absolute;z-index:3;left:18px;top:14px;font-size:11px;letter-spacing:.04em;background:#082c32c9;color:#c1ede4;border:1px solid #427b7a;border-radius:9px;padding:9px 12px;max-width:70%;line-height:1.4;pointer-events:none}
+.newton-stage-tip b{color:#ffce7b}
+.newton-direction{position:absolute;z-index:3;bottom:6%;left:50%;transform:translateX(-50%);background:#173d42ee;color:#b6f2e6;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:800;white-space:nowrap}
+.newton-scene.hide-vectors .newton-force-vector,.newton-scene.hide-vectors .newton-friction-vector{display:none}
+.newton-quick{margin:12px 0 2px}
+@media(max-width:640px){.newton-scene{height:330px}.newton-stage-tip{font-size:10px;max-width:62%}.newton-force-handle{top:30%}.newton-force-vector{bottom:calc(18% + 105px)}.newton-friction-vector{bottom:calc(18% + 96px)}}

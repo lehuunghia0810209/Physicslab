@@ -1,0 +1,31 @@
+.simulation-measurement-panel{margin-top:24px;min-width:0;padding:18px}
+.simulation-measurement-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.simulation-measurement-heading h2{font-size:18px;margin:7px 0 4px}
+.simulation-measurement-heading p,.simulation-measurement-panel>[data-measure-status]{font-size:13px;color:var(--muted);margin:0}
+.simulation-measurement-actions{display:flex;gap:8px;flex-wrap:wrap}
+.simulation-measurement-actions .button{min-height:44px}
+.simulation-measurement-panel>[data-measure-status]{margin:12px 0}
+.simulation-measurement-panel .table-scroll{max-width:100%;overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:300px}
+.simulation-measurement-panel table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;text-align:right}
+.simulation-measurement-panel :is(th,td){padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+.simulation-measurement-panel th{position:sticky;top:0;background:var(--surface-alt);color:var(--muted);font-weight:650}
+.simulation-measurement-panel .empty-cell{text-align:center;white-space:normal;color:var(--muted);padding:22px}
+.simulation-measurement-panel>details{margin:12px 0;min-width:0}
+.simulation-measurement-panel summary{min-height:44px;padding:12px 0;cursor:pointer;font-weight:650}
+.experiment-name{display:grid;gap:8px;margin:16px 0;font-weight:650}
+.experiment-name input{min-height:44px;width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-alt);color:var(--ink);font:inherit}
+.experiment-select{display:flex;gap:8px;align-items:center;justify-content:center;min-height:44px;min-width:44px;cursor:pointer}
+.experiment-select input{width:20px;height:20px}
+.experiment-comparison select{min-height:44px;max-width:100%;background:var(--surface-alt);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.experiment-comparison input[type=range]{min-height:44px;width:100%;margin:0}
+.experiment-comparison .experiment-select{justify-content:flex-start;overflow-wrap:anywhere}
+.experiment-comparison .experiment-select input{flex-shrink:0}
+.experiment-comparison p{overflow-wrap:anywhere}
+.experiment-run{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--line);padding:14px 0}
+.experiment-run>div{min-width:0}.experiment-run strong{overflow-wrap:anywhere}.experiment-run small{display:block;color:var(--muted);margin-top:5px}
+.experiment-note{white-space:pre-wrap;overflow-wrap:anywhere}
+[data-experiment-setup],[data-run-preview]>p{overflow-wrap:anywhere}
+.experiment-notebook .student-notebook{margin:0;padding:14px;box-shadow:none}
+.experiment-notebook .student-notebook-evidence,.experiment-notebook .student-notebook-footer{grid-template-columns:1fr}
+@media print{.experiment-notebook{display:block!important}.experiment-notebook>summary{display:none}}
+@media(max-width:600px){.simulation-measurement-panel{padding:14px}.simulation-measurement-actions{width:100%}.simulation-measurement-actions .button{flex:1 1 120px}}

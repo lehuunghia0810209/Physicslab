@@ -35,3 +35,22 @@ test('Topic learning summaries exclude unattempted quizzes and count completed l
   assert.equal(summary.find(topic => topic.id === 'optics').averageBestScore, null);
   assert.ok(summary.every(topic => topic.lessonCount > 0));
 });
+
+
+test('AUD-001 browser regression: discovery mastery counts only legacy mechanics lessons', () => {
+  // The full 49-lesson reader uses physicslab.learning.v1; this legacy dashboard
+  // reflects the original four-step discovery lessons in physicslab.progress.v1.
+  const first = summarizeLearningProgress(lessons, categories, {
+    quizzes: { 'projectile-discovery': 100, 'hooke-discovery': 0 },
+    lessons: {}
+  }).find(item => item.id === 'mechanics');
+  assert.equal(first.lessonCount, 6);
+  assert.equal(first.attemptedCount, 2);
+  const second = summarizeLearningProgress(lessons, categories, {
+    quizzes: { 'projectile-discovery': 100, 'hooke-discovery': 0, 'newton-discovery': 100 },
+    lessons: {}
+  }).find(item => item.id === 'mechanics');
+  assert.equal(second.lessonCount, 6);
+  assert.equal(second.attemptedCount, 3);
+  assert.equal(second.averageBestScore, 67);
+});

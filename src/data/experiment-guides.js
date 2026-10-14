@@ -8,7 +8,7 @@ export const experimentGuides = Object.freeze({
   'momentum-collision': ['Điều chỉnh hai khối lượng, vận tốc và loại va chạm.', 'Tua qua thời điểm hai vật tiếp xúc; so sánh động lượng trước và sau.', 'Trong va chạm không đàn hồi, đại lượng nào bảo toàn và đại lượng nào giảm?'],
   'spring-oscillation': ['Kéo vật ra khỏi vị trí cân bằng, rồi phát dao động.', 'Quan sát vật qua hai biên và vị trí cân bằng; theo dõi năng lượng.', 'Tại vị trí nào vận tốc lớn nhất và thế năng đàn hồi nhỏ nhất?'],
   'wave-on-string': ['Kéo dây để thử biên độ, sau đó chọn sóng truyền hoặc sóng dừng.', 'Theo dõi nút sóng, bụng sóng và đầu dò.', 'Một điểm trên dây có đi theo sóng truyền đi hay chỉ dao động tại chỗ?'],
-  'electric-circuits': ['Kéo linh kiện để đổi điện trở và chọn mạch nối tiếp/song song.', 'Quan sát dòng điện, điện áp và công suất ở từng nhánh.', 'Tổng dòng điện các nhánh bằng dòng tổng trong mạch song song như thế nào?'],
+  'electric-circuits': ['Chọn linh kiện trong khay, kéo lên bàn và nối hai đầu tròn bằng dây.', 'Đóng/ngắt công tắc; đặt ampe kế nối tiếp và vôn kế song song.', 'So sánh dòng nguồn khi hai bóng mắc nối tiếp và song song.'],
   'electric-field': ['Kéo điện tích dương/âm và đầu dò trên bản đồ điện trường.', 'Đọc hướng véc-tơ điện trường và điện thế tại điểm khảo sát.', 'Điểm nào điện trường triệt tiêu khi hai điện tích cùng độ lớn?'],
   'magnetic-field': ['Thay dấu điện tích và góc giữa vận tốc với từ trường.', 'Quan sát sự đổi chiều lực Lorentz và suất điện động cảm ứng.', 'Khi vận tốc song song với B, lực từ tác dụng lên hạt bằng bao nhiêu?'],
   lens: ['Kéo vật lại gần và ra xa thấu kính.', 'Quan sát tia sáng, vị trí và chiều cao ảnh ở hai phía tiêu điểm.', 'Vì sao khi vật nằm trong tiêu cự, ảnh trở thành ảnh ảo?'],

@@ -1,12 +1,24 @@
 .wave-viewport, .wave-parameters { min-width: 0; }
 .wave-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .wave-toolbar strong { color: var(--primary); font-variant-numeric: tabular-nums; }
-#wave-scene { display: block; width: 100%; height: auto; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb,var(--primary) 5%,var(--surface)); }
+#wave-scene { display: block; width: 100%; height: auto; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb,var(--primary) 5%,var(--surface)); touch-action: none; user-select: none; }
 #wave-scene text { fill: var(--muted); font: 13px var(--font); }
 .wave-axis { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .wave-grid { stroke: var(--line); stroke-width: 1; }
 .wave-profile { fill: none; stroke: var(--primary); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .wave-probe { fill: var(--amber); stroke: var(--surface); stroke-width: 3; }
+.wave-probe-line { stroke: var(--amber); stroke-width: 1.5; stroke-dasharray: 5 6; opacity: .72; pointer-events: none; }
+.wave-boundary-post { stroke: var(--muted); stroke-width: 8; stroke-linecap: round; }
+.wave-boundary-post.is-free { stroke-width: 3; stroke-dasharray: 8 6; }
+.wave-control { cursor: grab; outline: none; }
+.wave-control:active { cursor: grabbing; }
+.wave-control:focus-visible .wave-handle-halo { stroke: var(--ink); stroke-width: 3; }
+.wave-hit-target { fill: transparent; pointer-events: all; }
+.wave-handle-halo { fill: color-mix(in srgb,var(--primary) 20%,transparent); stroke: color-mix(in srgb,var(--primary) 55%,transparent); stroke-width: 1; }
+.wave-handle, .wave-source-handle { fill: var(--primary); stroke: var(--surface); stroke-width: 3; }
+.wave-source-handle { fill: var(--orange,var(--amber)); }
+.wave-source-arm { stroke: var(--orange,var(--amber)); stroke-width: 5; stroke-linecap: round; }
+.wave-control text { fill: var(--ink) !important; font-size: 11px !important; font-weight: 700 !important; letter-spacing: .04em; pointer-events: none; }
 .wave-readouts { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 1px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--line); }
 .wave-readouts > div { display: flex; flex-direction: column; gap: 2px; padding: 12px; background: var(--surface); min-height: 78px; }
 .wave-readouts span, .wave-readouts small { color: var(--muted); font-size: 12px; }
@@ -21,6 +33,7 @@
 .wave-mode { display: grid; gap: 7px; font-weight: 550; }
 .wave-mode select { min-height: 44px; padding: 8px 10px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
 .wave-parameter { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; margin: 14px 0; }
+.wave-parameter[hidden], .wave-mode[hidden] { display: none; }
 .wave-parameter span { font-weight: 550; }
 .wave-parameter strong { color: var(--muted); font-size: 13px; }
 .wave-parameter input { grid-column: 1/-1; width: 100%; min-height: 44px; }

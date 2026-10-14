@@ -49,3 +49,26 @@
 .gas-readouts strong { font-size:clamp(17px,1.6vw,22px); color:var(--ink); }
 .gas-controls { overflow-wrap:anywhere; }
 @media(prefers-reduced-motion:reduce){.gas-piston{transition:none}}
+/* Hands-on molecular gas experiment: tangible pump / heat / vent / cool actions. */
+.gas-apparatus-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:15px;}
+.gas-apparatus-actions button{min-height:56px;padding:9px 6px;border:1px solid var(--line);background:var(--surface-alt);border-radius:12px;color:var(--ink);font-size:13px;font-weight:700;line-height:1.5;cursor:pointer;}
+.gas-apparatus-actions button:hover,.gas-apparatus-actions button:focus-visible{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 13%,var(--surface));outline-offset:3px;}
+#gas-scene{border-radius:18px;min-height:280px;}
+#gas-scene .gas-meter-box{stroke:var(--line);stroke-width:1.5;fill:var(--surface);}
+#gas-scene .gas-meter-caption{font-size:9px;letter-spacing:.08em;fill:var(--muted);}
+#gas-scene .gas-meter-digits{font-size:13px;font-weight:800;fill:var(--primary);}
+#gas-scene[data-thermal=hot] .gas-particle{fill:#f9a964;stroke:#ffdb9f;}
+#gas-scene[data-thermal=cold] .gas-particle{fill:#92caee;stroke:#c7e7fd;}
+#gas-piston{cursor:ew-resize;touch-action:none;outline-offset:3px;}
+.gas-piston-hit{fill:transparent;stroke:transparent;}
+#gas-piston-visual{pointer-events:none;}
+#gas-piston:hover + .gas-piston,#gas-piston:focus-visible + .gas-piston{stroke:var(--amber);stroke-width:4;}
+.gas-gesture-hint{font-size:14px;line-height:1.65;}
+@media(max-width:600px){.gas-apparatus-actions{grid-template-columns:repeat(2,minmax(0,1fr));}.gas-apparatus-actions button{min-height:48px}.gas-readouts{grid-template-columns:repeat(2,minmax(0,1fr));}}
+/* Phase II: set the target volume directly; dashed line distinguishes target from current piston. */
+.gas-preset-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.gas-preset-actions button{flex:1 1 125px;min-height:44px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface-alt);color:var(--ink);font:650 13px var(--font);cursor:pointer}
+.gas-preset-actions button:hover,.gas-preset-actions button:focus-visible{border-color:var(--primary)}
+.gas-target-line{stroke:var(--amber);stroke-width:3;stroke-dasharray:9 7;opacity:.9;pointer-events:none}
+#gas-scene .gas-target-label{fill:var(--amber);font-size:12px;font-weight:700;pointer-events:none}
+#gas-target-line[hidden]{display:none}

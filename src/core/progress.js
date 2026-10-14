@@ -1,5 +1,5 @@
 const KEY = 'physicslab.progress.v1';
-const fresh = () => ({ version: 1, visited: {}, experiments: {}, lessons: {}, quizzes: {}, activity: [], sessions: {} });
+const fresh = () => ({ version: 1, visited: {}, experiments: {}, lessons: {}, quizzes: {}, activity: [], sessions: {}, notebooks: {} });
 const record = value => value && typeof value === 'object' && !Array.isArray(value);
 const validId = value => typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
 const validEquipmentId = value => typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$/.test(value);
@@ -74,50 +74,135 @@ function clean(raw) {
       if (Object.keys(cleanSession).length) data.sessions[id] = cleanSession;
     }
   }
+  if (record(raw.notebooks)) {
+    for (const [id, value] of Object.entries(raw.notebooks)) {
+      if (!validId(id) || !record(value)) continue;
+      const notebook = {};
+      for (const field of ['objective', 'hypothesis', 'observations', 'conclusion']) {
+        if (typeof value[field] === 'string') notebook[field] = value[field].slice(0, 4000);
+      }
+      if (Number.isInteger(value.selfAssessment) && value.selfAssessment >= 1 && value.selfAssessment <= 5) notebook.selfAssessment = value.selfAssessment;
+      if (Number.isFinite(value.updatedAt) && Math.abs(value.updatedAt) <= 8.64e15) notebook.updatedAt = value.updatedAt;
+      if (Object.keys(notebook).length) data.notebooks[id] = notebook;
+    }
+  }
   return data;
 }
+/** Keep the v1 schema; validate imports before replacing a learner's current progress. */
+export function validateProgressSnapshot(snapshot) {
+  if (!record(snapshot) || snapshot.version !== 1 || !record(snapshot.visited) || !record(snapshot.lessons)) {
+    throw new RangeError('Tệp tiến độ không đúng phiên bản hoặc thiếu dữ liệu PhysicsLab.');
+  }
+  return clean(snapshot);
+}
+
 export function createProgress(storage) {
   let data = fresh();
+  let raw = null;
   let persistent = !!storage;
-  try {
-    const raw = storage?.getItem(KEY);
-    try { data = clean(JSON.parse(raw ?? 'null')); } catch { /* Corrupted data starts clean. */ }
-  } catch { persistent = false; }
-  function save() { try { storage?.setItem(KEY, JSON.stringify(data)); } catch { persistent = false; } }
-  function activity(id, label) {
-    data.activity = [{ id, label, at: Date.now() }, ...data.activity].slice(0, 20); save();
+  let readable = !!storage;
+  let damaged = false;
+  let issue = '';
+  if (storage) {
+    try {
+      raw = storage.getItem(KEY);
+      if (raw !== null) {
+        const parsed = JSON.parse(raw);
+        if (!record(parsed) || parsed.version !== 1) throw new RangeError('Kho tiến độ không đúng phiên bản.');
+        data = clean(parsed);
+      }
+    } catch (error) {
+      if (raw !== null) damaged = true;
+      else readable = false;
+      persistent = false;
+      issue = damaged
+        ? 'Kho tiến độ cũ có lỗi hoặc khác phiên bản. Bản gốc được bảo vệ; hãy tải bản cứu hộ trước khi khôi phục.'
+        : `Không đọc được kho tiến độ; chỉ giữ thay đổi trong bộ nhớ. ${error.message}`;
+    }
   }
-  save(); // Probe persistence now so the shell can report a storage fallback immediately.
-  return { get: () => structuredClone(data), isPersistent: () => persistent,
-    restore(snapshot) {
-      if (!record(snapshot) || snapshot.version !== 1) throw new RangeError('Tệp tiến độ không đúng phiên bản PhysicsLab.');
-      const cleanSnapshot = clean(snapshot);
-      data = cleanSnapshot; save();
+  /** A stale tab may retain its unsaved draft for export, never overwrite the other tab. */
+  function save(next, { allowDamaged = false } = {}) {
+    data = next;
+    if (damaged && !allowDamaged) { persistent = false; return false; }
+    if (!storage || !readable) { persistent = false; return false; }
+    let current;
+    try { current = storage.getItem(KEY); }
+    catch (error) {
+      persistent = false;
+      issue = `Không đọc được kho tiến độ để kiểm tra xung đột. ${error.message}`;
+      return false;
+    }
+    if (current !== raw) {
+      persistent = false;
+      issue = 'Tiến độ đã thay đổi ở tab khác. Hãy xuất dữ liệu phiên này và tải lại trang trước khi ghi tiếp.';
+      return false;
+    }
+    try {
+      const encoded = JSON.stringify(next);
+      storage.setItem(KEY, encoded);
+      raw = encoded;
+      persistent = true;
+      damaged = false;
+      issue = '';
+      return true;
+    } catch (error) {
+      persistent = false;
+      issue = `Không lưu được tiến độ. Dữ liệu vẫn ở trong bộ nhớ; hãy xuất bản sao trước khi thoát. ${error.message}`;
+      return false;
+    }
+  }
+  function change(update) {
+    const next = structuredClone(data);
+    update(next);
+    save(next);
+  }
+  function activity(next, id, label) {
+    next.activity = [{ id, label, at: Date.now() }, ...next.activity].slice(0, 20);
+  }
+  // Probe only a *new* key. Never rewrite an existing/invalid/unsupported schema on startup.
+  if (raw === null && readable) save(data);
+  return {
+    get: () => structuredClone(data),
+    isPersistent: () => persistent && !damaged,
+    isDamaged: () => damaged,
+    issue: () => issue,
+    rescue: () => raw,
+    restore(snapshot, { allowDamaged = false } = {}) {
+      const restored = validateProgressSnapshot(snapshot);
+      if (damaged && !allowDamaged) throw new Error('Kho cũ đang được bảo vệ. Cần xác nhận khôi phục đè sau khi tải bản cứu hộ.');
+      save(restored, { allowDamaged });
       return structuredClone(data);
     },
     visit(id, label) {
       if (!validId(id) || typeof label !== 'string') throw new TypeError('Mã và tên hoạt động phải hợp lệ.');
-      if (!data.visited[id]) { data.visited[id] = Date.now(); activity(id, label); }
+      if (!data.visited[id]) change(next => { next.visited[id] = Date.now(); activity(next, id, label); });
     },
     complete(id) {
       if (!validId(id)) throw new TypeError('Mã mô phỏng không hợp lệ.');
-      data.experiments[id] = (data.experiments[id] || 0) + 1; activity(id, 'Hoàn thành một lượt mô phỏng');
+      change(next => { next.experiments[id] = (next.experiments[id] || 0) + 1; activity(next, id, 'Hoàn thành một lượt mô phỏng'); });
     },
     lesson(id, step) {
       if (!validId(id) || !Number.isInteger(step) || step < 1 || step > 4) throw new RangeError('Tiến độ bài học phải có mã hợp lệ và bước nguyên từ 1 đến 4.');
-      data.lessons[id] = Math.max(data.lessons[id] || 0, step); save();
+      change(next => { next.lessons[id] = Math.max(next.lessons[id] || 0, step); });
     },
     quiz(id, score) {
       if (!validId(id) || !Number.isInteger(score) || score < 0 || score > 100) throw new RangeError('Điểm câu hỏi phải là số nguyên từ 0 đến 100.');
-      data.quizzes[id] = Math.max(data.quizzes[id] || 0, score); activity(id, `Trả lời câu hỏi: ${score}%`);
+      change(next => { next.quizzes[id] = Math.max(next.quizzes[id] || 0, score); activity(next, id, `Trả lời câu hỏi: ${score}%`); });
     },
     session(id, value) {
       if (!validId(id) || !record(value)) throw new TypeError('Mã phiên và dữ liệu phiên phải hợp lệ.');
       const sanitized = clean({ version: 1, sessions: { [id]: value } }).sessions[id];
       if (!sanitized) throw new RangeError('Dữ liệu phiên không chứa thông tin hợp lệ.');
-      data.sessions[id] = sanitized; save();
+      change(next => { next.sessions[id] = sanitized; });
     },
-    clear() { data = fresh(); save(); }
+    notebook(id, value) {
+      if (!validId(id) || !record(value)) throw new TypeError('Mã thí nghiệm và nội dung sổ thực hành phải hợp lệ.');
+      const sanitized = clean({ version: 1, notebooks: { [id]: value } }).notebooks[id];
+      if (!sanitized) throw new RangeError('Sổ thực hành không chứa nội dung hợp lệ.');
+      change(next => { next.notebooks[id] = sanitized; });
+      return structuredClone(sanitized);
+    },
+    clear() { change(next => Object.assign(next, fresh())); }
   };
 }
 export function browserStorage() { try { return window.localStorage; } catch { return undefined; } }

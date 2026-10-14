@@ -1,0 +1,79 @@
+/* PhysicsLab — consistent, stage-first UX for phase 1/2. No new runtime dependencies. */
+.physics-first-layout{grid-template-columns:minmax(0,1fr) minmax(260px,290px)!important;align-items:start;gap:16px}
+.physics-first-panel{padding:clamp(12px,2vw,22px)!important;overflow:hidden;box-shadow:0 12px 32px #071c2410}
+.physics-stage,.mechanics-scene{position:relative;border-radius:17px;border:1px solid color-mix(in srgb,var(--primary) 31%,var(--line));background:radial-gradient(ellipse at 50% 100%,#2864584d,transparent 70%),linear-gradient(145deg,#17333f,#0d2631)!important;color:#e6faf4}
+.physics-stage::before,.mechanics-scene::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(#9adcd00b 1px,transparent 1px),linear-gradient(90deg,#9adcd00b 1px,transparent 1px);background-size:32px 32px}
+.physics-first-controls{padding:18px!important;min-width:0}
+.physics-first-caption{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 12px}
+.physics-first-controls .parameter{display:grid;gap:4px;margin:10px 0}
+.physics-first-controls .parameter-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px}
+.physics-first-controls .parameter-title label{font-size:13px;font-weight:650}
+.physics-first-controls .parameter-title output{font-size:13px;font-weight:750;color:var(--primary);white-space:nowrap}
+.physics-first-controls .parameter input[type=range]{min-height:48px;width:100%}
+.physics-first-play{padding:12px 0 8px!important;flex-wrap:wrap;gap:8px}
+.physics-first-play button{min-height:44px}
+.physics-first-quick{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.physics-first-quick button{font-size:13px;min-width:44px;min-height:44px;padding:8px 13px}
+.physics-first-check{min-height:44px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:650}
+.physics-first-check input{width:18px;height:18px;accent-color:var(--primary)}
+.physics-first-meters,.mechanics-measurements{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))!important;margin:12px 0 4px}
+.physics-first-meters>div,.mechanics-measurements>div{min-height:80px;padding:10px 12px}
+.physics-first-meters strong,.mechanics-measurements strong{font-size:clamp(17px,1.7vw,22px)}
+.physics-first-feedback{margin:12px 0 0;padding:12px;border-radius:10px;background:color-mix(in srgb,var(--primary) 10%,var(--surface));font-size:13px;line-height:1.6;color:var(--ink)}
+.physics-first-graphs{margin:20px 0;padding:14px 18px;border:1px solid var(--line);border-radius:15px;background:var(--surface)}
+.physics-first-graphs>summary{cursor:pointer;min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:var(--ink)}
+.physics-first-graphs>summary span{font-size:12px;color:var(--muted)}
+.physics-first-graphs .graphs-grid{margin-top:14px}
+.mechanics-stage-hud{position:absolute;z-index:2;top:12px;left:14px;right:14px;display:flex;gap:6px;justify-content:space-between;flex-wrap:wrap;pointer-events:none}
+.mechanics-stage-hud span{background:#0c3541dd;color:#e2f9f0;border:1px solid #54958d77;padding:7px 10px;border-radius:10px;font-weight:750;font-size:12px}
+.mechanics-force-arrows{position:absolute;bottom:32%;left:50%;transform:translateX(-50%);width:210px;height:35px;pointer-events:none;z-index:6;display:flex;justify-content:center;align-items:center;gap:8px;font-size:12px;font-weight:800}
+.mechanics-force-arrows .applied{color:#ffc678}.mechanics-force-arrows .friction{color:#94b7ff}
+.mechanics-energy-bars{display:flex;gap:12px;align-items:center;margin:12px 2px;flex-wrap:wrap}
+.mechanics-energy-bars .energy-item{flex:1;min-width:100px;font-size:12px;color:var(--muted);font-weight:650}
+.mechanics-energy-bars progress{display:block;appearance:auto;width:100%;height:13px;margin-top:6px;accent-color:var(--primary)}
+.mechanics-energy-bars .energy-item:nth-child(2) progress{accent-color:#f6b871}
+.mechanics-stage-rail{position:absolute;bottom:18%;left:7%;right:7%;height:6px;border-radius:12px;background:#91cfc755;z-index:1}
+.mechanics-stage-rail::before{content:'';position:absolute;left:50%;height:90px;bottom:1px;border-left:2px dashed #88cec65c}
+.mechanics-scene .force-label{top:16%;left:13%;font-size:12px;color:#ffd095}
+.mechanics-scene .force-arrow{top:18%!important;left:26%;width:62px!important;height:48px!important;font-weight:750;color:#ffd18e!important;transition:none!important}
+.mechanics-scene .motion-floor,.mechanics-scene .collision-floor{bottom:18%!important;height:17px!important;background:#4c827a!important;border-top:2px solid #a1e5dd}
+.mechanics-scene .motion-block,.mechanics-scene .collision-block{bottom:calc(18% + 17px)!important;transition:none!important;min-width:58px;min-height:60px}
+.mechanics-scene .oscillator-spring{top:calc(50% - 5px);height:10px;transition:none!important}
+.mechanics-scene .oscillator-mass{transition:none!important}
+.mechanics-scene #scene-caption{font-size:12px;max-width:92%;bottom:7%!important;white-space:normal;text-align:center}
+.mechanics-scene .collision-track,.mechanics-scene .oscillator-track,.mechanics-scene .force-track{isolation:isolate}
+.mechanics-panel .mechanics-parameter{margin:10px 0}
+.mechanics-panel .mechanics-parameter input{min-height:44px}
+@media(max-width:960px){.physics-first-layout{grid-template-columns:minmax(0,1fr)!important}}
+@media(max-width:620px){.physics-first-panel{padding:11px!important}.physics-first-controls{padding:14px!important}.physics-first-graphs{padding:12px}.physics-first-graphs .graphs-grid{grid-template-columns:1fr}.mechanics-scene{min-height:310px!important}.physics-first-quick{gap:6px}.physics-first-quick button{padding:8px 9px;font-size:12px}}
+/* Discoverable action presets have a hit target independent from decorative art. */
+.mechanics-quick{margin:10px 0 0;position:relative;z-index:8}
+.mechanics-scene{min-height:clamp(320px,38vw,430px)!important;touch-action:pan-y}
+.mechanics-scene .force-track,.mechanics-scene .collision-track,.mechanics-scene .oscillator-track{z-index:1}
+.mechanics-scene .oscillator-anchor{z-index:2}
+.mechanics-scene .oscillator-track .oscillator-center{pointer-events:none}
+.mechanics-scene .force-arrow{font-size:28px}
+.mechanics-scene .collision-block{font-size:12px;min-width:64px;min-height:64px}
+.mechanics-scene .oscillator-mass{font-size:12px;min-width:64px;min-height:64px}
+.mechanics-visual-key{flex-wrap:wrap}
+.physics-first-projectile-stage{border-radius:15px;overflow:hidden;margin:10px 0;background:linear-gradient(#14343a,#0d2833);padding:4px}
+.physics-first-projectile-stage .projectile-scene{min-height:315px;max-height:560px}
+.physics-first-inclined-stage{margin-top:12px}
+.physics-first-inclined-stage svg{max-height:510px}
+.physics-first-inclined-stage .inclined-info{fill:#c4d8d9}
+body[data-theme=light] .physics-first-projectile-stage .scene-grid text{fill:#b9d6d9}
+@media(max-width:620px){.mechanics-quick{gap:5px}.mechanics-quick button{font-size:12px;min-height:44px;padding:7px 9px}.physics-first-projectile-stage .projectile-scene{min-height:255px}}
+/* Individual physical apparatus styling, not a repeated generic slider card. */
+.mechanics-scene--friction[data-surface=smooth] .motion-floor{background:linear-gradient(90deg,#98def5,#367e9b)!important}
+.mechanics-scene--friction[data-surface=wood] .motion-floor{background:repeating-linear-gradient(90deg,#986b43 0px,#986b43 42px,#ad865e 44px,#ad865e 49px)!important}
+.mechanics-scene--friction[data-surface=rough] .motion-floor{background:repeating-linear-gradient(115deg,#807869 0px,#807869 8px,#666357 8px,#666357 15px)!important}
+.mechanics-scene--work::after{content:'ĐIỂM ĐÍCH';font-size:11px;font-weight:750;letter-spacing:.03em;position:absolute;bottom:26%;right:13%;color:#c7e6cb;background:#1a454b9c;padding:6px 9px;border-radius:8px;pointer-events:none}
+.mechanics-scene--collision .collision-block::after{content:attr(data-speed);display:block;position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#0c3542eb;border:1px solid #659a9a;border-radius:8px;color:#ecfaf6;white-space:nowrap;font-size:11px;font-weight:650;padding:4px 7px;pointer-events:none}
+.mechanics-scene--collision .collision-block{border-radius:12px 12px 6px 6px}
+.mechanics-scene--oscillation .oscillator-center::before{content:'x = 0';position:absolute;left:7px;top:5px;font-size:12px;color:#beeee7;white-space:nowrap}
+.mechanics-scene--oscillation .oscillator-spring{background:repeating-linear-gradient(118deg,#86b3ff 0 3px,transparent 3px 11px,#86b3ff 11px 14px,transparent 14px 22px)}
+.mechanics-scene--friction .motion-block{background:linear-gradient(135deg,#ad8663,#6d4730);border-color:#eccb9c}
+.mechanics-scene--work .motion-block{background:linear-gradient(135deg,#416fb8,#27476d);border-color:#b4d3ff}
+/* New mechanics routes display the physics stage BEFORE lengthy discovery/classroom panels. */
+.simulation-layout.physics-first-layout+.simulation-studio-bar{margin-top:20px}
+.mechanics-layout.physics-first-layout+.simulation-studio-bar{margin-top:20px}

@@ -108,3 +108,19 @@
 #hooke-apparatus svg { max-width:580px; }
 #hooke-apparatus [data-hooke-weight] { outline:none; }
 #hooke-apparatus [data-hooke-weight]:focus-visible { stroke:var(--amber);stroke-width:5; }
+/* Hands-on lab worksheet: observation comes before the theoretical answer. */
+.lab-activity-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0 17px;}
+.lab-activity-flow>div{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:12px;min-width:0;}
+.lab-activity-flow b{font-size:11px;letter-spacing:.08em;color:var(--primary);display:block;line-height:1.5;margin-bottom:5px;}
+.lab-activity-flow span{font-size:13px;line-height:1.6;color:var(--ink);display:block;}
+.lab-prediction-detail{min-width:0;flex:1 1 280px;}
+.lab-prediction-detail summary{cursor:pointer;font-weight:700;font-size:13px;line-height:1.6;min-height:36px;}
+.lab-prediction-detail output{display:block;font-size:14px;font-weight:720;line-height:1.6;overflow-wrap:anywhere;margin:8px 0;}
+.gas-lab-preview{margin:0 0 3px;}
+.gas-lab-preview svg{width:100%;height:95px;display:block;}
+@media(max-width:700px){.lab-activity-flow{grid-template-columns:1fr}.lab-activity-flow>div{padding:9px}.lab-live-strip .lab-prediction-detail{flex:1 1 100%;}}
+
+/* R4: Gas is a complete, independent workbench within the laboratory shell. */
+#gas-workspace .page-heading{display:none}
+#gas-workspace .gas-layout{margin-top:0}
+#gas-workspace .gas-apparatus-actions button{min-height:48px}

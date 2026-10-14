@@ -1,11 +1,24 @@
+const PROJECTILE_COLUMNS = [
+  { key: 't', csv: 't_s' }, { key: 'x', csv: 'x_m' }, { key: 'y', csv: 'y_m' },
+  { key: 'vx', csv: 'vx_m_s' }, { key: 'vy', csv: 'vy_m_s' }, { key: 'speed', csv: 'speed_m_s' }
+];
+
 export class MeasurementSystem {
-  constructor(limit = 100) { this.rows = []; this.limit = limit; }
+  constructor(limit = 100, columns = PROJECTILE_COLUMNS) {
+    if (!Number.isInteger(limit) || limit < 1 || !Array.isArray(columns) || !columns.length
+      || columns.some(column => !column || typeof column.key !== 'string' || !column.key)) {
+      throw new RangeError('Cấu hình sổ đo không hợp lệ.');
+    }
+    this.rows = []; this.limit = limit; this.columns = columns.map(column => ({ ...column }));
+  }
   capture(state) {
     if (!state || typeof state !== 'object' || this.rows.length >= this.limit) return false;
-    const values = ['t', 'x', 'y', 'vx', 'vy', 'speed'];
-    if (!values.every(key => Number.isFinite(state[key]))) return false;
-    this.rows.push({ t: state.t, x: state.x, y: state.y, vx: state.vx, vy: state.vy, speed: state.speed }); return true;
+    if (!this.columns.every(({ key }) => Number.isFinite(state[key]))) return false;
+    this.rows.push(Object.fromEntries(this.columns.map(({ key }) => [key, state[key]]))); return true;
   }
   clear() { this.rows = []; }
-  csv() { return ['t_s,x_m,y_m,vx_m_s,vy_m_s,speed_m_s', ...this.rows.map(r => [r.t, r.x, r.y, r.vx, r.vy, r.speed].map(v => Number(v).toFixed(6)).join(','))].join('\n'); }
+  csv() {
+    return [this.columns.map(column => column.csv || column.key).join(','),
+      ...this.rows.map(row => this.columns.map(({ key }) => Number(row[key]).toFixed(6)).join(','))].join('\n');
+  }
 }

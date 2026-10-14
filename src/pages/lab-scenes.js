@@ -46,3 +46,9 @@ export function labSceneMarkup(experiment,setup){
  const drag=param ? `<g data-lab-drag-handle role="slider" tabindex="0" aria-label="Thay đổi ${escapeHtml(param.label)} trên sơ đồ" aria-valuemin="${param.min}" aria-valuemax="${param.max}" aria-valuenow="${setup[param.key]}" aria-valuetext="${setup[param.key]} ${escapeHtml(param.unit)}"><path d="M90 321H630" class="lab-drag-track"/><path d="M90 321H${handleX}" class="lab-drag-fill"/><circle cx="${handleX}" cy="321" r="13" class="lab-drag-dot"/><rect x="74" y="295" width="572" height="54" fill="transparent" /></g><text x="91" y="297" class="lab-figure-label">KÉO CHẤM ĐỂ ĐỔI: ${escapeHtml(param.label)} · ${fmt(setup[param.key])} ${escapeHtml(param.unit)}</text>` : '';
  return `<div class="lab-figure" aria-label="Mô hình trực quan thí nghiệm ${escapeHtml(experiment.title)}"><svg viewBox="0 0 720 354" role="img" aria-label="Sơ đồ bố trí và hiện tượng ${escapeHtml(experiment.title)}"><defs><pattern id="lab-figure-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="currentColor" stroke-opacity=".08"/></pattern></defs><rect width="720" height="354" fill="url(#lab-figure-grid)"/>${scene(experiment,setup)}${drag}</svg><span class="lab-figure-note">HÌNH MINH HỌA THIẾT BỊ · KHÔNG DÙNG ĐỂ ĐỌC SỐ ĐO</span></div>`;
 }
+
+/** Lightweight scientific thumbnail; the large scene remains independently interactive. */
+export function labPreviewMarkup(experiment){
+ const setup=Object.fromEntries(experiment.parameters.map(item=>[item.key,item.value]));
+ return `<svg viewBox="0 35 720 260" role="img" aria-label="Sơ đồ thí nghiệm ${escapeHtml(experiment.title)}">${scene(experiment,setup)}</svg>`;
+}

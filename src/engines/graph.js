@@ -9,7 +9,9 @@ export class GraphRenderer {
   constructor(container, { key, label, unit, role = 'teal', xKey = 't', xLabel = 't (s)' }) {
     this.key = key; this.unit = unit; this.xKey = xKey; this.xLabel = xLabel;
     this.zoomScale = 1; this.zoomCenter = null;
-    container.innerHTML = `<div class="graph-title"><h3>${label}</h3><span>${unit}</span></div>`;
+    container.innerHTML = '<div class="graph-title"><h3></h3><span></span></div>';
+    container.querySelector('h3').textContent = label;
+    container.querySelector('.graph-title span').textContent = unit;
     this.svg = svg('svg', { viewBox: '0 0 400 170', role: 'img', 'aria-label': `Đồ thị ${label}, đơn vị ${unit}` });
     this.svg.classList.add('graph-svg', `graph--${role}`); container.append(this.svg);
     this.live = document.createElement('p'); this.live.className = 'graph-value'; container.append(this.live);
@@ -17,6 +19,7 @@ export class GraphRenderer {
     this.tools.className = 'graph-tools';
     this.tools.innerHTML = `<span class="graph-tools-hint">Chạm vào đường để đọc số liệu</span><div role="group" aria-label="Tùy chọn đồ thị"><button type="button" data-graph-action="zoom-in" aria-label="Phóng to trục thời gian" title="Phóng trục ngang">＋</button><button type="button" data-graph-action="zoom-out" aria-label="Thu nhỏ trục thời gian" title="Thu nhỏ trục ngang">−</button><button type="button" data-graph-action="reset" aria-label="Đưa đồ thị về vừa khung" title="Vừa khung">⊞</button><button type="button" data-graph-action="csv" aria-label="Xuất dữ liệu đồ thị CSV" title="Tải số liệu CSV">CSV ↓</button></div>`;
     container.append(this.tools);
+    this.tools.querySelector('[role="group"]').insertAdjacentHTML('beforeend','<button type="button" data-graph-action="pan-left" aria-label="Dịch khung đồ thị sang trái">←</button><button type="button" data-graph-action="pan-right" aria-label="Dịch khung đồ thị sang phải">→</button>');
     this.tools.addEventListener('click', event => {
       const button = event.target.closest('button[data-graph-action]');
       if (!button) return;
@@ -26,6 +29,7 @@ export class GraphRenderer {
       if (action === 'reset') { this.zoomScale = 1; this.zoomCenter = null; }
       else if (action === 'zoom-in') { this.zoomCenter = (this.xMin + this.xMax) / 2; this.zoomScale = Math.min(8, this.zoomScale * 2); }
       else if (action === 'zoom-out') { this.zoomCenter = (this.xMin + this.xMax) / 2; this.zoomScale = Math.max(1, this.zoomScale / 2); }
+      else if (action.startsWith('pan-')) this.zoomCenter = (this.xMin+this.xMax)/2+(action==='pan-left'?-1:1)*(this.xMax-this.xMin)*.4;
       this.setModel(this.model);
     });
     this.syncTools();
@@ -61,6 +65,7 @@ export class GraphRenderer {
     this.tools.querySelector('[data-graph-action="zoom-in"]').disabled = !hasData || this.zoomScale >= 8;
     this.tools.querySelector('[data-graph-action="zoom-out"]').disabled = !hasData || this.zoomScale <= 1;
     this.tools.querySelector('[data-graph-action="reset"]').disabled = !hasData || this.zoomScale <= 1;
+    for(const button of this.tools.querySelectorAll('[data-graph-action^="pan-"]'))button.disabled=!this.model||this.zoomScale<=1;
   }
   exportCsv() {
     if (!this.series?.length) return;
@@ -81,7 +86,8 @@ export class GraphRenderer {
       try { comparison = sampleSeries(this.compareModel, this.xKey, this.key); }
       catch { this.compareModel = null; }
     }
-    const bounds = seriesBounds(comparison ? [data, comparison] : [data], this.xKey, this.key);
+    const extra = (this.additionalComparisons || []).map(model=>sampleSeries(model,this.xKey,this.key));
+    const bounds = seriesBounds([data,...(comparison?[comparison]:[]),...extra], this.xKey, this.key);
     // Zoom only affects the view; sampled data and all physical calculations remain unchanged.
     this.fullXMin = bounds.xMin; this.fullXMax = bounds.xMax;
     const normalizedMax = bounds.xMax > bounds.xMin ? bounds.xMax : bounds.xMin + 1;
@@ -108,6 +114,9 @@ export class GraphRenderer {
     if (comparison) {
       this.svg.append(svg('path', { class: 'graph-comparison-line', fill: 'none', 'clip-path': `url(#${clipId})`, d: path(comparison.map(p => [this.x(p[this.xKey]), this.y(p[this.key])])) }));
     }
+    for(const points of extra){
+      this.svg.append(svg('path',{class:'graph-extra-comparison-line',fill:'none',stroke:'var(--blue)','stroke-width':2.5,'stroke-dasharray':'2 5','clip-path':`url(#${clipId})`,d:path(points.map(p=>[this.x(p[this.xKey]),this.y(p[this.key])]))}));
+    }
     this.svg.append(
       svg('path', { class: 'graph-line', fill: 'none', 'clip-path': `url(#${clipId})`, d: path(data.map(p => [this.x(p[this.xKey]), this.y(p[this.key])])) }),
       svg('text', { x: 378, y: 169, 'text-anchor': 'end' }, this.xLabel)
@@ -124,9 +133,14 @@ export class GraphRenderer {
   }
   /** Optional second physical model. No mutation of either model or stored progress. */
   setComparison(model = null) {
+    this.additionalComparisons = [];
     this.compareModel = model;
     this.svg.setAttribute('aria-label', `Đồ thị ${this.key}, đơn vị ${this.unit}${model ? ', có đường tham chiếu nét đứt' : ''}`);
     if (this.model) this.setModel(this.model);
+  }
+  setRecordedRuns(models) {
+    this.compareModel=models[1]||null;this.additionalComparisons=models.slice(2);
+    this.zoomScale=1;this.zoomCenter=null;this.setModel(models[0]);
   }
   inspect(index) {
     if (!this.series?.length) return;
@@ -140,6 +154,7 @@ export class GraphRenderer {
     this.inspectionDot?.setAttribute('cy', cy);
     this.inspectionDot?.setAttribute('visibility', 'visible');
     this.live.textContent = `${this.xLabel} = ${format(point[this.xKey])} · ${this.key} = ${format(point[this.key])} ${this.unit}`;
+    this.onInspect?.(point[this.xKey]);
   }
   clearInspection() {
     if (this.inspectionIndex === null) return;
@@ -155,7 +170,7 @@ export class GraphRenderer {
     if (points.some(point => [xErrorKey, yErrorKey].filter(Boolean).some(key => !Number.isFinite(point[key]) || point[key] < 0))) {
       throw new TypeError('Độ không đảm bảo trên đồ thị phải hữu hạn và không âm.');
     }
-    this.model = null; this.series = [...points]; this.compareModel = null; this.inspectionIndex = null;
+    this.model = null; this.series = [...points]; this.compareModel = null; this.additionalComparisons=[]; this.inspectionIndex = null;
     this.zoomScale = 1; this.zoomCenter = null; this.syncTools();
     this.svg.removeAttribute('tabindex'); this.svg.removeAttribute('aria-description');
     this.xKey = xKey; this.xLabel = xLabel; this.unit = yLabel;

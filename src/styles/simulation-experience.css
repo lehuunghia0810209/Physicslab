@@ -67,6 +67,7 @@ body[data-theme=dark] .mechanics-scene { background:linear-gradient(180deg,#1a36
 
 /* Direct launch aim — original controls remain accessible alternatives. */
 .launch-aim-line { stroke:var(--amber); stroke-width:4; stroke-dasharray:5 6; opacity:.8; pointer-events:none; }
+.launch-aim-hit { fill:transparent; stroke:transparent; }
 .launch-aim-point { fill:var(--amber); stroke:var(--surface); stroke-width:3; cursor:grab; touch-action:none; filter:drop-shadow(0 3px 5px rgba(0,0,0,.24)); }
 .launch-aim-handle { cursor:grab; outline:0; }
 .launch-aim-handle:focus-visible .launch-aim-point, .launch-aim-handle:hover .launch-aim-point { stroke:#fff; stroke-width:5; filter:drop-shadow(0 0 12px rgba(240,181,87,.75)); }

@@ -1,137 +1,159 @@
-# PhysicsLab 1.2.1 Beta — Interactive Experience (PhET-inspired)
+> **PhysicsLab 2.4.1 — Data Integrity Hotfix (2026-10-14):** Đã vá AUD-002/003/004 và autosave AUD-005 trong mã nguồn. `node scripts/check.mjs` PASS (210 modules) và `node --test tests/*.test.js` **291/291 PASS**. Vite build/Browser/Offline **chưa xác minh lại** trong môi trường này vì chưa cài đủ dependency; **chưa Stable**. Changelog & hướng dẫn tại [`docs/PHYSICSLAB_2_4_1_HOTFIX.md`](docs/PHYSICSLAB_2_4_1_HOTFIX.md). Các checkpoint bên dưới là lịch sử các phiên trước.
 
-**Bản phát triển dựa trực tiếp trên PhysicsLab 1.2.0.** Giữ nguyên toàn bộ 13 mô phỏng, 16 bài học, 15 cấu hình Lab, 3D Explorer, giao diện tiếng Việt và dữ liệu `physicslab.progress.v1`. Đây **không phải** mã PhET được sao chép hoặc một bản PhET đổi tên.
+> **AUD-001 fixed in source (2026-10-14):** Trang `#/learning` hiện dùng danh mục 49 bài Learning 3.0 theo lớp 10/11/12, tìm kiếm/chủ đề và tách 16 hoạt động khám phá cũ ra lối vào riêng. `npm run check:core`: **280/280 PASS**. Chưa xác nhận production build/Browser/Offline cho Patch này trên Windows; xem [`docs/audits/AUD_001_RESOLUTION.md`](docs/audits/AUD_001_RESOLUTION.md). Vẫn `2.4.0-dev`, chưa Stable.
 
-## Thay đổi trong bản này
+> **Learning 3.0 QA Hardening (2026-10-14):** Sửa chấm đơn vị câu trả lời số, bảo toàn điểm kiểm tra khi chỉ luyện một câu hoặc ôn câu sai, cân bằng câu hỏi ôn tập giữa các bài và giải thích đúng/sai từng mệnh đề. `npm run check:core` **275/275 PASS**; Vite/Browser/Offline cần xác minh trên Windows. Xem [`docs/LEARNING_3_0_QA_HARDENING.md`](docs/LEARNING_3_0_QA_HARDENING.md). Vẫn là `2.4.0-dev`, chưa Stable.
 
-- **Khí lí tưởng:** hạt khí minh họa chuyển động và phản xạ, phụ thuộc nhiệt độ; piston kéo trực tiếp, thang biểu diễn logarit để thấy được thể tích nhỏ. Các phép đo, áp suất và nhiệt động lực học luôn lấy từ mô hình SI hiện có.
-- **Mạch điện:** sơ đồ nối tiếp/song song đúng cấu trúc, trực quan dòng điện quy ước bằng các hạt chuyển động minh họa, chọn nhanh hai cách mắc, kéo và dùng phím mũi tên chỉnh điện trở. Điều khiển tạm dừng chuyển động; không làm giả số đo.
-- **Phòng thí nghiệm:** danh mục 16 bàn thực hành tách riêng (Hooke chuyên sâu + 15 chủ đề); sơ đồ minh họa riêng cho từng thí nghiệm; kéo chấm trên sơ đồ để đổi đại lượng, đọc số đo và dụng cụ từ mô hình gốc; có hiệu chuẩn và sổ tay/CSV.
-- **3D Explorer:** chỉnh lại khoảng cách chữ, số đo, khu vực canvas, bố cục tablet/desktop/mobile, giới hạn tràn bảng.
-- **Test:** unit tests mở rộng, cập nhật browser checks tương ứng các tương tác mới.
+> **PhysicsLab 2.4.0-dev · Learning 3.0 Full Curriculum Content checkpoint (2026-10-14):** 49/49 đơn vị học tập đã có nội dung Lesson Reader, 98 ví dụ và 245 câu hỏi. Code/schema + unit tests 269/269 PASS; Browser/Offline/Build của bản này **chờ Windows QA**, chưa Stable. Xem [`docs/LEARNING_3_0_CONTINUATION.md`](docs/LEARNING_3_0_CONTINUATION.md). Thông tin checkpoint A cũ ở đoạn dưới chỉ là lịch sử.
 
-**Chưa đạt parity với PhET:** Chưa phải bộ lắp mạch tự do hay môi trường thực nghiệm liên tục cho toàn bộ 15 adapter Lab; các cảnh generic là sơ đồ minh họa tương tác và kết quả đo được tính bằng mô hình. Muốn xây chức năng lắp thiết bị đa chiều như PhET cần thêm những bộ công cụ mô phỏng chuyên dụng.
+> **PhysicsLab 2.4.0-dev · Learning 3.0 checkpoint (2026-10-14):** lớp 10 đã hoàn thành **17/17 bài**; toàn hệ thống hiện có 19/49 bài Complete, 38 ví dụ và 95 câu hỏi được validate. Revision Home hỗ trợ đề không trùng, ôn câu sai và lưu kết quả. Lớp 11–12 còn 30 bài nên chưa phải Stable hoặc Learning 3.0 hoàn tất. Xem [`docs/PHYSICSLAB_LEARNING_3_0.md`](docs/PHYSICSLAB_LEARNING_3_0.md) và [`docs/THPT_CURRICULUM_COVERAGE.md`](docs/THPT_CURRICULUM_COVERAGE.md).
 
-## Chạy thử trước khi đẩy Cloudflare
+> **PhysicsLab 2.2.0-dev — Recovery checkpoint:** Chuẩn hóa thời gian đầu dò Helix/Ném xiên và sửa kiểm tra import nhầm `.import()` trong test. Xem `docs/PHYSICSLAB_2_2_RECOVERY.md`. Bản này chưa phải Stable.
 
-```powershell
-npm ci
-npm run check
-npm run dev -- --port 5188
-# Terminal thứ hai
-npm run check:browser
-```
+> **PhysicsLab 2.1.0-dev — 3D Explorer + Advanced Interactive Laboratory (2026-10-13):** Hệ trục/vectơ/playback 3D theo model; tương tác trực tiếp và sổ đo CSV dùng chung cho nhóm Newton–Ma sát–Công năng lượng–Va chạm–Quang học. Xem `docs/PHYSICSLAB_2_1_UPGRADE.md` và `docs/PHYSICSLAB_2_1_PHASE_B.md`. Đây là development checkpoint, chưa phải Stable.
 
-Chỉ đẩy GitHub sau khi cả build và browser tests thành công trên máy Windows và đã kiểm tra trực quan ở 320/390/768/1440px. Giữ nguyên `.git` và `node_modules` khi cập nhật mã nguồn, không xóa tiến độ trình duyệt. Xem `docs/PHET_EXPERIENCE_QA.md`.
+> **PhysicsLab 2.0.0-rc.1 — Release QA baseline:** 224/224 unit tests, Vite build, browser QA và offline QA đã PASS trên Windows trước khi mở nhánh phát triển 2.1. Firefox, thiết bị cảm ứng thật và profiling dài hạn vẫn là nghiệm thu thủ công trước Stable. Xem `docs/RELEASE_2_0_RC1.md`.
+
+> **PhysicsLab 2.0.0-preview.1:** bước sửa lỗi và kiểm thử giao diện Mô phỏng, không phải bản Stable. Xem `docs/PHYSICSLAB_2_0_PREVIEW_QA.md`. Giữ nguyên 13 mô phỏng, 15 bàn thí nghiệm và dữ liệu cũ.
+
+> **Simulation Remake phần 2/2 (2026-10-12):** Tiếp tục trên full source đợt 1; tập trung Điện trường, Từ trường, Quang học, Khí lí tưởng, bảo toàn Sóng & Mạch điện, đưa hiện tượng lên đầu trang ở đủ 13 mô phỏng. Xem [`docs/SIMULATION_FULL_REMAKE_PART_2.md`](docs/SIMULATION_FULL_REMAKE_PART_2.md) để biết tính năng và giới hạn QA. **Chưa phải Stable.**
+
+> **Simulation Remake đợt 1/2 (2026-10-12):** 7 mô phỏng Cơ học được nâng cấp trực tiếp từ Phase A. Xem [`docs/SIMULATION_FULL_REMAKE_HALF_1.md`](docs/SIMULATION_FULL_REMAKE_HALF_1.md) để biết phạm vi, kiểm thử và những bước nghiệm thu Windows còn bắt buộc. Đây chưa phải PhysicsLab Stable.
+
+# PhysicsLab 1.8 — Interactive Science Studio (Preview)
+
+**Kế thừa đầy đủ bản 1.7**, với cải tiến trực tiếp cho Khám phá 3D, Công cụ Vật lý và cơ chế kéo thả ở Thí nghiệm Quang học. **Đây chưa phải bản 1.8 Stable**: production build Vite trên Windows vẫn cần người dùng xác minh.
+
+- **Khám phá 3D:** camera Ném xiên tự vừa khung theo góc nhìn; mặt phẳng quy chiếu, vector vận tốc thật và cụm số đo thời gian/vị trí/tốc độ; xoay bằng pointer delta neo trạng thái gốc, Ctrl + cuộn zoom, Tab/bàn phím để điều khiển.
+- **Công cụ → Thước thời gian và quỹ đạo:** học sinh trực tiếp kéo dấu trên quỹ đạo hoặc đồ thị x(t)/y(t), xem x, y, vₓ, vᵧ và cơ năng cùng thời điểm; phát/tạm dừng, chế độ Trái Đất/Ném ngang/Mặt Trăng, export CSV, điều khiển bàn phím và hỗ trợ mobile.
+- **Virtual Lab → Thấu kính:** bỏ tỉ lệ hình vẽ thay đổi theo khoảng cách ảnh (nguồn gây nhảy khi kéo); dùng một tỉ lệ cố định, giữ nguyên phương trình thấu kính và các phép đo SI.
+- **Kiểm thử hồi quy:** thêm kiểm thử 3D camera fitting, cơ năng Ném xiên, phép đo thời gian, tỉ lệ Quang học ổn định. Các thí nghiệm Mạch điện, Hooke, Khí, Mặt phẳng nghiêng, Sóng và 13 mô phỏng vẫn có mặt.
+
+## Cài đặt trong VS Code trên Windows
+1. Sao lưu `D:\EduLab\physicslab`, giữ nguyên `.git` và `node_modules`.
+2. **Giải nén ZIP và chép tất cả nội dung ở cấp gốc ZIP** vào `D:\EduLab\physicslab`, chọn thay thế tệp cũ. Bản ZIP này không lồng một thư mục source khác.
+3. Chạy `npm ci`, `npm run check`, `npm run dev -- --port 5188`.
+4. Mở `http://127.0.0.1:5188/#/tools`, `#/explorer3d`, `#/lab`. Chạy `npm run check:browser` trước khi push lên GitHub / Cloudflare.
+
+Đọc `docs/RELEASE_1_8.md` để xem phạm vi, bài kiểm thử đã chạy, giới hạn và checklist.
 
 ---
 
-# PhysicsLab 1.2 — Beta 1 UX Rework (Balanced)
+# PhysicsLab 1.6 · Virtual Lab 3.0 (Preview)
 
-> **PhysicsLab 1.2 — bản nguồn hướng tới phát hành chính thức.** Đã gộp phần việc β2 (tương tác sâu) và RC (chất lượng, accessibility, QA) vào một đợt phát triển. Kiểm thử lõi tự động PASS nhưng Vite build và browser acceptance vẫn cần xác nhận trên Windows vì môi trường bàn giao không có native Vite Linux và chặn Chromium localhost. **Không push production trước khi ba lệnh check/build/browser PASS.**
+> **Cập nhật mới nhất:** xây sâu bàn Mặt phẳng nghiêng, Thấu kính hội tụ, Đo sóng trên dây và Giao thoa; 3 chuyên mục Cơ học / Quang học / Sóng. Các bàn Mạch điện, Hooke, Khí lí tưởng và 8 cảnh còn lại được giữ nguyên từ 1.5; tất cả 13 mô phỏng, Learning, Tools, 3D và tiến độ vẫn có mặt. Mở `docs/LAB_1_6_QA.md` để xem chức năng và giới hạn kiểm thử.
 
-## Những thay đổi cuối cùng của 1.2
+**Cài đặt:** Sao lưu dự án, giải nén Full Source 1.6 vào `D:\EduLab\physicslab` (giữ `.git` và dữ liệu trình duyệt); chạy `npm ci`, `npm run check`, `npm run dev -- --port 5188`. Truy cập `#/lab`. Đây là Preview; kiểm thử production Vite trên Windows trước khi cập nhật Cloudflare.
 
-- **13 mô phỏng có hướng dẫn trực quan ba bước:** Thử, Quan sát, Giải thích; không ghi tiến độ giả, không thay đổi công thức. Bộ tương tác kéo thả của β1 UX Rework vẫn được giữ.
-- **Graph Engine nâng cấp chung:** zoom 2×, 4×, 8× theo trục ngang, trở về vừa khung, điểm thăm dò, hỗ trợ bàn phím, xuất CSV các điểm thực do mô hình tạo ra; đường đồ thị được clip đúng vùng vẽ và giữ `fill:none`.
-- **Virtual Lab Hooke:** thêm mô hình lệch điểm 0 có thể chọn, bù sai lệch trước khi ghi mẫu, xem ảnh hưởng của hiệu chuẩn; bảng đo hiển thị ước lượng bất định chuẩn u(k) từ độ chia lực kế và thước (mô hình bù sai lệch chỉ là giả định sư phạm). Đặt lại thiết lập không xóa sổ đo.
-- **Learning 2.0:** yêu cầu thử nghiệm cụ thể được hiển thị ngay trong bài học, đồng bộ với hướng dẫn trên từng mô phỏng; giữ toàn bộ 16 bài và điều kiện hoàn thành thực.
-- **3D Explorer:** thêm góc nhìn phối cảnh/bên/dọc B và bật/tắt vectơ; giữ nút Vừa khung, kéo-xoay, tua thời gian và hai cảnh hiện có.
-- **Kiểm thử và bảo vệ tích hợp:** thêm hồi quy graph/calibration/learning, kiểm tra named exports trước build, mở rộng Playwright cho các chức năng mới. Giữ tương thích `physicslab.progress.v1`.
+---
 
-Xem [báo cáo nghiệm thu 1.2](docs/QA_1_2.md) và [trạng thái xác minh](docs/DEVELOPMENT_STATUS.md).
+# PhysicsLab 1.5 · Virtual Lab Remake
 
+> Xây trên Remake R4: 15 bàn thí nghiệm không trùng lặp (3 bàn chuyên dụng + 12 cảnh tương tác mới), giữ các chức năng học tập, 13 mô phỏng, 3D, Tools và tiến độ. Xem `docs/LAB_1_5_QA.md` về phạm vi, kiểm thử và giới hạn.
 
-**PhysicsLab** là một website Vật lý tương tác, **độc lập**, bằng **tiếng Việt** dành cho học sinh THPT. Triết lý: **“Không chỉ đọc Vật lý — hãy nhìn thấy và tương tác với nó.”**
+# PhysicsLab 1.3 — Remake R4 · Tích hợp tương tác & kiểm tra mô hình
 
-> **Trạng thái mã nguồn: `1.2.0` (cột mốc beta đầu tiên của lộ trình Balanced, chưa phải 1.2 stable).** Đã qua kiểm tra mã nguồn + 116 unit tests trong môi trường hiện tại (có bản vá Build Fix sửa thiếu export `updateNavigation`). Việc dựng Vite và kiểm thử trình duyệt thực tế cần xác nhận trên máy có đủ npm dependencies. Xem [báo cáo thử nghiệm](docs/TEST_REPORT.md).
+**Nền tảng kế thừa:** Remake R3 có bàn Lắp mạch điện và Lò xo Hooke tương tác. Bản R4 giữ lại các hệ thống đó, 13 mô phỏng, 16 bài học và khóa localStorage hiện tại. Không cần tải bất kỳ PATCH hoặc bản cũ nào.
 
+## Phần đã triển khai thật trong R4
 
+- **Cơ học trực tiếp:** Ma sát, Công–động năng, Va chạm, Dao động dùng vật thể có thể cầm và kéo; thao tác thay đổi **đầu vào mô hình Vật lý thật** thay vì chỉ tua thời gian. Có bàn phím, chú thích và kiểm tra bảo toàn động lượng.
+- **13 tình huống khám phá:** Mỗi mô phỏng có 3 tình huống chuẩn bị nhanh, một câu hỏi dự đoán và phần giải thích; các tình huống tác động đến chính slider/select của mô hình đang chạy, không hiện số liệu giả.
+- **Khí lí tưởng:** Bơm/xả khí, gia nhiệt/làm lạnh, piston kéo được, đồng hồ áp suất trực tiếp; bổ sung bàn **Bình khí & piston** trong mục Thí nghiệm, tái sử dụng mô hình nhiệt động PV=nRT. Hạt khí chuyển động minh họa **định tính**, không phải mô phỏng va chạm vi mô định lượng.
+- **Từ trường:** Thêm tay nắm kéo trực tiếp góc v/B và số vòng dây; sửa lỗi thay DOM khiến thanh trượt ngắt thao tác, sửa hướng mũi tên lực Lorentz hướng tâm theo vị trí quỹ đạo và dấu điện tích; ẩn mũi tên lực khi vận tốc song song từ trường.
+- **Khám phá 3D:** Chọn nhanh 0°/45°/90° để so sánh dạng quỹ đạo, zoom linh hoạt hơn và cải thiện bố cục/khả năng đọc.
+- **Phòng thí nghiệm:** Luồng Thử → Đo → Kết luận, dự đoán lý thuyết đặt trong hộp mở riêng để khuyến khích thực nghiệm trước, danh mục có bàn khí mới.
+- **Giao diện:** Sửa độ thoáng bảng thông số, responsive, số đo và trạng thái focus. Bản R4 không nhập mã hay che nhãn PhET.
 
-## Cập nhật UX Rework từ Lab.zip
+## Kết quả kiểm thử có thể tái lập
 
-Bản này sửa lỗi đồ thị màu đen và lỗi tràn công thức Hero; làm mới phong cách chung của biểu đồ, workbench và controls, thêm thao tác kéo trực tiếp trên các mô phỏng, giữ nguyên nội dung và tiến độ. Các mô phỏng Cơ học, Sóng, Điện, Từ, Quang, Nhiệt có thêm điều khiển trực quan và/hoặc chỉ báo khoa học đồng bộ; Lab Hooke có thể kéo quả nặng. **Xem ma trận đầy đủ và các giới hạn tại [UX_REWORK_1_2.md](docs/UX_REWORK_1_2.md).**
+- `npm run check:core` → PASS (161/161 unit tests, kiểm tra module/imports/named exports).
+- CSS: 27 stylesheet, không có lỗi parse bằng tinycss2.
+- Kiểm thử khoa học mới: thay đổi lực/quãng đường bằng cử chỉ, va chạm bảo toàn động lượng, góc lực Lorentz, khí nRT, thử nhanh đủ 13 mô phỏng.
+- **Chưa thể xác nhận `npm run build`** tại môi trường bàn giao vì không có gói Vite cục bộ và registry không sẵn để cài. **Chưa thể xác nhận browser tests/nhìn giao diện thực tế** vì môi trường Chromium chặn điều hướng địa chỉ localhost/file/data. Không gọi bản này là Stable.
 
-> **Lưu ý nghiệm thu:** 116 unit tests PASS; Vite build/Playwright chưa được xác minh trên môi trường Linux vì ZIP gốc chứa dependency native Windows và thiếu Chromium. Trước khi deploy lên Cloudflare Pages, cần chạy `npm run check` và `npm run check:browser` trên Windows.
+## Phạm vi chưa hoàn tất
 
-## Bản vá Build Fix cho 1.2 Beta 1
+Đây là bản cải tiến tích hợp R4 **không phải remake sâu cả 13 mô phỏng đến mức tương đương PhET**. Cảnh tương tác của Ném xiên/Newton/Dốc/Sóng/Mạch điện/Điện trường/Thấu kính được kế thừa từ các bản trước, không viết lại mới trong R4; thí nghiệm khác ngoài Mạch điện, Hooke, Bình khí chủ yếu là bàn thí nghiệm có thiết bị minh họa và số đo theo công thức. Cần tiếp tục xây kiến trúc thao tác vật thể cho các phòng thí nghiệm còn lại và kiểm thử usability thật với học sinh/giáo viên.
 
-- Sửa lỗi Vite build `[MISSING_EXPORT] updateNavigation` từ shell/router. Giữ nguyên các tính năng được bàn giao trong bản 1.2 Beta 1.
-- Bổ sung kiểm thử điều hướng để tránh làm mất export trong lần cải tiến giao diện tiếp theo.
+## Nghiệm thu trên VS Code Windows
 
-## Nâng cấp mới trong 1.2 Beta 1
+1. Sao lưu nguyên dự án `D:\EduLab\physicslab`; giải nén ZIP Full Source R4 chép đè vào đây, **giữ `.git`** và dữ liệu ngoài thư mục dự án. Không xóa localStorage nếu muốn giữ tiến độ.
+2. Chạy `npm ci`, `npm run check` (bao gồm kiểm tra Vite build), `npm run dev -- --port 5188`.
+3. Mở Terminal khác chạy `npm run check:browser`.
+4. Thử trực tiếp Mô phỏng → Ma sát, Va chạm, Dao động, Công–động năng, Từ trường, Khí lí tưởng; Thí nghiệm → Mạch điện/Hooke/Bình khí; Khám phá 3D; kiểm tra Light/Dark, mobile, console và trải nghiệm kéo/thả.
+5. **Chỉ push lên GitHub / cập nhật Cloudflare sau khi tất cả bước trên PASS**.
 
-- **Biểu đồ khoa học có thể thăm dò:** rê chuột hoặc dùng Tab + phím mũi tên trái/phải để đọc điểm dữ liệu; Escape thoát chế độ thăm dò. Con trỏ mô phỏng chính vẫn đồng bộ theo thời gian.
-- **So sánh thực nghiệm ném xiên:** dùng “Lưu làm mốc”, đổi tham số, xem hai quỹ đạo và hai đường trong 4 biểu đồ trên cùng thang; so sánh độ chênh tầm xa, độ cao và thời gian bay. Mốc chỉ tồn tại trong lần mở trang này.
-- **Liên kết cấu hình cho giáo viên:** sao chép link chứa vận tốc, góc, độ cao, trọng trường (không bao gồm tiến độ hay điểm số). Mở link trên Cloudflare Pages sẽ dùng bộ tham số đó.
-- **UI/UX:** đồ thị 2 cột trên desktop để đọc rõ; dark/light token đủ giá trị, nhãn dễ đọc, responsive và hỗ trợ reduced-motion như cũ.
+Chi tiết từng nhóm ở `docs/REMAKE_R4_AUDIT.md` và `docs/TEST_REPORT_REMAKE_R4.md`.
 
-Đây là đợt **1.2 Beta 1**. Ngoài các hạng mục của Alpha 1, bản này làm sạch thanh công cụ, di chuyển sao lưu dữ liệu sang trang Công cụ, tăng độ rõ minh họa thẻ mô phỏng trong dark mode và sửa lại hero card / visual language của khu vực Mô phỏng.
+---
 
-## Chạy trên Windows 11
+# PhysicsLab 1.3.0 Remake R3 — Interactive Hooke Workbench
 
-Yêu cầu **Node.js >= 22.12**, npm, trình duyệt Chromium hoặc Edge, và kết nối để cài dependency lần đầu. Mở terminal tại thư mục mã nguồn:
+**Bản này kế thừa đầy đủ Remake R2** (bàn lắp mạch DC, 13 mô phỏng hiện có, 16 bài học, 3D và Tools), không phải dự án mới. Trọng tâm R3 là xây lại sâu thí nghiệm Hooke, không thêm thanh kéo thay cho tương tác.
+
+## Điểm mới ở R3
+
+- Khay quả cân 100 g, 200 g và 500 g: bấm hoặc kéo thả vào giá treo, tháo toàn bộ, giới hạn 1 kg để vật không vượt vùng quan sát.
+- Kéo quả cân thật trong SVG, thả vật để xem dao động tắt dần; mô hình sử dụng nghiệm giải tích của `x'' + 2γx' + (k/m)x = g`, không nội suy hoạt ảnh tùy ý.
+- Thước độ dãn theo mét, vạch cân bằng, lực trọng trường và lực đàn hồi với vectơ cập nhật tức thời. Hỗ trợ tua dừng, đưa vật về cân bằng, bật/tắt vectơ.
+- Sổ thí nghiệm vẫn sử dụng `hooke-lab` trong hệ thống tiến độ hiện có; ghi phép đo theo độ phân giải/hiệu chuẩn dụng cụ, thống kê k và đồ thị F–Δx, xuất CSV.
+- Bố cục desktop/mobile, các khối chỉ số không tràn; mở rộng phần cấu hình lò xo/trọng trường/dụng cụ khi cần. Thao tác được cả bằng bàn phím.
+- Bài học Hooke liên kết trực tiếp tới `#/lab/hooke`, không đưa học sinh vào mặc định mạch điện.
+
+## Trạng thái kiểm thử
+
+Chạy `npm run check:core` để kiểm tra mã JS/module và tất cả unit tests; `npm run check` chạy thêm Vite build. Trong môi trường tạo bản này, Vite chưa cài được nên **production build và full-browser kiểm thử chưa xác minh**. Không đẩy lên Cloudflare trước khi chạy và xem tương tác trên VS Code/Windows.
+
+### Cài trên máy Windows
+
+Sao lưu `D:\EduLab\physicslab`, giải nén full source vào thư mục hiện tại (giữ `.git`); chạy `npm ci`, `npm run check`, rồi `npm run dev -- --port 5188`. Mở Thí nghiệm → Lò xo Hooke. Bản R3 bao gồm đầy đủ các thay đổi R2; không cài thêm PATCH hay ZIP R2 sau khi giải nén R3.
+
+---
+
+# PhysicsLab 1.3.0 Remake R2 — Circuit Workbench
+
+Website Vật lý THPT Việt Nam độc lập — Vite + Vanilla JS, mô phỏng tương tác, thí nghiệm ảo và tiến độ lưu cục bộ. **Giao diện và mã nguồn do PhysicsLab xây dựng, không lấy hoặc thay nhãn PhET.**
+
+## Bản R2: Bàn lắp mạch điện tự do (không chỉ kéo tham số)
+
+Mở **Thí nghiệm → Lắp mạch điện tương tác**. Mục này được ưu tiên khi mở trang thí nghiệm.
+
+- Chọn/kéo thả 6 loại linh kiện: pin DC, bóng đèn, điện trở, công tắc, ampe kế, vôn kế.
+- Kéo vị trí linh kiện trên bàn; chạm hai **đầu nối hình tròn** để tạo dây; có thể kéo từ đầu này sang đầu kia. Chọn dây để tháo, chọn linh kiện để xoay và điều chỉnh giá trị bằng ô nhập.
+- 3 bố trí ban đầu: nối tiếp, song song và bàn trống. Tự đấu lại và thử mở/đóng công tắc. Hiệu ứng đèn sáng và chấm dòng điện cập nhật theo **công suất/dòng do bộ giải mạch DC tính**.
+- Bộ giải sử dụng **modified nodal analysis** (định luật Kirchhoff + Ohm), nhiều nhánh nối tiếp/song song và các đảo mạch hở, phát hiện chập trực tiếp hai cực nguồn hoặc đấu nguồn lí tưởng xung đột.
+- Ampe kế có điện trở trong 0,02 Ω, vôn kế 10 MΩ; các phép đo dụng cụ phụ thuộc **vị trí đấu dây** thay vì công thức cố định.
+- Lưu sơ đồ và sổ tay đo trên thiết bị; xuất CSV; có hướng dẫn 3 thử thách. Mã nguồn có kiểm thử lõi mới cho phép so sánh với giá trị phân tích.
+- Bàn mạch có thể cuộn ngang trên điện thoại để thao tác đủ lớn; SVG hỗ trợ điểm nối bằng Enter/Space và thao tác chạm.
+
+**R2 là đợt phát triển theo từng thí nghiệm, chưa phải remake hoàn chỉnh của cả 13 mô phỏng và 17 thí nghiệm.** Những phần cũ vẫn hoạt động, dữ liệu học tập vẫn dùng khóa cũ `physicslab.progress.v1`. Bàn mạch mới dùng khóa riêng `physicslab.circuit-workbench.v1`.
+
+**Giới hạn mô hình**: mạch một chiều thuần trở, bóng đèn giả định điện trở không đổi; bỏ qua nhiệt, điện trở dây, quá tải/sự cố vật lý ngoài cảnh báo mạch chập, điện dung và điện cảm. Các chấm chuyển động chỉ minh họa hướng dòng điện quy ước. Trong mạng dây lí tưởng tạo vòng, dòng qua từng đoạn dây riêng lẻ không xác định duy nhất.
+
+## Các chức năng kế thừa từ R1
+
+- **13 mô phỏng**: có thanh hướng dẫn tương tác, chế độ tập trung vào cảnh, truy cập đồ thị một chạm, các thao tác vật thể hiện có vẫn giữ nguyên. Nút `Tập trung quan sát` là một chế độ có thể thoát, không làm mất dữ liệu.
+- **Mạch điện**: điều chỉnh điện áp bằng cách kéo nguồn trên sơ đồ, kéo điện trở, chuyển mạch nối tiếp/song song, xem đồng hồ A/V lấy số từ định luật Ohm.
+- **Công cụ**: thêm bàn tổng hợp hai lực, kéo mũi tên F₁/F₂, xem hợp lực và hình chiếu theo định luật cộng vectơ.
+- **Thí nghiệm**: 17 mục (gồm bàn lắp mạch mới) theo lĩnh vực, thẻ có minh họa dụng cụ riêng, tìm kiếm/lọc không dấu; trang thí nghiệm ưu tiên sân khấu trực quan; đọc dự đoán từ mô hình và ghi số đo bằng dụng cụ có độ chia. Hooke, CSV, báo cáo và hiệu chuẩn được bảo toàn.
+- **3D**: vùng quan sát lớn hơn, bảng điều khiển phân cấp, công thức không tràn hộp, playback sát canvas, nền lưới có độ tương phản tốt hơn.
+- **Điện thoại**: điều hướng dưới có đủ sáu mục cùng hàng.
+
+## Trạng thái nghiệm thu
+
+Đây là **Remake R2**, chưa được đánh dấu Stable. Bảng kiểm chứng và phạm vi còn lại ở [docs/REMAKE_SCOPE.md](docs/REMAKE_SCOPE.md). Dựng mạch thuần trở DC tùy ý đã được bổ sung trong R2 nhưng các hệ thống mô phỏng khác vẫn chưa được làm lại toàn diện, và chưa có kiểm chứng browser trên Windows trong lần bàn giao này.
+
+## Chạy trên Windows
 
 ```powershell
 npm ci
-npm run dev
-```
-
-Mở đường dẫn Vite đưa ra, mặc định `http://127.0.0.1:5173/`.
-
-Nếu project đặt trong OneDrive và gặp `EPERM` với file native `.node`, hãy tắt tiến trình Vite/Node đang dùng file, tạm dừng đồng bộ OneDrive rồi cài lại; lý tưởng nhất chạy project ngoài OneDrive. **Không xóa mã nguồn hoặc dữ liệu học tập.**
-
-## Nghiệm thu trước khi sử dụng chính thức
-
-```powershell
-npm run check:core
 npm run check
-npm run build
-```
-
-Kiểm tra browser (dùng terminal riêng):
-
-```powershell
 npm run dev -- --port 5188
 ```
 
-Sau đó terminal thứ hai:
+Mở Terminal thứ hai: `npm run check:browser`. Chỉ cập nhật Cloudflare sau khi unit/build/browser tests và kiểm thử bằng mắt thực tế hoàn tất.
 
-```powershell
-npx playwright install chromium
-npm run check:browser
-```
+Dữ liệu tiến độ giữ nguyên khóa `physicslab.progress.v1`. Không xóa dữ liệu trình duyệt khi cập nhật.
 
-`npm run check` gồm syntax/import tests, Node unit tests và Vite production build. `check:browser` có thể dùng biến môi trường `PHYSICSLAB_TEST_URL` để trỏ đến server khác. Các hình chụp và báo cáo nằm trong thư mục `work/` trên máy bạn.
-
-## Tính năng
-
-- **Tổng quan:** hoạt động gần đây, học tiếp bài chưa hoàn thành, tiến độ thực lấy từ toàn bộ danh sách bài học và Registry.
-- **Thư viện:** 13 mô phỏng có thể mở, tìm tiếng Việt không dấu, phân loại chương trình và lớp. Mỗi mô phỏng tải động khi người dùng mở.
-- **Cơ học:** ném xiên, Newton, mặt phẳng nghiêng, ma sát, công–động năng, va chạm, dao động.
-- **Sóng:** sóng truyền/sóng dừng/giao thoa trên dây.
-- **Điện học:** mạch Ohm nối tiếp/song song; điện trường và điện thế của điện tích điểm với hai điện tích kéo thả, đầu dò, vector, phép tính Coulomb.
-- **Từ–Quang–Nhiệt:** Lorentz/cảm ứng, thấu kính mỏng, khí lí tưởng.
-- **Learning:** 16 bài học tương tác theo lớp 10–12; có tìm/lọc theo lớp và chủ đề, checklist điều kiện thử nghiệm trước khi xác nhận, quiz/tiến độ.
-- **Virtual Lab:** Hooke với dụng cụ có độ chia, ghi số liệu theo từng lò xo, đồ thị và hồi quy từ phép đo; 15 cấu hình thực nghiệm chung, phép đo, bảng dữ liệu, CSV/báo cáo.
-- **3D Explorer:** tự căn khung quỹ đạo xoắn Lorentz (có nút “Vừa khung”) và hai mô hình phép chiếu 3D Canvas (xoắn ốc Lorentz, ném xiên), xoay/zoom/phát/tạm dừng/đặt lại; không cần WebGL.
-- **Công cụ:** chuyển đổi đơn vị, phân tích phép đo và công thức Vật lý.
-- **Điều hướng nhanh:** `Ctrl+K` / `Cmd+K` hoặc nút “Tìm nhanh”.
-- **Giao diện:** light/dark, chế độ HS/GV (chỉ tùy chọn giao diện), trình chiếu cho giáo viên, đồng nhất typography/spacing, điều khiển chạm tối thiểu 44px, responsive và hỗ trợ giảm chuyển động.
-- **Dữ liệu:** hỗ trợ xuất/nhập tiến độ cục bộ qua JSON trên desktop. Trước khi nhập dữ liệu nên xuất bản sao, vì nhập sẽ thay thế tiến độ của trình duyệt hiện tại. Không có tài khoản hay đồng bộ trực tuyến.
-
-Tính toán sử dụng SI và mô hình có giả định rõ. Các đồ thị/vật thể dùng kết quả vật lý chứ không dùng số ngẫu nhiên nhằm giả lập đúng.
-
-## Kỹ thuật
-
-Vite, Vanilla JavaScript, ES Modules, CSS, Canvas/SVG, Node test runner, Playwright. Không sử dụng React, backend, tài khoản, monorepo hoặc tích hợp EduLab/ChemLab/MathLab. Tiến độ người học được lưu trong `localStorage` **trên thiết bị** và có kiểm tra dữ liệu đầu vào khi phục hồi.
-
-## Tài liệu
-
-- [Lộ trình PhysicsLab 1.2](docs/ROADMAP_1_2.md)
-- [Lịch sử thay đổi](docs/CHANGELOG.md)
-- [Trạng thái và phạm vi kiểm chứng](docs/DEVELOPMENT_STATUS.md)
-- [Báo cáo kiểm thử / giới hạn](docs/TEST_REPORT.md)
-- [Hướng dẫn kiến trúc](docs/ARCHITECTURE.md)
-
-> **Bảo toàn tiến độ:** hãy sao lưu thư mục hiện tại trước khi thay nguồn. Thay mã nguồn không tự động xóa `localStorage` trong trình duyệt; đừng xóa dữ liệu website nếu muốn giữ điểm quiz/phiên học. Không đặt `node_modules/` của bản cũ vào ZIP mã nguồn mới.
+**Tham khảo thiết kế tương tác:** [PhET Interactive Simulations, University of Colorado Boulder](https://phet.colorado.edu/vi/simulations/filter?subjects=physics&type=html). PhysicsLab không phân phối lại mô phỏng PhET trong ZIP này.
